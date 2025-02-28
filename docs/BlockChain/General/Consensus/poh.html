@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ERC标准</title>
+        <title>POH</title>
 
 
         <!-- Custom HTML head -->
@@ -155,32 +155,111 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="erc"><a class="header" href="#erc">ERC</a></h1>
-<p>ERC 是 Ethereum Request for Comments（以太坊请求评论）的缩写。它是以太坊社区定义的一系列智能合约标准。这些标准为以太坊上的智能合约开发提供了规则和指南，确保不同开发者创建的合约能够相互交互和兼容。</p>
-<p>官方文档 :  <a href="https://github.com/ethereum/ERCs/tree/master/ERCS">ERC</a></p>
+                        <h1 id="proof-of-historypoh是什么"><a class="header" href="#proof-of-historypoh是什么">Proof of History（PoH）是什么？</a></h1>
+<p><a href="https://solana.com/nl/news/proof-of-history">文档推荐 - Solana</a></p>
+<p><strong>Proof of History（PoH，历史证明）</strong> 是由Solana团队开发的一种时间排序机制，旨在通过加密时间戳和可验证延迟函数（VDF）记录事件顺序，提升区块链的性能和可扩展性。PoH并非独立的共识算法，而是与Proof of Stake（PoS）结合使用，专注于解决分布式系统中时间同步的效率问题，为高吞吐量区块链提供了创新基础。</p>
 <hr />
-<h1 id="erc-的主要作用"><a class="header" href="#erc-的主要作用">ERC 的主要作用</a></h1>
-<h2 id="互操作性"><a class="header" href="#互操作性">互操作性</a></h2>
-<p>在以太坊生态系统中 ，不同的开发者可能会创建各种各样的智能合约。ERC 标准允许这些合约以一种统一的方式进行交互。例如，在去中心化金融（DeFi）领域，有许多不同的应用程序，如借贷平台、去中心化交易所等。ERC - 20 标准的存在使得各种通证能够在这些不同的平台之间方便地流通和交易。</p>
-<h2 id="标准化开发"><a class="header" href="#标准化开发">标准化开发</a></h2>
-<p>为开发者提供了清晰的开发指南。以 ERC - 721 为例，这个标准专门用于非同质化通证（NFT）。它规定了 NFT 合约必须实现的一些基本方法，如balanceOf（查询某个地址拥有的 NFT 数量）、ownerOf（查询某个 NFT 的所有者）和transferFrom（转移 NFT 的所有权）等。这使得开发者在创建 NFT 项目时能够遵循一套既定的规则，减少开发过程中的混乱，并确保所开发的 NFT 能够被市场上的各种钱包和应用程序所支持。</p>
-<h1 id="常见的-erc-标准"><a class="header" href="#常见的-erc-标准">常见的 ERC 标准</a></h1>
-<h2 id="erc---20"><a class="header" href="#erc---20">ERC - 20</a></h2>
-<p>这是最著名的 ERC 标准之一，主要用于创建可互换的数字资产，也就是同质化通证。在以太坊上发行的大多数加密货币（如以太坊本身之外的许多山寨币）都遵循 ERC - 20 标准。它定义了一套接口，包括totalSupply（总供应量）、balanceOf（账户余额）、transfer（转账）、transferFrom（授权转账）、approve（授权）等方法。</p>
-<h2 id="erc---721"><a class="header" href="#erc---721">ERC - 721：</a></h2>
-<p>专为非同质化通证（NFT）设计。与 ERC - 20 不同，ERC - 721 中的每个通证都是独一无二的，不能与其他通证互换。NFT 在数字艺术、游戏道具、虚拟房地产等领域有广泛的应用。通过 ERC - 721 标准，这些独特的资产可以在以太坊区块链上安全地创建、拥有和交易。</p>
-<h2 id="erc---1155"><a class="header" href="#erc---1155">ERC - 1155：</a></h2>
-<p>这是一种多令牌标准，它结合了 ERC - 20 和 ERC - 721 的特点。ERC - 1155 允许在一个智能合约中同时管理多种类型的通证，包括同质化和非同质化通证。这种标准在游戏开发等场景中特别有用，因为游戏中可能同时存在可互换的游戏货币和独一无二的游戏道具。</p>
+<h2 id="使用proof-of-historypoh的区块链项目"><a class="header" href="#使用proof-of-historypoh的区块链项目">使用Proof of History（PoH）的区块链项目</a></h2>
+<p>以下是截至2025年2月28日，已知与PoH直接关联的区块链项目及其应用情况：</p>
+<h3 id="1-solana"><a class="header" href="#1-solana">1. Solana</a></h3>
+<ul>
+<li><strong>概述</strong>：Solana是PoH的主要实现者，作为一个高性能Layer 1区块链，支持大规模去中心化应用（DApps）。</li>
+<li><strong>PoH作用</strong>：Solana将PoH作为其架构的核心组件，与PoS结合。PoH通过生成连续的时间戳序列，标记交易和事件的顺序，减少节点间的时间同步需求，从而实现高吞吐量。</li>
+<li><strong>特点</strong>：
+<ul>
+<li>高吞吐量：理论峰值超65,000 TPS，实际表现约为2,000-3,000 TPS（视网络状况）。</li>
+<li>低延迟：区块时间约400毫秒。</li>
+<li>应用场景：DeFi（如Serum）、NFT（如Magic Eden）、区块链游戏等。</li>
+</ul>
+</li>
+<li><strong>现状</strong>：截至2025年，Solana已成为领先公链之一，其生态系统持续扩展。</li>
+</ul>
+<h3 id="2-filecoin探索性研究"><a class="header" href="#2-filecoin探索性研究">2. Filecoin（探索性研究）</a></h3>
+<ul>
+<li><strong>概述</strong>：Filecoin是一个去中心化存储网络，基于Proof of Replication（PoRep）和Proof of Spacetime（PoSt）。</li>
+<li><strong>PoH关联</strong>：Filecoin本身不使用PoH，但社区和研究者曾探讨将其集成到架构中，以优化时间戳验证或存储证明效率。</li>
+<li><strong>特点</strong>：
+<ul>
+<li>PoH可能提升数据检索的排序效率。</li>
+<li>目前仅为理论提案，未在主网实现。</li>
+</ul>
+</li>
+<li><strong>现状</strong>：PoH在Filecoin中未被正式采用，仅停留于实验讨论。</li>
+</ul>
+<h3 id="3-arweave潜在计划"><a class="header" href="#3-arweave潜在计划">3. Arweave（潜在计划）</a></h3>
+<ul>
+<li><strong>概述</strong>：Arweave是一个永久存储区块链，使用Proof of Access（PoA）和“Blockweave”结构。</li>
+<li><strong>PoH关联</strong>：Arweave未正式采用PoH，但其团队曾提及探索类似时间排序机制的可能性，以改进数据验证效率。</li>
+<li><strong>特点</strong>：
+<ul>
+<li>PoH或可优化交易顺序记录。</li>
+<li>无明确证据显示已实现整合。</li>
+</ul>
+</li>
+<li><strong>现状</strong>：截至2025年，PoH在Arweave中仍属概念性讨论，未进入实际部署。</li>
+</ul>
+<h3 id="其他相关项目"><a class="header" href="#其他相关项目">其他相关项目</a></h3>
+<ul>
+<li><strong>Hashgraph</strong>：Hedera Hashgraph是一种基于DAG的分布式账本技术，其事件排序机制与PoH有相似之处，但使用的是“Gossip about Gossip”和虚拟投票协议，非PoH。</li>
+<li><strong>小型实验链</strong>：一些未具名的区块链项目可能在研究PoH，但缺乏公开文档和影响力，无法确认。</li>
+</ul>
+<h3 id="poh的应用前景"><a class="header" href="#poh的应用前景">PoH的应用前景</a></h3>
+<p>PoH的核心优势在于高效的时间排序，使其适用于需要高吞吐量和低延迟的场景，如金融交易和实时应用。然而，VDF的计算需求可能限制普通节点参与，引发中心化争议。Solana的成功表明PoH的潜力，未来或有更多项目借鉴其设计。</p>
+<hr />
+<h2 id="poh的核心特点"><a class="header" href="#poh的核心特点">PoH的核心特点</a></h2>
+<ol>
+<li>
+<p><strong>时间序列生成</strong><br />
+PoH通过连续哈希运算生成不可篡改的时间记录，证明事件发生的顺序。</p>
+</li>
+<li>
+<p><strong>与PoS协同</strong><br />
+PoH不决定区块生产者，而是为PoS提供时间框架，由质押的验证者负责区块确认。</p>
+</li>
+<li>
+<p><strong>高效性</strong><br />
+通过本地计算替代网络通信，PoH显著提升交易处理速度。</p>
+</li>
+</ol>
+<hr />
+<h2 id="poh的工作原理"><a class="header" href="#poh的工作原理">PoH的工作原理</a></h2>
+<p>PoH基于SHA-256哈希函数和可验证延迟函数（VDF），其运作流程如下：</p>
+<ul>
+<li>一个领导节点（Leader）持续运行哈希运算，将前一输出作为下一输入，形成单向的时间序列。</li>
+<li>交易和事件嵌入此序列，记录其相对时间戳。</li>
+<li>其他节点验证序列的正确性，因VDF的单向性，无需重新计算即可确认。</li>
+<li>在Solana中，PoS验证者轮流担任领导者，根据PoH序列打包并确认区块。</li>
+</ul>
+<p>此设计将时间同步负担转移至本地计算，极大减少了网络通信开销。</p>
+<hr />
+<h2 id="poh的优缺点"><a class="header" href="#poh的优缺点">PoH的优缺点</a></h2>
+<h3 id="优点"><a class="header" href="#优点">优点</a></h3>
+<ul>
+<li><strong>高吞吐量</strong>：支持数千至数万TPS，适用于大规模应用。</li>
+<li><strong>低延迟</strong>：区块确认时间短，提升用户体验。</li>
+<li><strong>可扩展性</strong>：为高性能区块链提供了技术支持。</li>
+</ul>
+<h3 id="缺点"><a class="header" href="#缺点">缺点</a></h3>
+<ul>
+<li><strong>硬件要求</strong>：生成PoH序列需要高性能硬件，可能提高参与门槛。</li>
+<li><strong>集中化风险</strong>：领导节点的轮换若不平衡，可能削弱去中心化。</li>
+<li><strong>应用范围有限</strong>：目前主要在Solana中实现，其他项目采用较少。</li>
+</ul>
+<hr />
+<h2 id="poh的历史与愿景"><a class="header" href="#poh的历史与愿景">PoH的历史与愿景</a></h2>
+<p>PoH由 <strong>Anatoly Yakovenko</strong> 于2017年首次提出，当时他试图解决分布式系统中时间协调的低效问题。传统共识如PoW依赖算力排序交易，耗能且缓慢；PoS虽降低能耗，仍需频繁通信以同步状态。Yakovenko受到密码学中VDF研究的启发，提出用加密手段生成时间序列，减少节点间依赖。</p>
+<p>2018年2月，PoH在《Solana: A new architecture for a high performance blockchain》白皮书中正式亮相，结合PoS和VDF奠定了Solana的技术基础。2019年3月，Solana测试网上线，验证了PoH的可行性。2020年3月16日，Solana主网Beta版启动，PoH投入实际运行。此后，Solana凭借PoH实现的高性能迅速崛起，至2025年已成为公链领域的标杆。</p>
+<p>未来，PoH可能在高吞吐量场景（如物联网、金融科技）中获得更多应用，尽管其硬件依赖性仍需优化。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/Ethereum/Basic/EthereumBasic.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/General/Consensus/pos.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/General/Consensus/pbft.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -190,11 +269,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/Ethereum/Basic/EthereumBasic.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/General/Consensus/pos.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/General/Consensus/pbft.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
