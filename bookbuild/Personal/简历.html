@@ -1,0 +1,356 @@
+<!DOCTYPE HTML>
+<html lang="en" class="ayu sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>中文简历 - Xu&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="This blog record my learning progress">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="联系方式"><a class="header" href="#联系方式">联系方式</a></h1>
+<ul>
+<li>
+<p>简要:因为个人隐私原因不在网络公示个人信息，可通过邮件联系</p>
+</li>
+<li>
+<p><strong>Email</strong>：web3test1@outlook.com</p>
+</li>
+<li>
+<p><strong>Github</strong>：<a href="https://github.com/codermaybe">https://github.com/codermaybe</a></p>
+</li>
+</ul>
+<hr />
+<h2 id="个人信息"><a class="header" href="#个人信息">个人信息</a></h2>
+<ul>
+<li><strong>姓名</strong>：徐佳伟</li>
+<li><strong>性别</strong>：男</li>
+<li><strong>出生年份</strong>：2000</li>
+<li><strong>学历</strong>：本科 / xxx计算机系网络工程专业</li>
+<li><strong>工作年限</strong>：3年</li>
+<li><strong>期望职位</strong>：区块链开发</li>
+<li><strong>期望薪资</strong>：9-12K</li>
+<li><strong>期望城市</strong>：深圳 / 远程</li>
+</ul>
+<hr />
+<h2 id="工作经历"><a class="header" href="#工作经历">工作经历</a></h2>
+<h3 id="xxx--网络工程师"><a class="header" href="#xxx--网络工程师"><strong>xxx</strong> | <strong>网络工程师</strong></a></h3>
+<p><strong>2023年6月 ~ 至今</strong></p>
+<ul>
+<li>主导网络架构设计与实施，熟悉Panabit、爱快、高恪、ROS、OpenWrt等软路由系统，具备丰富的实操经验。</li>
+<li>完成网络布线规划及设备选型，采用<strong>ikuai软路由+华为S5700-24TP-SI-AC</strong>方案，配置ACL、VLAN、IPSec VPN、行为管理及DPI检测分流，支持200个房间近300人同时在线，网络稳定运行近两年。</li>
+<li>负责日常网络维护与优化，确保高并发场景下的流畅体验。</li>
+</ul>
+<h3 id="xxx--网络运维工程师"><a class="header" href="#xxx--网络运维工程师"><strong>xxx</strong> | <strong>网络运维工程师</strong></a></h3>
+<p><strong>2023年2月 ~ 2023年5月</strong></p>
+<ul>
+<li>日均处理20+家企业网络问题，服务规模涵盖20-500人，独立完成路由器选型、配置及VPN（IPSec/L2TP/PPTP）部署，实现跨平台、跨厂家设备互联互通。</li>
+<li>熟练配置企业级交换机，支持大流量数据交互，具备华为、深信服、锐捷等主流网络设备的调试与故障排查能力。</li>
+<li>解决多起防火墙配置问题，提升企业网络安全性及稳定性。</li>
+</ul>
+<hr />
+<h2 id="技能清单"><a class="header" href="#技能清单">技能清单</a></h2>
+<h3 id="技术栈"><a class="header" href="#技术栈"><strong>技术栈</strong></a></h3>
+<ul>
+<li><strong>编程语言</strong>：Java / Rust / Solidity</li>
+<li><strong>Web3开发框架及工具</strong>：
+<ul>
+<li>交互：Ethers.JS（主） / Web3.JS</li>
+<li>前端：ReactJS / Web3uikit / Antd / Wagmi / HTML / JS / TS / CSS / AJAX</li>
+<li>智能合约开发与部署：Solidity / Rust / Hardhat（含Hardhat Ignition、Hardhat Truffle等） / Ganache</li>
+<li>合约检查工具：Slither</li>
+</ul>
+</li>
+<li><strong>数据库</strong>：MySQL</li>
+<li><strong>版本管理与部署工具</strong>：Git</li>
+</ul>
+<h3 id="区块链能力"><a class="header" href="#区块链能力"><strong>区块链能力</strong></a></h3>
+<ol>
+<li>
+<p><strong>智能合约开发</strong>：</p>
+<ul>
+<li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链，详情见【项目经历】。</li>
+<li>熟练使用OpenZeppelin安全合约库，阅读过Uniswap、USDT等项目的源码。</li>
+</ul>
+</li>
+<li>
+<p><strong>区块链生态理解</strong>：</p>
+<ul>
+<li>了解DeFi、GameFi、DApp等方向，实现过简单的ERC-20流动池货币兑换项目。</li>
+<li>熟悉Uniswap、Layer2、IPFS等技术实现，了解RWA、AMM、永续合约等概念及实现方式。</li>
+</ul>
+</li>
+<li>
+<p><strong>共识机制</strong>：</p>
+<ul>
+<li>熟悉PoW、PoS、DPOS、PoH、PBFT等共识机制的原理及应用场景。</li>
+</ul>
+</li>
+</ol>
+<h3 id="计算机基础"><a class="header" href="#计算机基础"><strong>计算机基础</strong></a></h3>
+<ul>
+<li><strong>英语能力</strong>：英语六级，能流畅阅读并理解英文技术文档。</li>
+<li><strong>计算机组成</strong>：
+<ul>
+<li>熟悉CPU流水线、访存、译码、写回等阶段，了解进制转换、有符号数/无符号数计算、溢出等概念。</li>
+<li>掌握汇编语言、机器指令实现方式及编译过程，熟悉计算机存储层次结构。</li>
+</ul>
+</li>
+<li><strong>计算机网络</strong>：
+<ul>
+<li>熟悉OSI七层模型和TCP/IP模型，了解TCP协议、HTTP协议及Socket编程。</li>
+<li>具备路由器、交换机、防火墙、AC+AP等网络设备的实操经验。</li>
+</ul>
+</li>
+<li><strong>Rust语言</strong>：
+<ul>
+<li>熟悉所有权系统、借用与生命周期、数据类型、函数与闭包、错误处理等核心特性。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="开源项目"><a class="header" href="#开源项目">开源项目</a></h2>
+<h3 id="区块链交互工具"><a class="header" href="#区块链交互工具"><strong>区块链交互工具</strong></a></h3>
+<ul>
+<li><strong>项目链接</strong>：<a href="https://github.com/codermaybe/BlockChain_InteractTools">https://github.com/codermaybe/BlockChain_InteractTools</a></li>
+<li><strong>功能</strong>：
+<ul>
+<li>实现钱包余额查询、与已部署合约的交互功能。</li>
+<li>前端采用React + Antd + Ethers.JS，通过Tauri封装为开箱即用的工具。</li>
+<li>支持转账功能，未来计划集成Wagmi Hooks，转型为钱包或类Remix的交互工具。</li>
+</ul>
+</li>
+</ul>
+<h3 id="solidity智能合约开发"><a class="header" href="#solidity智能合约开发"><strong>Solidity智能合约开发</strong></a></h3>
+<ul>
+<li><strong>项目链接</strong>：<a href="https://sepolia.etherscan.io/address/0x48aeCf60f7D272Dc118409CE5FB589386d4267eE">https://sepolia.etherscan.io/address/0x48aeCf60f7D272Dc118409CE5FB589386d4267eE</a></li>
+<li><strong>描述</strong>：包含多个智能合约的部署与调用记录，展示实际开发能力。</li>
+</ul>
+<h3 id="rust子网转换工具"><a class="header" href="#rust子网转换工具"><strong>Rust子网转换工具</strong></a></h3>
+<ul>
+<li><strong>项目链接</strong>：<a href="https://github.com/codermaybe/IP_SubnetConverter_Flawed">https://github.com/codermaybe/IP_SubnetConverter_Flawed</a></li>
+<li><strong>功能</strong>：将Windows默认输出文本转换为路由条目，展示Rust编程能力。</li>
+</ul>
+<h3 id="毕业设计p2p局域网聊天工具"><a class="header" href="#毕业设计p2p局域网聊天工具"><strong>毕业设计：P2P局域网聊天工具</strong></a></h3>
+<ul>
+<li><strong>项目链接</strong>：<a href="https://github.com/codermaybe/display">https://github.com/codermaybe/display</a></li>
+<li><strong>功能</strong>：支持大文件互传和实时信息传输，展示网络编程能力。</li>
+</ul>
+<hr />
+<h2 id="致谢"><a class="header" href="#致谢">致谢</a></h2>
+<p>感谢您花时间阅读我的简历，期待能有机会和您共事！</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../Personal/resume.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../Personal/resume.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
