@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>私钥还原 - Xu&#x27;s Blog</title>
+        <title>POW</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="This blog record my learning progress">
+        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -120,7 +120,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+                    <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
                         <a href="../../../print.html" title="Print this book" aria-label="Print this book">
@@ -155,51 +155,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
-<h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
-<p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
-<h4 id="二安装-ethersjs"><a class="header" href="#二安装-ethersjs">二、安装 ethers.js</a></h4>
-<p>在实现私钥还原公钥之前，需要先安装 <code>ethers.js</code>：</p>
-<pre><code class="language-bash">npm install ethers
-</code></pre>
-<h4 id="三使用-ethersjs-运算公钥"><a class="header" href="#三使用-ethersjs-运算公钥">三、使用 ethers.js 运算公钥</a></h4>
-<p>以下是通过 ethers.js 将私钥转换为公钥的完整代码：</p>
-<pre><code class="language-javascript">const { Wallet } = require('ethers');
-
-// 私钥（确保保密！）
-const privateKey = "0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d";
-
-// 从私钥生成钥包实例
-const wallet = new Wallet(privateKey);
-
-// 获取公钥
-const publicKey = wallet.publicKey;
-
-console.log("私钥:", privateKey);
-console.log("公钥:", publicKey);
-</code></pre>
-<h5 id="输出格式"><a class="header" href="#输出格式">输出格式</a></h5>
+                        <h1 id="工作量证明proof-of-work"><a class="header" href="#工作量证明proof-of-work">工作量证明(Proof of work)</a></h1>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%B7%A5%E4%BD%9C%E9%87%8F%E8%AD%89%E6%98%8E">文档推荐-wikipia</a></p>
+<h1 id="深入浅出什么是pow共识机制"><a class="header" href="#深入浅出什么是pow共识机制">深入浅出：什么是PoW共识机制？</a></h1>
+<p>如果你听说过比特币或区块链，可能会对“挖矿”这个词不陌生。而挖矿的核心，就是 <strong>PoW（Proof of Work，工作量证明）</strong> 共识机制。今天，我们就来聊聊PoW是什么，它是如何工作的，以及它的优缺点。</p>
+<h2 id="pow的本质"><a class="header" href="#pow的本质">PoW的本质</a></h2>
+<p>简单来说，PoW是一种通过计算工作让网络参与者达成一致的共识机制。在区块链中，参与者（通常称为矿工）通过解决复杂的数学难题来证明其投入的计算资源。找到符合条件的解后，矿工有权向区块链添加新区块并获得奖励。这种机制的核心在于“工作量”的可验证性，确保了系统的安全性和去中心化特性。</p>
+<p>在比特币中，这个难题围绕哈希函数（SHA-256）展开：矿工需要找到一个随机数（Nonce），使其与区块数据结合后生成的哈希值满足特定条件（如前导零数量）。这需要大量试错计算，体现了PoW的“工作”本质。</p>
+<h2 id="pow的工作原理"><a class="header" href="#pow的工作原理">PoW的工作原理</a></h2>
+<ol>
+<li><strong>交易收集</strong>：网络中的交易被打包进一个候选区块。</li>
+<li><strong>难题挑战</strong>：矿工通过不断调整Nonce，计算区块的哈希值，直至满足难度目标。</li>
+<li><strong>验证答案</strong>：全网节点快速验证结果是否有效，确保共识。</li>
+<li><strong>广播与确认</strong>：有效区块被添加至链上，矿工获得奖励。</li>
+<li><strong>持续循环</strong>：过程重复，推动区块链增长。</li>
+</ol>
+<p>作弊成本极高，因为篡改历史区块需要重算后续所有工作量，而这在算力竞争中几乎不可行。</p>
+<h2 id="pow的优点"><a class="header" href="#pow的优点">PoW的优点</a></h2>
 <ul>
-<li><strong>私钥</strong>：输入值，64 个十六进制字符，前缀为 <code>0x</code>。</li>
-<li><strong>公钥</strong>：未压缩格式，524-bit （含前缀 <code>0x04</code>），起始为一个指针。</li>
+<li><strong>安全性高</strong>：51%攻击需掌握全网多数算力，在成熟网络中成本极高。</li>
+<li><strong>去中心化</strong>：无需准入许可，任何拥有算力的个体均可参与。</li>
+<li><strong>透明性</strong>：规则明确，奖励与工作量挂钩。</li>
 </ul>
-<h5 id="示例输出"><a class="header" href="#示例输出">示例输出</a></h5>
-<pre><code>私钥: 0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d
-公钥: 0x04bfcab4e67d19d84cf2047269de360f3e51b50fa5c45594f5365ff3c7ec8f3f482c909de42ccadf81a913e51e535fc327fced47adf968f2bf4bfdbc5f8862bb2d
-</code></pre>
-<h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
-<h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
-<p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
+<h2 id="pow的缺点"><a class="header" href="#pow的缺点">PoW的缺点</a></h2>
+<ul>
+<li><strong>能耗巨大</strong>：高算力需求导致电力消耗惊人，引发环保争议。</li>
+<li><strong>效率较低</strong>：交易吞吐量受限，如比特币每秒仅约7笔。</li>
+<li><strong>算力集中</strong>：专业化设备（如ASIC）使得小型参与者难以竞争。</li>
+</ul>
+<h2 id="pow的历史背景与技术意义"><a class="header" href="#pow的历史背景与技术意义">PoW的历史背景与技术意义</a></h2>
+<p>PoW并非凭空诞生，其概念源于计算机科学和密码学的长期演进。早在1993年，Cynthia Dwork和Moni Naor在研究垃圾邮件防御时首次提出通过计算成本阻止滥用资源的想法。他们设计了一种机制，要求发送者解决计算难题以证明“诚意”，这可以视为PoW的雏形。1997年，Adam Back的 <strong>Hashcash</strong> 进一步完善了这一概念，利用SHA-1哈希函数生成符合条件的输出，用于抵御邮件轰炸和拒绝服务攻击。Hashcash的“工作量证明”直接启发了比特币的设计。</p>
+<p>2008年，中本聪（Satoshi Nakamoto）在比特币白皮书中将PoW引入区块链，结合分布式账本和经济激励，解决“双重支付”问题。中本聪的创新在于将Hashcash的单次证明扩展为动态调整难度的持续竞争机制，确保网络随算力增长保持稳定。2009年1月3日，比特币创世区块诞生，PoW正式成为首个成功运行的区块链共识算法。</p>
+<p>从历史角度看，PoW不仅是技术突破，更是对传统信任模型的颠覆。它通过数学和算力取代中介，奠定了去中心化数字经济的基石。然而，随着以太坊转向PoS（2022年合并）等新趋势，PoW的角色也在被重新审视。尽管如此，其作为区块链技术起源的地位无可替代。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Hardhat/Hardhat-Ignition/redeploy/ignition-redeploy.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -209,11 +206,11 @@ console.log("公钥:", publicKey);
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Hardhat/Hardhat-Ignition/redeploy/ignition-redeploy.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -9,7 +9,7 @@ description = "This blog record my learning progress"
 default-theme = "Rust"
 git-repository-url = "https://github.com/codermaybe"
 git-repository-icon = "fa-github"
-
+destination = "docs"
 [output.html.search]
 limit-results = 8
 

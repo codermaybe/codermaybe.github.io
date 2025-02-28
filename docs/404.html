@@ -3,41 +3,42 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Hardhat-ignition再次部署问题 - Xu&#x27;s Blog</title>
+        <title>Page not found</title>
+        <base href="/">
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="This blog record my learning progress">
+        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../../../favicon.svg">
-        <link rel="shortcut icon" href="../../../../favicon.png">
-        <link rel="stylesheet" href="../../../../css/variables.css">
-        <link rel="stylesheet" href="../../../../css/general.css">
-        <link rel="stylesheet" href="../../../../css/chrome.css">
-        <link rel="stylesheet" href="../../../../css/print.css" media="print">
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../../../fonts/fonts.css">
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../../../../highlight.css">
-        <link rel="stylesheet" href="../../../../tomorrow-night.css">
-        <link rel="stylesheet" href="../../../../ayu-highlight.css">
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../../../../";
+            var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../../../toc.js"></script>
+        <script src="toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +90,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -120,10 +121,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+                    <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
-                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
@@ -155,71 +156,13 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>ignition再次部署合约报错</p>
-<p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>
-<pre><code>[ Transaction ] reconciliation failed ⛔
-
-The module contains changes to executed futures:
-
-Transaction#GLDToken:
-
-- From account has been changed from 0x0988258112531ef09ebfbdb5a0b5a537bc4b860c to 0x373d36662619ed994e9778c5be4f7044f005ff9b
-
-Consider modifying your module to remove the inconsistencies with deployed futures.
-</code></pre>
-<p>解决方法：</p>
-<pre><code>npx hardhat ignition wipe deploymentId futureId
-</code></pre>
-<p>Hardhat官方说明文档</p>
-<p><a href="https://hardhat.org/ignition/docs/guides/error-handling#wiping-a-previous-execution">Handling errors | Ethereum development environment for professionals by Nomic Foundation</a></p>
-<p>部署环境说明：</p>
-<p>Ganache，非公链</p>
-<h4 id="补充说明"><a class="header" href="#补充说明"><mark>补充说明</mark></a></h4>
-<blockquote>
-<p>deploymentId         --目前等同于chainid，命名方式为chain-xxx</p>
-<p>futureId                   --对应每个需要部署的合约</p>
-</blockquote>
-<h5 id="deploymentid"><a class="header" href="#deploymentid">deploymentId</a></h5>
-<pre><code class="language-npx">npx hardhat ignition deployments
-</code></pre>
-<p>效果如下</p>
-<p><img src="./2024-12-06-14-48-16-image.png" alt="" /></p>
-<h5 id="futureid"><a class="header" href="#futureid">futureId</a></h5>
-<p>官方文档</p>
-<pre><code>npx hardhat ignition status deploymentId
-</code></pre>
-<p>项目中实际命令</p>
-<pre><code>npx hardhat ignition status chain-1337
-</code></pre>
-<p>效果如下</p>
-<p><img src="./2024-12-06-14-53-56-image.png" alt="" /></p>
-<h4 id="wipe命令擦除原本部署的合约记录"><a class="header" href="#wipe命令擦除原本部署的合约记录">wipe命令擦除原本部署的合约记录</a></h4>
-<p>官方文档</p>
-<pre><code>npx hardhat ignition wipe deploymentId futureId
-</code></pre>
-<p>实际命令</p>
-<pre><code>npx hardhat ignition wipe chain-1337 Transaction#GLDToken
-</code></pre>
-<p>效果如下</p>
-<p><img src="./2024-12-06-15-03-50-image.png" alt="" /></p>
-<h4 id="重新部署测试"><a class="header" href="#重新部署测试">重新部署测试</a></h4>
-<pre><code>npx hardhat ignition deploy ignition/modules/GLD.js --network ganache
-</code></pre>
-<p>效果如下</p>
-<p><img src="./2024-12-06-15-07-05-image.png" alt="" /></p>
-<p>//注意部署脚本的位置替换为自己脚本的路径</p>
+                        <h1 id="error"><a class="header" href="#error">Error</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
 
-                            <a rel="next prefetch" href="../../../../BlockChain/Foundry/FoundryGuide.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -227,13 +170,7 @@ Consider modifying your module to remove the inconsistencies with deployed futur
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
 
-                    <a rel="next prefetch" href="../../../../BlockChain/Foundry/FoundryGuide.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
-                    </a>
             </nav>
 
         </div>
@@ -246,13 +183,13 @@ Consider modifying your module to remove the inconsistencies with deployed futur
         </script>
 
 
-        <script src="../../../../elasticlunr.min.js"></script>
-        <script src="../../../../mark.min.js"></script>
-        <script src="../../../../searcher.js"></script>
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
 
-        <script src="../../../../clipboard.min.js"></script>
-        <script src="../../../../highlight.js"></script>
-        <script src="../../../../book.js"></script>
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
 

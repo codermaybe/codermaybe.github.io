@@ -3,41 +3,41 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>POW - Xu&#x27;s Blog</title>
+        <title>Hardhat-ignition再次部署问题</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="This blog record my learning progress">
+        <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../../favicon.svg">
-        <link rel="shortcut icon" href="../../../favicon.png">
-        <link rel="stylesheet" href="../../../css/variables.css">
-        <link rel="stylesheet" href="../../../css/general.css">
-        <link rel="stylesheet" href="../../../css/chrome.css">
-        <link rel="stylesheet" href="../../../css/print.css" media="print">
+        <link rel="icon" href="../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../../../highlight.css">
-        <link rel="stylesheet" href="../../../tomorrow-night.css">
-        <link rel="stylesheet" href="../../../ayu-highlight.css">
+        <link rel="stylesheet" href="../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../../../";
+            var path_to_root = "../../../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../../toc.js"></script>
+        <script src="../../../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -120,10 +120,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+                    <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
-                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
@@ -155,48 +155,69 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="工作量证明proof-of-work"><a class="header" href="#工作量证明proof-of-work">工作量证明(Proof of work)</a></h1>
-<p><a href="https://zh.wikipedia.org/wiki/%E5%B7%A5%E4%BD%9C%E9%87%8F%E8%AD%89%E6%98%8E">文档推荐-wikipia</a></p>
-<h1 id="深入浅出什么是pow共识机制"><a class="header" href="#深入浅出什么是pow共识机制">深入浅出：什么是PoW共识机制？</a></h1>
-<p>如果你听说过比特币或区块链，可能会对“挖矿”这个词不陌生。而挖矿的核心，就是 <strong>PoW（Proof of Work，工作量证明）</strong> 共识机制。今天，我们就来聊聊PoW是什么，它是如何工作的，以及它的优缺点。</p>
-<h2 id="pow的本质"><a class="header" href="#pow的本质">PoW的本质</a></h2>
-<p>简单来说，PoW是一种通过计算工作让网络参与者达成一致的共识机制。在区块链中，参与者（通常称为矿工）通过解决复杂的数学难题来证明其投入的计算资源。找到符合条件的解后，矿工有权向区块链添加新区块并获得奖励。这种机制的核心在于“工作量”的可验证性，确保了系统的安全性和去中心化特性。</p>
-<p>在比特币中，这个难题围绕哈希函数（SHA-256）展开：矿工需要找到一个随机数（Nonce），使其与区块数据结合后生成的哈希值满足特定条件（如前导零数量）。这需要大量试错计算，体现了PoW的“工作”本质。</p>
-<h2 id="pow的工作原理"><a class="header" href="#pow的工作原理">PoW的工作原理</a></h2>
-<ol>
-<li><strong>交易收集</strong>：网络中的交易被打包进一个候选区块。</li>
-<li><strong>难题挑战</strong>：矿工通过不断调整Nonce，计算区块的哈希值，直至满足难度目标。</li>
-<li><strong>验证答案</strong>：全网节点快速验证结果是否有效，确保共识。</li>
-<li><strong>广播与确认</strong>：有效区块被添加至链上，矿工获得奖励。</li>
-<li><strong>持续循环</strong>：过程重复，推动区块链增长。</li>
-</ol>
-<p>作弊成本极高，因为篡改历史区块需要重算后续所有工作量，而这在算力竞争中几乎不可行。</p>
-<h2 id="pow的优点"><a class="header" href="#pow的优点">PoW的优点</a></h2>
-<ul>
-<li><strong>安全性高</strong>：51%攻击需掌握全网多数算力，在成熟网络中成本极高。</li>
-<li><strong>去中心化</strong>：无需准入许可，任何拥有算力的个体均可参与。</li>
-<li><strong>透明性</strong>：规则明确，奖励与工作量挂钩。</li>
-</ul>
-<h2 id="pow的缺点"><a class="header" href="#pow的缺点">PoW的缺点</a></h2>
-<ul>
-<li><strong>能耗巨大</strong>：高算力需求导致电力消耗惊人，引发环保争议。</li>
-<li><strong>效率较低</strong>：交易吞吐量受限，如比特币每秒仅约7笔。</li>
-<li><strong>算力集中</strong>：专业化设备（如ASIC）使得小型参与者难以竞争。</li>
-</ul>
-<h2 id="pow的历史背景与技术意义"><a class="header" href="#pow的历史背景与技术意义">PoW的历史背景与技术意义</a></h2>
-<p>PoW并非凭空诞生，其概念源于计算机科学和密码学的长期演进。早在1993年，Cynthia Dwork和Moni Naor在研究垃圾邮件防御时首次提出通过计算成本阻止滥用资源的想法。他们设计了一种机制，要求发送者解决计算难题以证明“诚意”，这可以视为PoW的雏形。1997年，Adam Back的 <strong>Hashcash</strong> 进一步完善了这一概念，利用SHA-1哈希函数生成符合条件的输出，用于抵御邮件轰炸和拒绝服务攻击。Hashcash的“工作量证明”直接启发了比特币的设计。</p>
-<p>2008年，中本聪（Satoshi Nakamoto）在比特币白皮书中将PoW引入区块链，结合分布式账本和经济激励，解决“双重支付”问题。中本聪的创新在于将Hashcash的单次证明扩展为动态调整难度的持续竞争机制，确保网络随算力增长保持稳定。2009年1月3日，比特币创世区块诞生，PoW正式成为首个成功运行的区块链共识算法。</p>
-<p>从历史角度看，PoW不仅是技术突破，更是对传统信任模型的颠覆。它通过数学和算力取代中介，奠定了去中心化数字经济的基石。然而，随着以太坊转向PoS（2022年合并）等新趋势，PoW的角色也在被重新审视。尽管如此，其作为区块链技术起源的地位无可替代。</p>
+                        <p>ignition再次部署合约报错</p>
+<p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>
+<pre><code>[ Transaction ] reconciliation failed ⛔
+
+The module contains changes to executed futures:
+
+Transaction#GLDToken:
+
+- From account has been changed from 0x0988258112531ef09ebfbdb5a0b5a537bc4b860c to 0x373d36662619ed994e9778c5be4f7044f005ff9b
+
+Consider modifying your module to remove the inconsistencies with deployed futures.
+</code></pre>
+<p>解决方法：</p>
+<pre><code>npx hardhat ignition wipe deploymentId futureId
+</code></pre>
+<p>Hardhat官方说明文档</p>
+<p><a href="https://hardhat.org/ignition/docs/guides/error-handling#wiping-a-previous-execution">Handling errors | Ethereum development environment for professionals by Nomic Foundation</a></p>
+<p>部署环境说明：</p>
+<p>Ganache，非公链</p>
+<h4 id="补充说明"><a class="header" href="#补充说明"><mark>补充说明</mark></a></h4>
+<blockquote>
+<p>deploymentId         --目前等同于chainid，命名方式为chain-xxx</p>
+<p>futureId                   --对应每个需要部署的合约</p>
+</blockquote>
+<h5 id="deploymentid"><a class="header" href="#deploymentid">deploymentId</a></h5>
+<pre><code class="language-npx">npx hardhat ignition deployments
+</code></pre>
+<p>效果如下</p>
+<p><img src="./2024-12-06-14-48-16-image.png" alt="" /></p>
+<h5 id="futureid"><a class="header" href="#futureid">futureId</a></h5>
+<p>官方文档</p>
+<pre><code>npx hardhat ignition status deploymentId
+</code></pre>
+<p>项目中实际命令</p>
+<pre><code>npx hardhat ignition status chain-1337
+</code></pre>
+<p>效果如下</p>
+<p><img src="./2024-12-06-14-53-56-image.png" alt="" /></p>
+<h4 id="wipe命令擦除原本部署的合约记录"><a class="header" href="#wipe命令擦除原本部署的合约记录">wipe命令擦除原本部署的合约记录</a></h4>
+<p>官方文档</p>
+<pre><code>npx hardhat ignition wipe deploymentId futureId
+</code></pre>
+<p>实际命令</p>
+<pre><code>npx hardhat ignition wipe chain-1337 Transaction#GLDToken
+</code></pre>
+<p>效果如下</p>
+<p><img src="./2024-12-06-15-03-50-image.png" alt="" /></p>
+<h4 id="重新部署测试"><a class="header" href="#重新部署测试">重新部署测试</a></h4>
+<pre><code>npx hardhat ignition deploy ignition/modules/GLD.js --network ganache
+</code></pre>
+<p>效果如下</p>
+<p><img src="./2024-12-06-15-07-05-image.png" alt="" /></p>
+<p>//注意部署脚本的位置替换为自己脚本的路径</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../BlockChain/Foundry/FoundryGuide.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -206,11 +227,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../BlockChain/Foundry/FoundryGuide.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -225,13 +246,13 @@
         </script>
 
 
-        <script src="../../../elasticlunr.min.js"></script>
-        <script src="../../../mark.min.js"></script>
-        <script src="../../../searcher.js"></script>
+        <script src="../../../../elasticlunr.min.js"></script>
+        <script src="../../../../mark.min.js"></script>
+        <script src="../../../../searcher.js"></script>
 
-        <script src="../../../clipboard.min.js"></script>
-        <script src="../../../highlight.js"></script>
-        <script src="../../../book.js"></script>
+        <script src="../../../../clipboard.min.js"></script>
+        <script src="../../../../highlight.js"></script>
+        <script src="../../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 
