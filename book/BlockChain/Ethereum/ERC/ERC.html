@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="ayu sidebar-visible" dir="ltr">
+<html lang="en" class="rust sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>主流方向 - Xu&#x27;s Blog</title>
+        <title>ERC标准 - Xu&#x27;s Blog</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../favicon.svg">
-        <link rel="shortcut icon" href="../../favicon.png">
-        <link rel="stylesheet" href="../../css/variables.css">
-        <link rel="stylesheet" href="../../css/general.css">
-        <link rel="stylesheet" href="../../css/chrome.css">
-        <link rel="stylesheet" href="../../css/print.css" media="print">
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../../highlight.css">
-        <link rel="stylesheet" href="../../tomorrow-night.css">
-        <link rel="stylesheet" href="../../ayu-highlight.css">
+        <link rel="stylesheet" href="../../../highlight.css">
+        <link rel="stylesheet" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+            var path_to_root = "../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc.js"></script>
+        <script src="../../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -63,7 +63,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('ayu')
+            html.classList.remove('rust')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title">Xu&#x27;s Blog</h1>
 
                     <div class="right-buttons">
-                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
@@ -155,67 +155,32 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>推荐链接：
-<a href="https://dappradar.com">dappradar.com</a></p>
-<h3 id="1-金融领域深化应用核心方向"><a class="header" href="#1-金融领域深化应用核心方向"><strong>1. 金融领域深化应用（核心方向）</strong></a></h3>
-<ul>
-<li><strong>去中心化金融（DeFi）</strong>：基于以太坊等公链构建借贷、交易、衍生品平台，2023年DeFi总锁仓量已突破千亿美元。</li>
-<li><strong>供应链金融</strong>：通过区块链实现多方信息透明共享，降低信任成本，解决中小企业融资难题。</li>
-<li><strong>跨境支付与结算</strong>：如瑞波币（Ripple）通过联盟链提升跨境支付效率，减少中间环节费用。</li>
-<li><strong>数字资产证券化</strong>：利用智能合约实现资产Token化，提升流动性，典型案例如房地产和艺术品投资。</li>
-</ul>
+                        <h1 id="erc"><a class="header" href="#erc">ERC</a></h1>
+<p>ERC 是 Ethereum Request for Comments（以太坊请求评论）的缩写。它是以太坊社区定义的一系列智能合约标准。这些标准为以太坊上的智能合约开发提供了规则和指南，确保不同开发者创建的合约能够相互交互和兼容。</p>
+<p>官方文档 :  <a href="https://github.com/ethereum/ERCs/tree/master/ERCS">ERC</a></p>
 <hr />
-<h3 id="2-企业级区块链解决方案主战场"><a class="header" href="#2-企业级区块链解决方案主战场"><strong>2. 企业级区块链解决方案（主战场）</strong></a></h3>
-<ul>
-<li><strong>联盟链与私有链主导</strong>：企业更倾向采用强管理的联盟链（如Hyperledger Fabric）优化供应链管理、数据存证等场景，提升协作效率。</li>
-<li><strong>BaaS（区块链即服务）</strong>：云服务商（如AWS、阿里云）集成区块链模块，降低企业部署成本，加速应用落地。</li>
-<li><strong>行业标准建设</strong>：金融、物流等领域制定区块链技术标准，如工信部发布的《区块链隐私保护规范》。</li>
-</ul>
-<hr />
-<h3 id="3-跨行业扩展与实体经济融合"><a class="header" href="#3-跨行业扩展与实体经济融合"><strong>3. 跨行业扩展与实体经济融合</strong></a></h3>
-<ul>
-<li><strong>物联网与供应链管理</strong>：区块链+物联网实现设备数据可信上链，优化物流追踪与溯源（如IBM Food Trust）。</li>
-<li><strong>医疗健康</strong>：患者数据加密共享，提升跨机构协作效率，同时保障隐私。</li>
-<li><strong>政务与司法存证</strong>：多地政府采用区块链技术实现电子证照、司法证据存证，增强公信力。</li>
-</ul>
-<hr />
-<h3 id="4-技术创新与生态扩展"><a class="header" href="#4-技术创新与生态扩展"><strong>4. 技术创新与生态扩展</strong></a></h3>
-<ul>
-<li><strong>跨链技术</strong>：解决多链互通问题，Polkadot、Cosmos等项目推动跨链协议发展，支撑价值互联网构建。</li>
-<li><strong>Layer2扩容方案</strong>：如Optimism、zkSync通过Rollup技术提升以太坊交易吞吐量，降低Gas费用。</li>
-<li><strong>隐私计算结合</strong>：零知识证明（ZKP）与同态加密技术增强交易隐私性，应用于匿名币（如Zcash）和合规金融场景。</li>
-</ul>
-<hr />
-<h3 id="5-监管合规与标准化"><a class="header" href="#5-监管合规与标准化"><strong>5. 监管合规与标准化</strong></a></h3>
-<ul>
-<li><strong>STO（证券型代币）取代ICO</strong>：通过合规化代币发行降低风险，美国SEC已推动相关监管框架。</li>
-<li><strong>全球监管协作</strong>：如区块链协会发布《数字资产市场结构原则》，强调保护用户自托管权利与跨境协作。</li>
-<li><strong>反洗钱（AML）与KYC</strong>：各国要求交易所和钱包服务商纳入传统金融监管体系，如FATF“旅行规则”。</li>
-</ul>
-<hr />
-<h3 id="6-新兴领域探索"><a class="header" href="#6-新兴领域探索"><strong>6. 新兴领域探索</strong></a></h3>
-<ul>
-<li><strong>Web3.0与去中心化身份（DID）</strong>：构建用户自主控制的数据身份体系，如以太坊的ERC-725标准。</li>
-<li><strong>元宇宙与NFT</strong>：区块链支撑虚拟资产确权与交易，NFT应用扩展至游戏、艺术和知识产权领域。</li>
-<li><strong>碳中和与能源管理</strong>：通过区块链追踪碳足迹，激励绿色能源交易，如Power Ledger项目。</li>
-</ul>
-<hr />
-<h3 id="未来趋势关键点"><a class="header" href="#未来趋势关键点"><strong>未来趋势关键点</strong></a></h3>
-<ol>
-<li><strong>技术融合</strong>：区块链与AI、物联网、边缘计算结合，形成分布式信任网络。</li>
-<li><strong>去中心化与监管平衡</strong>：在合规框架下探索DAO（去中心化自治组织）等新模式。</li>
-<li><strong>基础设施升级</strong>：高性能公链（如Solana）和模块化架构（如Celestia）推动大规模商用。</li>
-</ol>
+<h1 id="erc-的主要作用"><a class="header" href="#erc-的主要作用">ERC 的主要作用</a></h1>
+<h2 id="互操作性"><a class="header" href="#互操作性">互操作性</a></h2>
+<p>在以太坊生态系统中 ，不同的开发者可能会创建各种各样的智能合约。ERC 标准允许这些合约以一种统一的方式进行交互。例如，在去中心化金融（DeFi）领域，有许多不同的应用程序，如借贷平台、去中心化交易所等。ERC - 20 标准的存在使得各种通证能够在这些不同的平台之间方便地流通和交易。</p>
+<h2 id="标准化开发"><a class="header" href="#标准化开发">标准化开发</a></h2>
+<p>为开发者提供了清晰的开发指南。以 ERC - 721 为例，这个标准专门用于非同质化通证（NFT）。它规定了 NFT 合约必须实现的一些基本方法，如balanceOf（查询某个地址拥有的 NFT 数量）、ownerOf（查询某个 NFT 的所有者）和transferFrom（转移 NFT 的所有权）等。这使得开发者在创建 NFT 项目时能够遵循一套既定的规则，减少开发过程中的混乱，并确保所开发的 NFT 能够被市场上的各种钱包和应用程序所支持。</p>
+<h1 id="常见的-erc-标准"><a class="header" href="#常见的-erc-标准">常见的 ERC 标准</a></h1>
+<h2 id="erc---20"><a class="header" href="#erc---20">ERC - 20</a></h2>
+<p>这是最著名的 ERC 标准之一，主要用于创建可互换的数字资产，也就是同质化通证。在以太坊上发行的大多数加密货币（如以太坊本身之外的许多山寨币）都遵循 ERC - 20 标准。它定义了一套接口，包括totalSupply（总供应量）、balanceOf（账户余额）、transfer（转账）、transferFrom（授权转账）、approve（授权）等方法。</p>
+<h2 id="erc---721"><a class="header" href="#erc---721">ERC - 721：</a></h2>
+<p>专为非同质化通证（NFT）设计。与 ERC - 20 不同，ERC - 721 中的每个通证都是独一无二的，不能与其他通证互换。NFT 在数字艺术、游戏道具、虚拟房地产等领域有广泛的应用。通过 ERC - 721 标准，这些独特的资产可以在以太坊区块链上安全地创建、拥有和交易。</p>
+<h2 id="erc---1155"><a class="header" href="#erc---1155">ERC - 1155：</a></h2>
+<p>这是一种多令牌标准，它结合了 ERC - 20 和 ERC - 721 的特点。ERC - 1155 允许在一个智能合约中同时管理多种类型的通证，包括同质化和非同质化通证。这种标准在游戏开发等场景中特别有用，因为游戏中可能同时存在可互换的游戏货币和独一无二的游戏道具。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../BlockChain/General/BasicOfBlockchain.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/Ethereum/Basic/EthereumBasic.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../BlockChain/General/Consensus/pow.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -225,11 +190,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../BlockChain/General/BasicOfBlockchain.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/Ethereum/Basic/EthereumBasic.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../BlockChain/General/Consensus/pow.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC20.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -260,13 +225,13 @@
         </script>
 
 
-        <script src="../../elasticlunr.min.js"></script>
-        <script src="../../mark.min.js"></script>
-        <script src="../../searcher.js"></script>
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
 
-        <script src="../../clipboard.min.js"></script>
-        <script src="../../highlight.js"></script>
-        <script src="../../book.js"></script>
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

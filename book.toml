@@ -6,7 +6,7 @@ src = "src"
 title = "Xu's Blog"
 description = "This blog record my learning progress"
 [output.html]
-default-theme = "Ayu"
+default-theme = "Rust"
 git-repository-url = "https://github.com/codermaybe"
 git-repository-icon = "fa-github"
 
@@ -17,4 +17,4 @@ limit-results = 8
 edition = "2018"
 
 [build]
-build-dir = "bookbuild"
+build-dir = "book"

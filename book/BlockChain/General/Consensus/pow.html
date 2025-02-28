@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="en" class="ayu sidebar-visible" dir="ltr">
+<html lang="en" class="rust sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ERC20 - Xu&#x27;s Blog</title>
+        <title>POW - Xu&#x27;s Blog</title>
 
 
         <!-- Custom HTML head -->
@@ -34,7 +34,7 @@
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../../../";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "ayu";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../../toc.js"></script>
@@ -63,7 +63,7 @@
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
             const html = document.documentElement;
-            html.classList.remove('ayu')
+            html.classList.remove('rust')
             html.classList.add(theme);
             html.classList.add("js");
         </script>
@@ -155,195 +155,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="概念"><a class="header" href="#概念">概念</a></h1>
-<p>ERC-20 标准的 ABI 是一组函数和事件定义，用于在以太坊上实现可互换的代币标准。ERC-20 代币标准由以太坊社区提出，定义了一组基础接口和功能，如余额查询、转账和授权等。</p>
-<h3 id="erc-20-标准-abi"><a class="header" href="#erc-20-标准-abi">ERC-20 标准 ABI</a></h3>
-<p>以下是 <strong>ERC-20 标准 ABI</strong>，用于与符合 ERC-20 标准的合约进行交互：</p>
-<pre><code class="language-json">[
-  {
-    "constant": true,
-    "inputs": [{"name": "_owner", "type": "address"}],
-    "name": "balanceOf",
-    "outputs": [{"name": "balance", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {"name": "_to", "type": "address"},
-      {"name": "_value", "type": "uint256"}
-    ],
-    "name": "transfer",
-    "outputs": [{"name": "", "type": "bool"}],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {"name": "_spender", "type": "address"},
-      {"name": "_value", "type": "uint256"}
-    ],
-    "name": "approve",
-    "outputs": [{"name": "", "type": "bool"}],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {"name": "_owner", "type": "address"},
-      {"name": "_spender", "type": "address"}
-    ],
-    "name": "allowance",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {"name": "_from", "type": "address"},
-      {"name": "_to", "type": "address"},
-      {"name": "_value", "type": "uint256"}
-    ],
-    "name": "transferFrom",
-    "outputs": [{"name": "", "type": "bool"}],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true, "name": "owner", "type": "address"},
-      {"indexed": true, "name": "spender", "type": "address"},
-      {"indexed": false, "name": "value", "type": "uint256"}
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {"indexed": true, "name": "from", "type": "address"},
-      {"indexed": true, "name": "to", "type": "address"},
-      {"indexed": false, "name": "value", "type": "uint256"}
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "totalSupply",
-    "outputs": [{"name": "", "type": "uint256"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "name",
-    "outputs": [{"name": "", "type": "string"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [{"name": "", "type": "string"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [{"name": "", "type": "uint8"}],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }
-]
-</code></pre>
-<hr />
-<h3 id="erc-20-abi-说明"><a class="header" href="#erc-20-abi-说明">ERC-20 ABI 说明</a></h3>
+                        <h1 id="工作量证明proof-of-work"><a class="header" href="#工作量证明proof-of-work">工作量证明(Proof of work)</a></h1>
+<p><a href="https://zh.wikipedia.org/wiki/%E5%B7%A5%E4%BD%9C%E9%87%8F%E8%AD%89%E6%98%8E">文档推荐-wikipia</a></p>
+<h1 id="深入浅出什么是pow共识机制"><a class="header" href="#深入浅出什么是pow共识机制">深入浅出：什么是PoW共识机制？</a></h1>
+<p>如果你听说过比特币或区块链，可能会对“挖矿”这个词不陌生。而挖矿的核心，就是 <strong>PoW（Proof of Work，工作量证明）</strong> 共识机制。今天，我们就来聊聊PoW是什么，它是如何工作的，以及它的优缺点。</p>
+<h2 id="pow的本质"><a class="header" href="#pow的本质">PoW的本质</a></h2>
+<p>简单来说，PoW是一种通过计算工作让网络参与者达成一致的共识机制。在区块链中，参与者（通常称为矿工）通过解决复杂的数学难题来证明其投入的计算资源。找到符合条件的解后，矿工有权向区块链添加新区块并获得奖励。这种机制的核心在于“工作量”的可验证性，确保了系统的安全性和去中心化特性。</p>
+<p>在比特币中，这个难题围绕哈希函数（SHA-256）展开：矿工需要找到一个随机数（Nonce），使其与区块数据结合后生成的哈希值满足特定条件（如前导零数量）。这需要大量试错计算，体现了PoW的“工作”本质。</p>
+<h2 id="pow的工作原理"><a class="header" href="#pow的工作原理">PoW的工作原理</a></h2>
+<ol>
+<li><strong>交易收集</strong>：网络中的交易被打包进一个候选区块。</li>
+<li><strong>难题挑战</strong>：矿工通过不断调整Nonce，计算区块的哈希值，直至满足难度目标。</li>
+<li><strong>验证答案</strong>：全网节点快速验证结果是否有效，确保共识。</li>
+<li><strong>广播与确认</strong>：有效区块被添加至链上，矿工获得奖励。</li>
+<li><strong>持续循环</strong>：过程重复，推动区块链增长。</li>
+</ol>
+<p>作弊成本极高，因为篡改历史区块需要重算后续所有工作量，而这在算力竞争中几乎不可行。</p>
+<h2 id="pow的优点"><a class="header" href="#pow的优点">PoW的优点</a></h2>
 <ul>
-<li>
-<p><strong>Functions</strong>：</p>
+<li><strong>安全性高</strong>：51%攻击需掌握全网多数算力，在成熟网络中成本极高。</li>
+<li><strong>去中心化</strong>：无需准入许可，任何拥有算力的个体均可参与。</li>
+<li><strong>透明性</strong>：规则明确，奖励与工作量挂钩。</li>
+</ul>
+<h2 id="pow的缺点"><a class="header" href="#pow的缺点">PoW的缺点</a></h2>
 <ul>
-<li><code>totalSupply</code>：返回代币的总供应量。</li>
-<li><code>balanceOf</code>：查询指定地址的余额。</li>
-<li><code>transfer</code>：从发送者地址向指定地址发送代币。</li>
-<li><code>approve</code>：批准某个地址可以花费指定数量的代币。</li>
-<li><code>allowance</code>：查询某个地址对另一个地址授权的代币数量。</li>
-<li><code>transferFrom</code>：从指定地址向另一个地址转移代币（需要先批准）。</li>
+<li><strong>能耗巨大</strong>：高算力需求导致电力消耗惊人，引发环保争议。</li>
+<li><strong>效率较低</strong>：交易吞吐量受限，如比特币每秒仅约7笔。</li>
+<li><strong>算力集中</strong>：专业化设备（如ASIC）使得小型参与者难以竞争。</li>
 </ul>
-</li>
-<li>
-<p><strong>Events</strong>：</p>
-<ul>
-<li><code>Transfer</code>：代币转移事件，记录从一个地址向另一个地址转移的情况。</li>
-<li><code>Approval</code>：授权事件，记录某个地址被授权花费代币。</li>
-</ul>
-</li>
-<li>
-<p><strong>Metadata Functions</strong>（非强制但通常包含）：</p>
-<ul>
-<li><code>name</code>：代币的名称。</li>
-<li><code>symbol</code>：代币的符号。</li>
-<li><code>decimals</code>：代币的小数位数，通常是 18。</li>
-</ul>
-</li>
-</ul>
-<hr />
-<h3 id="如何使用-erc-20-abi"><a class="header" href="#如何使用-erc-20-abi">如何使用 ERC-20 ABI</a></h3>
-<p>使用上面的 ABI 和 <code>web3.js</code> 或 <code>ethers.js</code> 库，可以轻松与符合 ERC-20 标准的智能合约交互。</p>
-<h4 id="使用-ethersjs-示例"><a class="header" href="#使用-ethersjs-示例">使用 <code>ethers.js</code> 示例：</a></h4>
-<h4 id="使用-web3js-示例"><a class="header" href="#使用-web3js-示例">使用 <code>web3.js</code> 示例：</a></h4>
-<pre><code class="language-javascript">const Web3 = require('web3');
-const web3 = new Web3('https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID');
-
-const erc20ABI = [/* 这里粘贴上面的 ERC-20 ABI */];
-const contractAddress = '0xTokenContractAddress'; // 替换为 ERC-20 代币合约地址
-
-const erc20Contract = new web3.eth.Contract(erc20ABI, contractAddress);
-
-erc20Contract.methods.balanceOf('0xYourAddress').call()
-  .then(balance =&gt; console.log(`Token Balance: ${balance}`));
-</code></pre>
-<hr />
-<h3 id="总结"><a class="header" href="#总结">总结</a></h3>
-<p>ERC-20 标准 ABI 包含了代币的核心功能，如代币转移、余额查询和授权操作。通过使用此标准的 ABI，你可以与任何 ERC-20 兼容的合约进行交互。</p>
-<h1 id="如何调用任意erc20合约"><a class="header" href="#如何调用任意erc20合约">如何调用任意ERC20合约</a></h1>
-<h2 id="ierc20"><a class="header" href="#ierc20">ierc20</a></h2>
-<h1 id=""><a class="header" href="#"></a></h1>
+<h2 id="pow的历史背景与技术意义"><a class="header" href="#pow的历史背景与技术意义">PoW的历史背景与技术意义</a></h2>
+<p>PoW并非凭空诞生，其概念源于计算机科学和密码学的长期演进。早在1993年，Cynthia Dwork和Moni Naor在研究垃圾邮件防御时首次提出通过计算成本阻止滥用资源的想法。他们设计了一种机制，要求发送者解决计算难题以证明“诚意”，这可以视为PoW的雏形。1997年，Adam Back的 <strong>Hashcash</strong> 进一步完善了这一概念，利用SHA-1哈希函数生成符合条件的输出，用于抵御邮件轰炸和拒绝服务攻击。Hashcash的“工作量证明”直接启发了比特币的设计。</p>
+<p>2008年，中本聪（Satoshi Nakamoto）在比特币白皮书中将PoW引入区块链，结合分布式账本和经济激励，解决“双重支付”问题。中本聪的创新在于将Hashcash的单次证明扩展为动态调整难度的持续竞争机制，确保网络随算力增长保持稳定。2009年1月3日，比特币创世区块诞生，PoW正式成为首个成功运行的区块链共识算法。</p>
+<p>从历史角度看，PoW不仅是技术突破，更是对传统信任模型的颠覆。它通过数学和算力取代中介，奠定了去中心化数字经济的基石。然而，随着以太坊转向PoS（2022年合并）等新趋势，PoW的角色也在被重新审视。尽管如此，其作为区块链技术起源的地位无可替代。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -353,11 +206,11 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/General/Mainstream_direction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
