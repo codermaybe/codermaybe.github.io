@@ -216,8 +216,8 @@
 <li>
 <p><strong>智能合约开发</strong>：</p>
 <ul>
-<li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链，详情见【项目经历】。</li>
-<li>熟练使用OpenZeppelin安全合约库，阅读过Uniswap、USDT等项目的源码。</li>
+<li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链。</li>
+<li>熟练使用OpenZeppelin安全合约库,如RBAC,Ownable2等实用功能，阅读过Uniswap、USDT等项目的源码。</li>
 </ul>
 </li>
 <li>
@@ -262,10 +262,24 @@
 <li><strong>项目链接</strong>：<a href="https://github.com/codermaybe/BlockChain_InteractTools">https://github.com/codermaybe/BlockChain_InteractTools</a></li>
 <li><strong>功能</strong>：
 <ul>
-<li>实现钱包余额查询、与已部署合约的交互功能。</li>
-<li>前端采用React + Antd + Ethers.JS，通过Tauri封装为开箱即用的工具。</li>
-<li>支持转账功能，未来计划集成Wagmi Hooks，转型为钱包或类Remix的交互工具。</li>
-<li>目前已上线部分钱包功能</li>
+<li>以太坊余额查询、通用合约交互(目前仅view/pure方法可调用)。</li>
+<li>随机钱包申请、转账、钱包恢复(助记词)、remix合约部署重定向。</li>
+<li>区块链历史交易查询、区块链合约事件监听、代币归集等功能。</li>
+<li>预计引入私钥管理，支持私钥导入、导出、管理。向完善的去中心化钱包发展。</li>
+</ul>
+</li>
+</ul>
+<h3 id="区块链投票系统"><a class="header" href="#区块链投票系统"><strong>区块链投票系统</strong></a></h3>
+<ul>
+<li><strong>项目链接</strong>：<a href="https://github.com/codermaybe/VotingSystem">https://github.com/codermaybe/VotingSystem</a></li>
+<li>V1.0版本：
+<ul>
+<li>单项目投票、管理员开奖，投票结果查询。</li>
+</ul>
+</li>
+<li>V2.0版本：
+<ul>
+<li>多项目同时投票、用户发起项目权限控制、定时开奖、投票结果查询、略微复杂的设计模式。</li>
 </ul>
 </li>
 </ul>
@@ -317,6 +331,22 @@
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

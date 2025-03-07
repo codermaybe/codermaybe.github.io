@@ -17,6 +17,7 @@
     - [POH](./BlockChain/General/Consensus/poh.md)
     - [PBFT](./BlockChain/General/Consensus/pbft.md)
     - [BFT]() 
+    - [HOTSTUFF](./BlockChain/General/Consensus/hotstuff.md)
   - [技术概览]()
   - [商机&&危机]()
 - [Ethereum](./BlockChain/Ethereum/ethereum.md)
@@ -45,6 +46,7 @@
 ---
 # Rust
 - [基础]()
+  - [特征](./Rust/Basic/Trait.md) 
 ---
 # 计算机组成原理()
 ---
