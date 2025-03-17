@@ -1165,6 +1165,824 @@ console.log("公钥:", publicKey);
 <h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
 <h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
 <p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="usdc源码解析"><a class="header" href="#usdc源码解析">USDC源码解析</a></h1>
+<p><a href="https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code">USDC v1 源码链接</a></p>
+<p>V1设计结构
+<img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./img/image.png" alt="alt text" /></p>
+<h2 id="逐模块分析"><a class="header" href="#逐模块分析">逐模块分析</a></h2>
+<h3 id="fiattokenv1sol"><a class="header" href="#fiattokenv1sol">FiatTokenV1.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/FiatTokenV1/FiatTokenV1.html">FiatTokenV1</a></p>
+<h3 id="ownablesol"><a class="header" href="#ownablesol">ownable.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/Ownable/Ownable.html">ownable</a></p>
+<h3 id="pauseablesol"><a class="header" href="#pauseablesol">pauseable.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/Pauseable/Pauseable.html">pauseable</a></p>
+<h3 id="abstractfiattokenv1sol"><a class="header" href="#abstractfiattokenv1sol">AbstractFiatTokenV1.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/AbstractFiatTokenV1/AbstractFiatTokenV1.html">AbstractFiatTokenV1</a></p>
+<h3 id="blacklistablesol"><a class="header" href="#blacklistablesol">Blacklistable.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/Blacklistable/Blacklistable.html">Blacklistable</a></p>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/sourcecode/Ownable/ownable.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: MIT
+ *
+ * Copyright (c) 2018 zOS Global Limited.
+ * Copyright (c) 2018-2020 CENTRE SECZ
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+pragma solidity 0.6.12;
+
+/**
+ * @notice The Ownable contract has an owner address, and provides basic
+ * authorization control functions
+ * @dev Forked from https://github.com/OpenZeppelin/openzeppelin-labs/blob/3887ab77b8adafba4a26ace002f3a684c1a3388b/upgradeability_ownership/contracts/ownership/Ownable.sol
+ * Modifications:
+ * 1. Consolidate OwnableStorage into this contract (7/13/18)
+ * 2. Reformat, conform to Solidity 0.6 syntax, and add error messages (5/13/20)
+ * 3. Make public functions external (5/27/20)
+ */
+contract Ownable {
+    // Owner of the contract
+    address private _owner;
+
+    /**
+     * @dev Event to show ownership has been transferred
+     * @param previousOwner representing the address of the previous owner
+     * @param newOwner representing the address of the new owner
+     */
+    event OwnershipTransferred(address previousOwner, address newOwner);
+
+    /**
+     * @dev The constructor sets the original owner of the contract to the sender account.
+     */
+    constructor() public {
+        setOwner(msg.sender);
+    }
+
+    /**
+     * @dev Tells the address of the owner
+     * @return the address of the owner
+     */
+    function owner() external view returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @dev Sets a new owner address
+     */
+    function setOwner(address newOwner) internal {
+        _owner = newOwner;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(msg.sender == _owner, "Ownable: caller is not the owner");
+        _;
+    }
+
+    /**
+     * @dev Allows the current owner to transfer control of the contract to a newOwner.
+     * @param newOwner The address to transfer ownership to.
+     */
+    function transferOwnership(address newOwner) external onlyOwner {
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
+        emit OwnershipTransferred(_owner, newOwner);
+        setOwner(newOwner);
+    }
+}
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/sourcecode/Pauseable/Pauseable.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: MIT
+ *
+ * Copyright (c) 2016 Smart Contract Solutions, Inc.
+ * Copyright (c) 2018-2020 CENTRE SECZ
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
+pragma solidity 0.6.12;
+
+import { Ownable } from "./Ownable.sol";
+
+/**
+ * @notice Base contract which allows children to implement an emergency stop
+ * mechanism
+ * @dev Forked from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/feb665136c0dae9912e08397c1a21c4af3651ef3/contracts/lifecycle/Pausable.sol
+ * Modifications:
+ * 1. Added pauser role, switched pause/unpause to be onlyPauser (6/14/2018)
+ * 2. Removed whenNotPause/whenPaused from pause/unpause (6/14/2018)
+ * 3. Removed whenPaused (6/14/2018)
+ * 4. Switches ownable library to use ZeppelinOS (7/12/18)
+ * 5. Remove constructor (7/13/18)
+ * 6. Reformat, conform to Solidity 0.6 syntax and add error messages (5/13/20)
+ * 7. Make public functions external (5/27/20)
+ */
+contract Pausable is Ownable {
+    event Pause();
+    event Unpause();
+    event PauserChanged(address indexed newAddress);
+
+    address public pauser;
+    bool public paused = false;
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is not paused.
+     */
+    modifier whenNotPaused() {
+        require(!paused, "Pausable: paused");
+        _;
+    }
+
+    /**
+     * @dev throws if called by any account other than the pauser
+     */
+    modifier onlyPauser() {
+        require(msg.sender == pauser, "Pausable: caller is not the pauser");
+        _;
+    }
+
+    /**
+     * @dev called by the owner to pause, triggers stopped state
+     */
+    function pause() external onlyPauser {
+        paused = true;
+        emit Pause();
+    }
+
+    /**
+     * @dev called by the owner to unpause, returns to normal state
+     */
+    function unpause() external onlyPauser {
+        paused = false;
+        emit Unpause();
+    }
+
+    /**
+     * @notice Updates the pauser address.
+     * @param _newPauser The address of the new pauser.
+     */
+    function updatePauser(address _newPauser) external onlyOwner {
+        require(
+            _newPauser != address(0),
+            "Pausable: new pauser is the zero address"
+        );
+        pauser = _newPauser;
+        emit PauserChanged(pauser);
+    }
+}
+
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/sourcecode/AbstractFiatTokenV1/AbstractFiatTokenV1.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+abstract contract AbstractFiatTokenV1 is IERC20 {
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value
+    ) internal virtual;
+
+    function _transfer(
+        address from,
+        address to,
+        uint256 value
+    ) internal virtual;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/sourcecode/Blacklistable/Blacklistable.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { Ownable } from "./Ownable.sol";
+
+/**
+ * @title Blacklistable Token
+ * @dev Allows accounts to be blacklisted by a "blacklister" role
+ */
+abstract contract Blacklistable is Ownable {
+    address public blacklister;
+    mapping(address =&gt; bool) internal _deprecatedBlacklisted;
+
+    event Blacklisted(address indexed _account);
+    event UnBlacklisted(address indexed _account);
+    event BlacklisterChanged(address indexed newBlacklister);
+
+    /**
+     * @dev Throws if called by any account other than the blacklister.
+     */
+    modifier onlyBlacklister() {
+        require(
+            msg.sender == blacklister,
+            "Blacklistable: caller is not the blacklister"
+        );
+        _;
+    }
+
+    /**
+     * @dev Throws if argument account is blacklisted.
+     * @param _account The address to check.
+     */
+    modifier notBlacklisted(address _account) {
+        require(
+            !_isBlacklisted(_account),
+            "Blacklistable: account is blacklisted"
+        );
+        _;
+    }
+
+    /**
+     * @notice Checks if account is blacklisted.
+     * @param _account The address to check.
+     * @return True if the account is blacklisted, false if the account is not blacklisted.
+     */
+    function isBlacklisted(address _account) external view returns (bool) {
+        return _isBlacklisted(_account);
+    }
+
+    /**
+     * @notice Adds account to blacklist.
+     * @param _account The address to blacklist.
+     */
+    function blacklist(address _account) external onlyBlacklister {
+        _blacklist(_account);
+        emit Blacklisted(_account);
+    }
+
+    /**
+     * @notice Removes account from blacklist.
+     * @param _account The address to remove from the blacklist.
+     */
+    function unBlacklist(address _account) external onlyBlacklister {
+        _unBlacklist(_account);
+        emit UnBlacklisted(_account);
+    }
+
+    /**
+     * @notice Updates the blacklister address.
+     * @param _newBlacklister The address of the new blacklister.
+     */
+    function updateBlacklister(address _newBlacklister) external onlyOwner {
+        require(
+            _newBlacklister != address(0),
+            "Blacklistable: new blacklister is the zero address"
+        );
+        blacklister = _newBlacklister;
+        emit BlacklisterChanged(blacklister);
+    }
+
+    /**
+     * @dev Checks if account is blacklisted.
+     * @param _account The address to check.
+     * @return true if the account is blacklisted, false otherwise.
+     */
+    function _isBlacklisted(address _account)
+        internal
+        virtual
+        view
+        returns (bool);
+
+    /**
+     * @dev Helper method that blacklists an account.
+     * @param _account The address to blacklist.
+     */
+    function _blacklist(address _account) internal virtual;
+
+    /**
+     * @dev Helper method that unblacklists an account.
+     * @param _account The address to unblacklist.
+     */
+    function _unBlacklist(address _account) internal virtual;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/sourcecode/FiatTokenV1/FiatTokenV1.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { SafeMath } from "@openzeppelin/contracts/math/SafeMath.sol";
+import { AbstractFiatTokenV1 } from "./AbstractFiatTokenV1.sol";
+import { Ownable } from "./Ownable.sol";
+import { Pausable } from "./Pausable.sol";
+import { Blacklistable } from "./Blacklistable.sol";
+
+/**
+ * @title FiatToken
+ * @dev ERC20 Token backed by fiat reserves
+ */
+contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
+    using SafeMath for uint256;
+
+    string public name;
+    string public symbol;
+    uint8 public decimals;
+    string public currency;
+    address public masterMinter;
+    bool internal initialized;
+
+    /// @dev A mapping that stores the balance and blacklist states for a given address.
+    /// The first bit defines whether the address is blacklisted (1 if blacklisted, 0 otherwise).
+    /// The last 255 bits define the balance for the address.
+    mapping(address =&gt; uint256) internal balanceAndBlacklistStates;
+    mapping(address =&gt; mapping(address =&gt; uint256)) internal allowed;
+    uint256 internal totalSupply_ = 0;
+    mapping(address =&gt; bool) internal minters;
+    mapping(address =&gt; uint256) internal minterAllowed;
+
+    event Mint(address indexed minter, address indexed to, uint256 amount);
+    event Burn(address indexed burner, uint256 amount);
+    event MinterConfigured(address indexed minter, uint256 minterAllowedAmount);
+    event MinterRemoved(address indexed oldMinter);
+    event MasterMinterChanged(address indexed newMasterMinter);
+
+    /**
+     * @notice Initializes the fiat token contract.
+     * @param tokenName       The name of the fiat token.
+     * @param tokenSymbol     The symbol of the fiat token.
+     * @param tokenCurrency   The fiat currency that the token represents.
+     * @param tokenDecimals   The number of decimals that the token uses.
+     * @param newMasterMinter The masterMinter address for the fiat token.
+     * @param newPauser       The pauser address for the fiat token.
+     * @param newBlacklister  The blacklister address for the fiat token.
+     * @param newOwner        The owner of the fiat token.
+     */
+    function initialize(
+        string memory tokenName,
+        string memory tokenSymbol,
+        string memory tokenCurrency,
+        uint8 tokenDecimals,
+        address newMasterMinter,
+        address newPauser,
+        address newBlacklister,
+        address newOwner
+    ) public {
+        require(!initialized, "FiatToken: contract is already initialized");
+        require(
+            newMasterMinter != address(0),
+            "FiatToken: new masterMinter is the zero address"
+        );
+        require(
+            newPauser != address(0),
+            "FiatToken: new pauser is the zero address"
+        );
+        require(
+            newBlacklister != address(0),
+            "FiatToken: new blacklister is the zero address"
+        );
+        require(
+            newOwner != address(0),
+            "FiatToken: new owner is the zero address"
+        );
+
+        name = tokenName;
+        symbol = tokenSymbol;
+        currency = tokenCurrency;
+        decimals = tokenDecimals;
+        masterMinter = newMasterMinter;
+        pauser = newPauser;
+        blacklister = newBlacklister;
+        setOwner(newOwner);
+        initialized = true;
+    }
+
+    /**
+     * @dev Throws if called by any account other than a minter.
+     */
+    modifier onlyMinters() {
+        require(minters[msg.sender], "FiatToken: caller is not a minter");
+        _;
+    }
+
+    /**
+     * @notice Mints fiat tokens to an address.
+     * @param _to The address that will receive the minted tokens.
+     * @param _amount The amount of tokens to mint. Must be less than or equal
+     * to the minterAllowance of the caller.
+     * @return True if the operation was successful.
+     */
+    function mint(address _to, uint256 _amount)
+        external
+        whenNotPaused
+        onlyMinters
+        notBlacklisted(msg.sender)
+        notBlacklisted(_to)
+        returns (bool)
+    {
+        require(_to != address(0), "FiatToken: mint to the zero address");
+        require(_amount &gt; 0, "FiatToken: mint amount not greater than 0");
+
+        uint256 mintingAllowedAmount = minterAllowed[msg.sender];
+        require(
+            _amount &lt;= mintingAllowedAmount,
+            "FiatToken: mint amount exceeds minterAllowance"
+        );
+
+        totalSupply_ = totalSupply_.add(_amount);
+        _setBalance(_to, _balanceOf(_to).add(_amount));
+        minterAllowed[msg.sender] = mintingAllowedAmount.sub(_amount);
+        emit Mint(msg.sender, _to, _amount);
+        emit Transfer(address(0), _to, _amount);
+        return true;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the masterMinter
+     */
+    modifier onlyMasterMinter() {
+        require(
+            msg.sender == masterMinter,
+            "FiatToken: caller is not the masterMinter"
+        );
+        _;
+    }
+
+    /**
+     * @notice Gets the minter allowance for an account.
+     * @param minter The address to check.
+     * @return The remaining minter allowance for the account.
+     */
+    function minterAllowance(address minter) external view returns (uint256) {
+        return minterAllowed[minter];
+    }
+
+    /**
+     * @notice Checks if an account is a minter.
+     * @param account The address to check.
+     * @return True if the account is a minter, false if the account is not a minter.
+     */
+    function isMinter(address account) external view returns (bool) {
+        return minters[account];
+    }
+
+    /**
+     * @notice Gets the remaining amount of fiat tokens a spender is allowed to transfer on
+     * behalf of the token owner.
+     * @param owner   The token owner's address.
+     * @param spender The spender's address.
+     * @return The remaining allowance.
+     */
+    function allowance(address owner, address spender)
+        external
+        override
+        view
+        returns (uint256)
+    {
+        return allowed[owner][spender];
+    }
+
+    /**
+     * @notice Gets the totalSupply of the fiat token.
+     * @return The totalSupply of the fiat token.
+     */
+    function totalSupply() external override view returns (uint256) {
+        return totalSupply_;
+    }
+
+    /**
+     * @notice Gets the fiat token balance of an account.
+     * @param account  The address to check.
+     * @return balance The fiat token balance of the account.
+     */
+    function balanceOf(address account)
+        external
+        override
+        view
+        returns (uint256)
+    {
+        return _balanceOf(account);
+    }
+
+    /**
+     * @notice Sets a fiat token allowance for a spender to spend on behalf of the caller.
+     * @param spender The spender's address.
+     * @param value   The allowance amount.
+     * @return True if the operation was successful.
+     */
+    function approve(address spender, uint256 value)
+        external
+        virtual
+        override
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(spender)
+        returns (bool)
+    {
+        _approve(msg.sender, spender, value);
+        return true;
+    }
+
+    /**
+     * @dev Internal function to set allowance.
+     * @param owner     Token owner's address.
+     * @param spender   Spender's address.
+     * @param value     Allowance amount.
+     */
+    function _approve(
+        address owner,
+        address spender,
+        uint256 value
+    ) internal override {
+        require(owner != address(0), "ERC20: approve from the zero address");
+        require(spender != address(0), "ERC20: approve to the zero address");
+        allowed[owner][spender] = value;
+        emit Approval(owner, spender, value);
+    }
+
+    /**
+     * @notice Transfers tokens from an address to another by spending the caller's allowance.
+     * @dev The caller must have some fiat token allowance on the payer's tokens.
+     * @param from  Payer's address.
+     * @param to    Payee's address.
+     * @param value Transfer amount.
+     * @return True if the operation was successful.
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    )
+        external
+        override
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(from)
+        notBlacklisted(to)
+        returns (bool)
+    {
+        require(
+            value &lt;= allowed[from][msg.sender],
+            "ERC20: transfer amount exceeds allowance"
+        );
+        _transfer(from, to, value);
+        allowed[from][msg.sender] = allowed[from][msg.sender].sub(value);
+        return true;
+    }
+
+    /**
+     * @notice Transfers tokens from the caller.
+     * @param to    Payee's address.
+     * @param value Transfer amount.
+     * @return True if the operation was successful.
+     */
+    function transfer(address to, uint256 value)
+        external
+        override
+        whenNotPaused
+        notBlacklisted(msg.sender)
+        notBlacklisted(to)
+        returns (bool)
+    {
+        _transfer(msg.sender, to, value);
+        return true;
+    }
+
+    /**
+     * @dev Internal function to process transfers.
+     * @param from  Payer's address.
+     * @param to    Payee's address.
+     * @param value Transfer amount.
+     */
+    function _transfer(
+        address from,
+        address to,
+        uint256 value
+    ) internal override {
+        require(from != address(0), "ERC20: transfer from the zero address");
+        require(to != address(0), "ERC20: transfer to the zero address");
+        require(
+            value &lt;= _balanceOf(from),
+            "ERC20: transfer amount exceeds balance"
+        );
+
+        _setBalance(from, _balanceOf(from).sub(value));
+        _setBalance(to, _balanceOf(to).add(value));
+        emit Transfer(from, to, value);
+    }
+
+    /**
+     * @notice Adds or updates a new minter with a mint allowance.
+     * @param minter The address of the minter.
+     * @param minterAllowedAmount The minting amount allowed for the minter.
+     * @return True if the operation was successful.
+     */
+    function configureMinter(address minter, uint256 minterAllowedAmount)
+        external
+        whenNotPaused
+        onlyMasterMinter
+        returns (bool)
+    {
+        minters[minter] = true;
+        minterAllowed[minter] = minterAllowedAmount;
+        emit MinterConfigured(minter, minterAllowedAmount);
+        return true;
+    }
+
+    /**
+     * @notice Removes a minter.
+     * @param minter The address of the minter to remove.
+     * @return True if the operation was successful.
+     */
+    function removeMinter(address minter)
+        external
+        onlyMasterMinter
+        returns (bool)
+    {
+        minters[minter] = false;
+        minterAllowed[minter] = 0;
+        emit MinterRemoved(minter);
+        return true;
+    }
+
+    /**
+     * @notice Allows a minter to burn some of its own tokens.
+     * @dev The caller must be a minter, must not be blacklisted, and the amount to burn
+     * should be less than or equal to the account's balance.
+     * @param _amount the amount of tokens to be burned.
+     */
+    function burn(uint256 _amount)
+        external
+        whenNotPaused
+        onlyMinters
+        notBlacklisted(msg.sender)
+    {
+        uint256 balance = _balanceOf(msg.sender);
+        require(_amount &gt; 0, "FiatToken: burn amount not greater than 0");
+        require(balance &gt;= _amount, "FiatToken: burn amount exceeds balance");
+
+        totalSupply_ = totalSupply_.sub(_amount);
+        _setBalance(msg.sender, balance.sub(_amount));
+        emit Burn(msg.sender, _amount);
+        emit Transfer(msg.sender, address(0), _amount);
+    }
+
+    /**
+     * @notice Updates the master minter address.
+     * @param _newMasterMinter The address of the new master minter.
+     */
+    function updateMasterMinter(address _newMasterMinter) external onlyOwner {
+        require(
+            _newMasterMinter != address(0),
+            "FiatToken: new masterMinter is the zero address"
+        );
+        masterMinter = _newMasterMinter;
+        emit MasterMinterChanged(masterMinter);
+    }
+
+    /**
+     * @inheritdoc Blacklistable
+     */
+    function _blacklist(address _account) internal override {
+        _setBlacklistState(_account, true);
+    }
+
+    /**
+     * @inheritdoc Blacklistable
+     */
+    function _unBlacklist(address _account) internal override {
+        _setBlacklistState(_account, false);
+    }
+
+    /**
+     * @dev Helper method that sets the blacklist state of an account.
+     * @param _account         The address of the account.
+     * @param _shouldBlacklist True if the account should be blacklisted, false if the account should be unblacklisted.
+     */
+    function _setBlacklistState(address _account, bool _shouldBlacklist)
+        internal
+        virtual
+    {
+        _deprecatedBlacklisted[_account] = _shouldBlacklist;
+    }
+
+    /**
+     * @dev Helper method that sets the balance of an account.
+     * @param _account The address of the account.
+     * @param _balance The new fiat token balance of the account.
+     */
+    function _setBalance(address _account, uint256 _balance) internal virtual {
+        balanceAndBlacklistStates[_account] = _balance;
+    }
+
+    /**
+     * @inheritdoc Blacklistable
+     */
+    function _isBlacklisted(address _account)
+        internal
+        virtual
+        override
+        view
+        returns (bool)
+    {
+        return _deprecatedBlacklisted[_account];
+    }
+
+    /**
+     * @dev Helper method to obtain the balance of an account.
+     * @param _account  The address of the account.
+     * @return          The fiat token balance of the account.
+     */
+    function _balanceOf(address _account)
+        internal
+        virtual
+        view
+        returns (uint256)
+    {
+        return balanceAndBlacklistStates[_account];
+    }
+}
+
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>ignition再次部署合约报错</p>
 <p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>
 <pre><code>[ Transaction ] reconciliation failed ⛔
@@ -1225,7 +2043,32 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 <h2 id="入门指南书"><a class="header" href="#入门指南书">入门指南书</a></h2>
 <p><a href="https://book.getfoundry.sh/">官网导航</a></p>
 <p><a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">中文版-登链社区</a></p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="基础"><a class="header" href="#基础">基础</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rust"><a class="header" href="#rust">Rust</a></h1>
+<blockquote>
+<p>引用（摘自Rust权威指南）译者序</p>
+</blockquote>
+<blockquote>
+<p>作为系统级语言事实上的标杆，C/C++语言诞生至今已经四十余年了。四十年历史的积累从某种角度上讲亦是四十年的负担。为了开发出运行正确的软件，我们需要投入数年的时间来学会如何避免臭名昭著的漏洞，但即便是最为谨慎的开发者，也无法保证自己的程序万无一失。这些漏洞不仅会导致计算机崩溃，还会带来许多意想不到的安全性问题。特别是随着互联网技术的飞速发展，所有人的私密信息都有可能因为这类安全性问题而赤裸裸地暴露在陌生人的面前。
+有些语言，比如C#等，试图使用庞大的运行时系统来解决这一问题，其中最常见的解决方案便是垃圾回收（Garbage Collection）机制。这种机制在保证了内存安全的同时，却在某种程度上剥夺了程序员对底层的控制能力，并往往伴随着性能上的额外损耗。
+正是在这样的背景之下，Rust应运而生。
+Rust站在了前人的肩膀上，借助于最近几十年的语言研究成果，创造出了所有权与生命周期等崭新的概念。相对于C/C++等传统语言，它具有天生的安全性；换句话说，你无法在安全的Rust代码中执行任何非法的内存操作。相对于C#等带有垃圾回收机制的语言来讲，它遵循了零开销抽象（Zero-Cost Abstraction）规则，并为开发者保留了最大的底层控制能力。
+Rust从设计伊始便致力于提供高水准的人体工程学体验。你可以在Rust中看到代数数据类型、卫生宏、迭代器等饱经证明的优秀语言设计，这些刻意的设计能够帮助你自然而然地编写出高效且安全的代码。在语言本身之外，Rust核心开发团队还规划并实现了一系列顶尖的工具链——从集成的包管理器到带有依赖管理的构建工具，再到跨越编辑器的自动补全、类型推导及自动格式化等服务工具。
+Rust由开源基金会Mozilla推动开发，它的背后有一个完善且热情的社区。年轻的Rust正在众人合力之下不断进步，许许多多像你我一样的开发者共同决定着Rust的前进方向。你能够在Rust的托管网站GitHub上追踪到最新的源代码及开发进展，甚至是参与到Rust本身的开发之中。</p>
+</blockquote>
+<h2 id="官方资源"><a class="header" href="#官方资源">官方资源</a></h2>
+<p>官网：<a href="https://www.rust-lang.org/learn">rust-lang.org</a>
+第三方库：<a href="https://crates.io/">crates.io</a>
+std-doc :<a href="https://doc.rust-lang.org/std/">std-doc</a></p>
+<h2 id="推荐学习资源个人喜好"><a class="header" href="#推荐学习资源个人喜好">推荐学习资源(个人喜好)</a></h2>
+<p>在线:   <a href="https://course.rs/">course.rs</a>
+电子书：<a href="https://book.douban.com/subject/35081743/">Rust权威指南</a>
+练习： <a href="https://github.com/rust-lang/rustlings">rustlings</a></p>
+<h2 id="知名项目"><a class="header" href="#知名项目">知名项目</a></h2>
+<ul>
+<li>多线程、异步相关：<a href="https://github.com/tokio-rs/tokio">tokio</a></li>
+<li>图形界面：<a href="https://github.com/tauri-apps/tauri">tauri</a></li>
+<li>远程工具：<a href="https://github.com/rustdesk/rustdesk">rustdesk</a></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rust中基本语句给声明的变量绑定某个值"><a class="header" href="#rust中基本语句给声明的变量绑定某个值">rust中基本语句，给声明的变量绑定某个值</a></h1>
 <blockquote>
 <p>个人理解 ： rust中变量设定是内存安全的基石之一 1.对于指针概念的隐藏，通过变量声明控制 2.对于指针访问操作的限制：通过变量可修改性的限制</p>
