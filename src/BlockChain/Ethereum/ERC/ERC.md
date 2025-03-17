@@ -2,7 +2,7 @@
 
 ERC 是 Ethereum Request for Comments（以太坊请求评论）的缩写。它是以太坊社区定义的一系列智能合约标准。这些标准为以太坊上的智能合约开发提供了规则和指南，确保不同开发者创建的合约能够相互交互和兼容。
 
-官方文档 :  [ERC](https://github.com/ethereum/ERCs/tree/master/ERCS) 
+[官方文档](https://github.com/ethereum/ERCs/tree/master/ERCS) 
 
 ***
 # ERC 的主要作用

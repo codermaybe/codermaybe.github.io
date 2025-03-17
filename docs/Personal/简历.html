@@ -203,7 +203,7 @@
 <li><strong>Web3开发框架及工具</strong>：
 <ul>
 <li>交互：Ethers.JS（主） / Web3.JS</li>
-<li>前端：ReactJS / Web3uikit / Antd / Wagmi / HTML / JS / TS / CSS / AJAX</li>
+<li>前端基础开发：ReactJS / Web3uikit / Antd / Wagmi / HTML / JS / TS / CSS / AJAX</li>
 <li>智能合约开发与部署：Solidity / Rust / Hardhat（含Hardhat Ignition、Hardhat Truffle等） / Ganache</li>
 <li>合约检查工具：Slither</li>
 </ul>
@@ -216,8 +216,8 @@
 <li>
 <p><strong>智能合约开发</strong>：</p>
 <ul>
-<li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链。</li>
-<li>熟练使用OpenZeppelin安全合约库,如RBAC,Ownable2等实用功能，阅读过Uniswap、USDT等项目的源码。</li>
+<li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155、ERC-4626等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链。</li>
+<li>熟练使用OpenZeppelin安全合约库,如RBAC,Ownable2等实用功能，阅读过Uniswap、USDT等项目的源码，了解UTXO与账户余额存储机制的区别。</li>
 </ul>
 </li>
 <li>
@@ -306,7 +306,7 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../Resources.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -320,7 +320,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../Resources.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
@@ -331,22 +331,6 @@
 
         </div>
 
-        <!-- Livereload script (if served using the cli tool) -->
-        <script>
-            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
-            const socket = new WebSocket(wsAddress);
-            socket.onmessage = function (event) {
-                if (event.data === "reload") {
-                    socket.close();
-                    location.reload();
-                }
-            };
-
-            window.onbeforeunload = function() {
-                socket.close();
-            }
-        </script>
 
 
 

@@ -1,6 +1,7 @@
 # Summary
 # [关于此站]()
 - [免责声明](README.md)
+- [资源导航](Resources.md)
 # [个人资料(profile)]()
 
 - [中文简历](./Personal/简历.md)
@@ -45,8 +46,10 @@
 
 ---
 # Rust
-- [基础]()
-  - [特征](./Rust/Basic/Trait.md) 
+- [基础](./Rust/Basic.md)
+  - [变量绑定与赋值](./Rust/Basic/变量绑定与赋值.md)
+  - [变量类型](./Rust/Basic/Variables.md)
+  - [特征](./Rust/Basic/Trait.md)
 ---
 # 计算机组成原理()
 ---

@@ -1,5 +1,5 @@
 # 通过泛型和特征实现不同结构体实现相同效果
-```Rust
+```rust
 use std::fmt::format;
 
 #[derive(Debug)]
@@ -16,6 +16,7 @@ pub struct Student {
 pub trait TellInfo {
     fn Sayage(&self);
     fn SelfIntroduction(&self) -> String;
+    
 }
 
 impl TellInfo for Teacher {
@@ -44,11 +45,13 @@ impl TellInfo for Student {
     }
 }
 
-fn main() {
-    fn StageSpeech(T: &impl TellInfo) {
+ fn StageSpeech(T: &impl TellInfo) { //引入特征变量
         let Info = T.SelfIntroduction();
         println!("{}", &Info);
     }
+
+fn main() {
+   
 
     let Teacher1 = Teacher {
         age: 33,
@@ -63,5 +66,7 @@ fn main() {
     StageSpeech(&Teacher1);
     StageSpeech(&Student1);
 }
-
 ```
+- 特征类似于java等类语言中的接口，用于给自定义类型或者常见类型变量实现指定的方法
+- 常见声明如下 `pub trait trait1 { fn a(&self)->Self{};}`,常用于声明和定义方法和函数：方法和函数的区别在于 方法中引用变量自身作为参数传入 ，而函数不依赖
+- 特征变量：从各类变量中抽象出来，仅作为有某一特定特征的变量 调用方式:1. 在函数声明中直接声明，例 `fn a(T:&impl Display)`  2. Box<dyn Display> 使用智能指针封装并调用。 
