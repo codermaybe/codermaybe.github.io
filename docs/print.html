@@ -1126,8 +1126,7 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <h3 id="总结"><a class="header" href="#总结">总结</a></h3>
 <p>ERC-20 标准 ABI 包含了代币的核心功能，如代币转移、余额查询和授权操作。通过使用此标准的 ABI，你可以与任何 ERC-20 兼容的合约进行交互。</p>
 <h1 id="如何调用任意erc20合约"><a class="header" href="#如何调用任意erc20合约">如何调用任意ERC20合约</a></h1>
-<h2 id="ierc20"><a class="header" href="#ierc20">ierc20</a></h2>
-<h1 id="-1"><a class="header" href="#-1"></a></h1>
+<p>详见github项目<a href="https://github.com/codermaybe/BlockChain_InteractTools/graphs/traffic">BlockChain_InteractTools</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc721概念"><a class="header" href="#erc721概念">ERC721概念</a></h1>
 <p><a href="https://ethereum.org/zh/developers/docs/standards/tokens/erc-721/">推荐链接-ethereum</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
@@ -1166,11 +1165,11 @@ console.log("公钥:", publicKey);
 <h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
 <p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="usdc源码解析"><a class="header" href="#usdc源码解析">USDC源码解析</a></h1>
-<p><a href="https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code">USDC v1 源码链接</a></p>
+<p><a href="https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code">USDC 源码链接</a></p>
 <p>V1设计结构
 <img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./img/image.png" alt="alt text" /></p>
 <h2 id="逐模块分析"><a class="header" href="#逐模块分析">逐模块分析</a></h2>
-<h3 id="fiattokenv1sol"><a class="header" href="#fiattokenv1sol">FiatTokenV1.sol</a></h3>
+<h3 id="fiattokenv1sol--主要实现"><a class="header" href="#fiattokenv1sol--主要实现">FiatTokenV1.sol  (主要实现)</a></h3>
 <p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/FiatTokenV1/FiatTokenV1.html">FiatTokenV1</a></p>
 <h3 id="ownablesol"><a class="header" href="#ownablesol">ownable.sol</a></h3>
 <p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./sourcecode/Ownable/Ownable.html">ownable</a></p>
@@ -1982,6 +1981,115 @@ contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
     }
 }
 
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/FiatTokenV1_1/FiatTokenV1_1.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { FiatTokenV1 } from "../v1/FiatTokenV1.sol";
+import { Rescuable } from "./Rescuable.sol";
+
+/**
+ * @title FiatTokenV1_1
+ * @dev ERC20 Token backed by fiat reserves
+ */
+contract FiatTokenV1_1 is FiatTokenV1, Rescuable {
+
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.png" alt="alt text" /></p>
+<h3 id="rescuable"><a class="header" href="#rescuable">Rescuable</a></h3>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { Ownable } from "../v1/Ownable.sol";
+import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+
+contract Rescuable is Ownable {
+    using SafeERC20 for IERC20;
+
+    address private _rescuer;
+
+    event RescuerChanged(address indexed newRescuer);
+
+    /**
+     * @notice Returns current rescuer
+     * @return Rescuer's address
+     */
+    function rescuer() external view returns (address) {
+        return _rescuer;
+    }
+
+    /**
+     * @notice Revert if called by any account other than the rescuer.
+     */
+    modifier onlyRescuer() {
+        require(msg.sender == _rescuer, "Rescuable: caller is not the rescuer");
+        _;
+    }
+
+    /**
+     * @notice Rescue ERC20 tokens locked up in this contract.
+     * @param tokenContract ERC20 token contract address
+     * @param to        Recipient address
+     * @param amount    Amount to withdraw
+     */
+    function rescueERC20(
+        IERC20 tokenContract,
+        address to,
+        uint256 amount
+    ) external onlyRescuer {
+        tokenContract.safeTransfer(to, amount);
+    }
+
+    /**
+     * @notice Updates the rescuer address.
+     * @param newRescuer The address of the new rescuer.
+     */
+    function updateRescuer(address newRescuer) external onlyOwner {
+        require(
+            newRescuer != address(0),
+            "Rescuable: new rescuer is the zero address"
+        );
+        _rescuer = newRescuer;
+        emit RescuerChanged(newRescuer);
+    }
+}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><p>ignition再次部署合约报错</p>
 <p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>

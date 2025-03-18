@@ -1,12 +1,12 @@
 # USDC源码解析
-[USDC v1 源码链接](https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code)
+[USDC 源码链接](https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code)
 
 V1设计结构
 ![alt text](./img/image.png)
 
 ## 逐模块分析
 
-### FiatTokenV1.sol  
+### FiatTokenV1.sol  (主要实现)
 [FiatTokenV1](./sourcecode/FiatTokenV1/FiatTokenV1.md)
 
 ### ownable.sol
@@ -20,4 +20,5 @@ V1设计结构
 
 ### Blacklistable.sol
 [Blacklistable](./sourcecode/Blacklistable/Blacklistable.md)
+
 
