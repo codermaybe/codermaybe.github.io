@@ -240,7 +240,7 @@
 <p><strong>智能合约开发</strong>：</p>
 <ul>
 <li>熟悉ERC-20、ERC-721、ERC-777、ERC-1155、ERC-4626等标准，具备独立开发、部署和上线智能合约的经验。主要实践项目部署于以太坊测试链。</li>
-<li>熟练使用OpenZeppelin安全合约库,如RBAC,Ownable2等实用功能，阅读过Uniswap、USDT等项目的源码，了解UTXO与账户余额存储机制的区别。</li>
+<li>熟练使用OpenZeppelin安全合约库,如RBAC,Ownable2Steps等实用功能，阅读过Uniswap、USDT等项目的源码，了解UTXO与账户余额存储机制的区别。</li>
 </ul>
 </li>
 <li>
@@ -951,6 +951,39 @@ PoH不决定区块生产者，而是为PoS提供时间框架，由质押的验�
 <p>这是一种多令牌标准，它结合了 ERC - 20 和 ERC - 721 的特点。ERC - 1155 允许在一个智能合约中同时管理多种类型的通证，包括同质化和非同质化通证。这种标准在游戏开发等场景中特别有用，因为游戏中可能同时存在可互换的游戏货币和独一无二的游戏道具。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="概念"><a class="header" href="#概念">概念</a></h1>
 <p>ERC-20 标准的 ABI 是一组函数和事件定义，用于在以太坊上实现可互换的代币标准。ERC-20 代币标准由以太坊社区提出，定义了一组基础接口和功能，如余额查询、转账和授权等。</p>
+<blockquote>
+<p>目前以太坊等支持evm的链上最活跃的合约标准，大量的加密货币依赖此合约进行交易。</p>
+</blockquote>
+<hr />
+<h3 id="erc-20-abi-说明"><a class="header" href="#erc-20-abi-说明">ERC-20 ABI 说明</a></h3>
+<ul>
+<li>
+<p><strong>Functions</strong>：</p>
+<ul>
+<li><code>totalSupply</code>：返回代币的总供应量。</li>
+<li><code>balanceOf</code>：查询指定地址的余额。</li>
+<li><code>transfer</code>：从发送者地址向指定地址发送代币。</li>
+<li><code>approve</code>：批准某个地址可以花费指定数量的代币。</li>
+<li><code>allowance</code>：查询某个地址对另一个地址授权的代币数量。</li>
+<li><code>transferFrom</code>：从指定地址向另一个地址转移代币（需要先批准）。</li>
+</ul>
+</li>
+<li>
+<p><strong>Events</strong>：</p>
+<ul>
+<li><code>Transfer</code>：代币转移事件，记录从一个地址向另一个地址转移的情况。</li>
+<li><code>Approval</code>：授权事件，记录某个地址被授权花费代币。</li>
+</ul>
+</li>
+<li>
+<p><strong>Metadata Functions</strong>（非强制但通常包含）：</p>
+<ul>
+<li><code>name</code>：代币的名称。</li>
+<li><code>symbol</code>：代币的符号。</li>
+<li><code>decimals</code>：代币的小数位数，通常是 18。</li>
+</ul>
+</li>
+</ul>
 <h3 id="erc-20-标准-abi"><a class="header" href="#erc-20-标准-abi">ERC-20 标准 ABI</a></h3>
 <p>以下是 <strong>ERC-20 标准 ABI</strong>，用于与符合 ERC-20 标准的合约进行交互：</p>
 <pre><code class="language-json">[
@@ -1077,36 +1110,6 @@ PoH不决定区块生产者，而是为PoS提供时间框架，由质押的验�
 ]
 </code></pre>
 <hr />
-<h3 id="erc-20-abi-说明"><a class="header" href="#erc-20-abi-说明">ERC-20 ABI 说明</a></h3>
-<ul>
-<li>
-<p><strong>Functions</strong>：</p>
-<ul>
-<li><code>totalSupply</code>：返回代币的总供应量。</li>
-<li><code>balanceOf</code>：查询指定地址的余额。</li>
-<li><code>transfer</code>：从发送者地址向指定地址发送代币。</li>
-<li><code>approve</code>：批准某个地址可以花费指定数量的代币。</li>
-<li><code>allowance</code>：查询某个地址对另一个地址授权的代币数量。</li>
-<li><code>transferFrom</code>：从指定地址向另一个地址转移代币（需要先批准）。</li>
-</ul>
-</li>
-<li>
-<p><strong>Events</strong>：</p>
-<ul>
-<li><code>Transfer</code>：代币转移事件，记录从一个地址向另一个地址转移的情况。</li>
-<li><code>Approval</code>：授权事件，记录某个地址被授权花费代币。</li>
-</ul>
-</li>
-<li>
-<p><strong>Metadata Functions</strong>（非强制但通常包含）：</p>
-<ul>
-<li><code>name</code>：代币的名称。</li>
-<li><code>symbol</code>：代币的符号。</li>
-<li><code>decimals</code>：代币的小数位数，通常是 18。</li>
-</ul>
-</li>
-</ul>
-<hr />
 <h3 id="如何使用-erc-20-abi"><a class="header" href="#如何使用-erc-20-abi">如何使用 ERC-20 ABI</a></h3>
 <p>使用上面的 ABI 和 <code>web3.js</code> 或 <code>ethers.js</code> 库，可以轻松与符合 ERC-20 标准的智能合约交互。</p>
 <h4 id="使用-ethersjs-示例"><a class="header" href="#使用-ethersjs-示例">使用 <code>ethers.js</code> 示例：</a></h4>
@@ -1127,8 +1130,345 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <p>ERC-20 标准 ABI 包含了代币的核心功能，如代币转移、余额查询和授权操作。通过使用此标准的 ABI，你可以与任何 ERC-20 兼容的合约进行交互。</p>
 <h1 id="如何调用任意erc20合约"><a class="header" href="#如何调用任意erc20合约">如何调用任意ERC20合约</a></h1>
 <p>详见github项目<a href="https://github.com/codermaybe/BlockChain_InteractTools/graphs/traffic">BlockChain_InteractTools</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc712"><a class="header" href="#erc712">ERC712</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc721概念"><a class="header" href="#erc721概念">ERC721概念</a></h1>
 <p><a href="https://ethereum.org/zh/developers/docs/standards/tokens/erc-721/">推荐链接-ethereum</a></p>
+<h3 id="主要功能"><a class="header" href="#主要功能">主要功能</a></h3>
+<ul>
+<li>
+<p><strong>事件 (Events)</strong>：</p>
+<ul>
+<li><code>Transfer</code>：当 NFT 被转移时触发。</li>
+<li><code>Approval</code>：当某个地址被授权管理 NFT 时触发。</li>
+<li><code>ApprovalForAll</code>：当某个地址被授权管理所有 NFT 时触发。</li>
+</ul>
+</li>
+<li>
+<p><strong>方法 (Functions)</strong>：</p>
+<ul>
+<li><code>balanceOf(address owner)</code>：查询某地址拥有的 NFT 数量。</li>
+<li><code>ownerOf(uint256 tokenId)</code>：查询某个 NFT 的持有者。</li>
+<li><code>approve(address to, uint256 tokenId)</code>：授权某个地址管理指定的 NFT。</li>
+<li><code>setApprovalForAll(address operator, bool approved)</code>：批量授权某个地址管理所有 NFT。</li>
+<li><code>getApproved(uint256 tokenId)</code>：查询某个 NFT 被授权的地址。</li>
+<li><code>isApprovedForAll(address owner, address operator)</code>：查询某个地址是否被批量授权。</li>
+<li><code>safeTransferFrom(address from, address to, uint256 tokenId)</code>：安全转移 NFT。</li>
+<li><code>tokenURI(uint256 tokenId)</code>：查询 NFT 的元数据 URI。</li>
+</ul>
+</li>
+</ul>
+<p>下面是一个标准的 <strong>ERC-721</strong> 代币合约的 ABI（Application Binary Interface），基于 OpenZeppelin 的实现：</p>
+<pre><code class="language-json">[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Transfer",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "approved",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "Approval",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "approve",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApproved",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_data",
+        "type": "bytes"
+      }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ownerOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "name",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "tokenURI",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612"><a class="header" href="#eip2612">EIP2612</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
 <h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
 <p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
@@ -1164,7 +1504,19 @@ console.log("公钥:", publicKey);
 <h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
 <h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
 <p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc常用实战"><a class="header" href="#erc常用实战">ERC常用实战</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="usdc源码解析"><a class="header" href="#usdc源码解析">USDC源码解析</a></h1>
+<blockquote>
+<p>文中代码所有来源均来自于etherscan verified contract ，代码中出现的相对路径可查阅以下链接
+<a href="https://vscode.blockscan.com/ethereum/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48">源代码快捷链接</a></p>
+</blockquote>
+<h2 id="usdc-v1"><a class="header" href="#usdc-v1">USDC V1</a></h2>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/./V1/USDCV1.html">USDC V1</a></p>
+<h2 id="usdc-v11"><a class="header" href="#usdc-v11">USDC V1.1</a></h2>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/./V1.1/USDCV1_1.html">USDC V1.1</a></p>
+<h2 id="usdc-v20"><a class="header" href="#usdc-v20">USDC V2.0</a></h2>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/">USDC V2.0</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="usdc源码解析-1"><a class="header" href="#usdc源码解析-1">USDC源码解析</a></h1>
 <p><a href="https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code">USDC 源码链接</a></p>
 <p>V1设计结构
 <img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1/./img/image.png" alt="alt text" /></p>
@@ -1982,6 +2334,13 @@ contract FiatTokenV1 is AbstractFiatTokenV1, Ownable, Pausable, Blacklistable {
 }
 
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><p>V1设计结构
+<img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/image.png" alt="alt text" /></p>
+<h2 id="逐模块分析-1"><a class="header" href="#逐模块分析-1">逐模块分析</a></h2>
+<h3 id="fiattokenv1_1sol"><a class="header" href="#fiattokenv1_1sol">FiatTokenV1_1.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/./sourcecode/FiatTokenV1_1/FiatTokenV1_1.html">FiatTokenV1_1</a></p>
+<h3 id="rescuablesol"><a class="header" href="#rescuablesol">Rescuable.sol</a></h3>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/./sourcecode/Rescuable/Rescuable.html">Rescuable</a></p>
 <div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/FiatTokenV1_1/FiatTokenV1_1.png" alt="alt text" /></p>
 <pre><code class="language-solidity">/**
  * SPDX-License-Identifier: Apache-2.0
@@ -2014,7 +2373,7 @@ contract FiatTokenV1_1 is FiatTokenV1, Rescuable {
 
 }
 </code></pre>
-<div style="break-before: page; page-break-before: always;"></div><p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.png" alt="alt text" /></p>
+<div style="break-before: page; page-break-before: always;"></div><p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.png" target="_blank"><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.png" alt="alt text" /></a></p>
 <h3 id="rescuable"><a class="header" href="#rescuable">Rescuable</a></h3>
 <pre><code class="language-solidity">/**
  * SPDX-License-Identifier: Apache-2.0
@@ -2091,6 +2450,854 @@ contract Rescuable is Ownable {
     }
 }
 </code></pre>
+<h3 id="safeerc20sol"><a class="header" href="#safeerc20sol">SafeERC20.sol</a></h3>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+
+pragma solidity &gt;=0.6.0 &lt;0.8.0;
+
+import "./IERC20.sol";
+import "../../math/SafeMath.sol";
+import "../../utils/Address.sol";
+
+/**
+ * @title SafeERC20
+ * @dev Wrappers around ERC20 operations that throw on failure (when the token
+ * contract returns false). Tokens that return no value (and instead revert or
+ * throw on failure) are also supported, non-reverting calls are assumed to be
+ * successful.
+ * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
+ * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+ */
+library SafeERC20 {
+    using SafeMath for uint256;
+    using Address for address;
+
+    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+    }
+
+    function safeTransferFrom(IERC20 token, address from, address to, uint256 value) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+    }
+
+    /**
+     * @dev Deprecated. This function has issues similar to the ones found in
+     * {IERC20-approve}, and its usage is discouraged.
+     *
+     * Whenever possible, use {safeIncreaseAllowance} and
+     * {safeDecreaseAllowance} instead.
+     */
+    function safeApprove(IERC20 token, address spender, uint256 value) internal {
+        // safeApprove should only be called when setting an initial allowance,
+        // or when resetting it to zero. To increase and decrease it, use
+        // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
+        // solhint-disable-next-line max-line-length
+        require((value == 0) || (token.allowance(address(this), spender) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+    }
+
+    function safeIncreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+        uint256 newAllowance = token.allowance(address(this), spender).add(value);
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    function safeDecreaseAllowance(IERC20 token, address spender, uint256 value) internal {
+        uint256 newAllowance = token.allowance(address(this), spender).sub(value, "SafeERC20: decreased allowance below zero");
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    /**
+     * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
+     * on the return value: the return value is optional (but if data is returned, it must not be false).
+     * @param token The token targeted by the call.
+     * @param data The call data (encoded using abi.encode or one of its variants).
+     */
+    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+        // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
+        // the target address contains contract code and also asserts for success in the low-level call.
+
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        if (returndata.length &gt; 0) { // Return data is optional
+            // solhint-disable-next-line max-line-length
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+        }
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="usdc_v2源码解析"><a class="header" href="#usdc_v2源码解析">USDC_V2源码解析</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="abstractfiattokenv2"><a class="header" href="#abstractfiattokenv2">AbstractFiatTokenV2</a></h1>
+<p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/AbstractFiatTokenV2/AbstractFiatTokenV2.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { AbstractFiatTokenV1 } from "../v1/AbstractFiatTokenV1.sol";
+
+abstract contract AbstractFiatTokenV2 is AbstractFiatTokenV1 {
+    function _increaseAllowance(
+        address owner,
+        address spender,
+        uint256 increment
+    ) internal virtual;
+
+    function _decreaseAllowance(
+        address owner,
+        address spender,
+        uint256 decrement
+    ) internal virtual;
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="eip712domain"><a class="header" href="#eip712domain">EIP712Domain</a></h1>
+<blockquote>
+<p>EIP712题案细节详见链接<a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP712Domian//src/BlockChain/Ethereum/ERC/ERC712.html">EIP712</a></p>
+</blockquote>
+<p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP712Domian/EIP712Domain.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+// solhint-disable func-name-mixedcase
+
+/**
+ * @title EIP712 Domain
+ */
+contract EIP712Domain {
+    // was originally DOMAIN_SEPARATOR
+    // but that has been moved to a method so we can override it in V2_2+
+    bytes32 internal _DEPRECATED_CACHED_DOMAIN_SEPARATOR;
+
+    /**
+     * @notice Get the EIP712 Domain Separator.
+     * @return The bytes32 EIP712 domain separator.
+     */
+    function DOMAIN_SEPARATOR() external view returns (bytes32) {
+        return _domainSeparator();
+    }
+
+    /**
+     * @dev Internal method to get the EIP712 Domain Separator.
+     * @return The bytes32 EIP712 domain separator.
+     */
+    function _domainSeparator() internal virtual view returns (bytes32) {
+        return _DEPRECATED_CACHED_DOMAIN_SEPARATOR;
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612-1"><a class="header" href="#eip2612-1">EIP2612</a></h1>
+<blockquote>
+<p>EIP2612题案细节及功能详见链接<a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP2612//src/BlockChain/Ethereum/ERC/ERC2612.html">EIP2612</a>。此小结中为USDC重写的对应功能</p>
+</blockquote>
+<p>这段代码实现了EIP-2612标准，是一个用于以太坊代币的"permit"功能的智能合约实现。
+主要功能
+EIP-2612实现了一种称为"gas抽象授权"(gas-abstracted approvals)的机制，它允许用户通过签名来授权第三方花费他们的代币，而不需要自己支付gas费用进行交互。</p>
+<h2 id="关键组件"><a class="header" href="#关键组件">关键组件</a></h2>
+<ul>
+<li>PERMIT_TYPEHASH：用于EIP-712结构化数据签名的类型哈希常量。</li>
+<li>_permitNonces映射：跟踪每个地址的nonce值，以防止<a href="https://zhuanlan.zhihu.com/p/163121813">重放攻击</a>。</li>
+<li>nonces函数：公开查询特定地址的当前nonce。</li>
+<li>_permit函数：核心功能，有两个版本：</li>
+<li>一个接受v, r, s分离的签名参数</li>
+<li>一个接受整合的signature字节数组</li>
+</ul>
+<h2 id="工作流程"><a class="header" href="#工作流程">工作流程</a></h2>
+<p>代币持有者(owner)离线签署一个包含以下信息的消息：</p>
+<ul>
+<li>自己的地址(owner)</li>
+<li>被授权者地址(spender)</li>
+<li>授权金额(value)</li>
+<li>当前nonce值</li>
+<li>授权截止时间(deadline)</li>
+</ul>
+<p>签名后，任何人可以将这个签名提交到合约。
+合约验证：</p>
+<ul>
+<li>检查截止时间是否有效</li>
+<li>使用EIP-712构建相同的消息哈希</li>
+<li>验证签名是否匹配owner地址</li>
+<li>增加owner的nonce值</li>
+<li>执行实际的approve操作</li>
+</ul>
+<p>实际应用场景
+这个功能解决了以太坊代币使用的一个主要摩擦点：用户需要进行两次交易才能通过第三方服务使用代币：</p>
+<p>首先批准第三方花费代币
+然后实际使用第三方服务</p>
+<p>使用EIP-2612，用户只需签名一个许可消息（不需要支付gas），然后第三方可以在同一笔交易中验证许可并使用代币，大大改善了用户体验。</p>
+<h2 id="技术细节"><a class="header" href="#技术细节">技术细节</a></h2>
+<p>基于Solidity 0.6.12
+实现了EIP-712标准进行结构化数据签名
+支持智能合约钱包签名验证（通过SignatureChecker）
+可以设置永不过期的授权（通过设置deadline为最大uint256值）</p>
+<p>这是一个关键的DeFi基础设施组件，特别适用于稳定币等高频使用的代币，可以显著降低用户与DeFi协议交互的成本和复杂性。</p>
+<p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP2612/EIP2612.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { AbstractFiatTokenV2 } from "./AbstractFiatTokenV2.sol";
+import { EIP712Domain } from "./EIP712Domain.sol";
+import { MessageHashUtils } from "../util/MessageHashUtils.sol";
+import { SignatureChecker } from "../util/SignatureChecker.sol";
+
+/**
+ * @title EIP-2612
+ * @notice Provide internal implementation for gas-abstracted approvals
+ */
+abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
+    // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)")
+    bytes32
+        public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+
+    mapping(address =&gt; uint256) private _permitNonces;
+
+    /**
+     * @notice Nonces for permit
+     * @param owner Token owner's address (Authorizer)
+     * @return Next nonce
+     */
+    function nonces(address owner) external view returns (uint256) {
+        return _permitNonces[owner];
+    }
+
+    /**
+     * @notice Verify a signed approval permit and execute if valid
+     * @param owner     Token owner's address (Authorizer)
+     * @param spender   Spender's address
+     * @param value     Amount of allowance
+     * @param deadline  The time at which the signature expires (unix time), or max uint256 value to signal no expiration
+     * @param v         v of the signature
+     * @param r         r of the signature
+     * @param s         s of the signature
+     */
+    function _permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _permit(owner, spender, value, deadline, abi.encodePacked(r, s, v));
+    }
+
+    /**
+     * @notice Verify a signed approval permit and execute if valid
+     * @dev EOA wallet signatures should be packed in the order of r, s, v.
+     * @param owner      Token owner's address (Authorizer)
+     * @param spender    Spender's address
+     * @param value      Amount of allowance
+     * @param deadline   The time at which the signature expires (unix time), or max uint256 value to signal no expiration
+     * @param signature  Signature byte array signed by an EOA wallet or a contract wallet
+     */
+    function _permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        bytes memory signature
+    ) internal {
+        require(
+            deadline == type(uint256).max || deadline &gt;= now,
+            "FiatTokenV2: permit is expired"
+        );
+
+        bytes32 typedDataHash = MessageHashUtils.toTypedDataHash(
+            _domainSeparator(),
+            keccak256(
+                abi.encode(
+                    PERMIT_TYPEHASH,
+                    owner,
+                    spender,
+                    value,
+                    _permitNonces[owner]++,
+                    deadline
+                )
+            )
+        );
+        require(
+            SignatureChecker.isValidSignatureNow(
+                owner,
+                typedDataHash,
+                signature
+            ),
+            "EIP2612: invalid signature"
+        );
+
+        _approve(owner, spender, value);
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
+<p>这段代码实现了EIP-3009标准，提供了一种气体抽象转账（gas-abstracted transfers）的内部实现。</p>
+<h3 id="主要功能-1"><a class="header" href="#主要功能-1">主要功能</a></h3>
+<p>EIP-3009允许用户通过离线签名消息授权他人代表自己执行代币转账，而无需亲自支付气体费用。这种模式类似于EIP-2612的授权机制，但专注于直接转账操作。</p>
+<h3 id="核心组件"><a class="header" href="#核心组件">核心组件</a></h3>
+<ol>
+<li>
+<p><strong>三种类型的交易</strong>：</p>
+<ul>
+<li><code>transferWithAuthorization</code>: 任何人都可以提交已签名的转账授权</li>
+<li><code>receiveWithAuthorization</code>: 只有指定的接收者可以提交已签名的转账授权</li>
+<li><code>cancelAuthorization</code>: 允许签名者取消之前未使用的授权</li>
+</ul>
+</li>
+<li>
+<p><strong>授权状态跟踪</strong>：</p>
+<ul>
+<li>使用<code>_authorizationStates</code>双重映射跟踪每个授权者的每个nonce的使用状态</li>
+<li>每个授权使用随机生成的32字节nonce来确保唯一性</li>
+</ul>
+</li>
+<li>
+<p><strong>事件通知</strong>：</p>
+<ul>
+<li><code>AuthorizationUsed</code>: 当授权被使用时发出</li>
+<li><code>AuthorizationCanceled</code>: 当授权被取消时发出</li>
+</ul>
+</li>
+</ol>
+<h3 id="工作流程-1"><a class="header" href="#工作流程-1">工作流程</a></h3>
+<ol>
+<li>
+<p><strong>创建授权</strong>：</p>
+<ul>
+<li>用户离线签署包含转账详情的消息（发送方、接收方、金额、有效期、nonce）</li>
+<li>签名使用EIP-712标准格式化数据以提高可读性和安全性</li>
+</ul>
+</li>
+<li>
+<p><strong>提交授权</strong>：</p>
+<ul>
+<li>对于<code>transferWithAuthorization</code>：任何人都可以提交授权</li>
+<li>对于<code>receiveWithAuthorization</code>：只有指定的接收方可以提交（防止抢跑攻击）</li>
+</ul>
+</li>
+<li>
+<p><strong>验证机制</strong>：</p>
+<ul>
+<li>确保授权在有效时间范围内</li>
+<li>验证nonce未被使用</li>
+<li>验证签名的有效性</li>
+<li>标记授权为已使用</li>
+<li>执行实际转账</li>
+</ul>
+</li>
+</ol>
+<h3 id="技术亮点"><a class="header" href="#技术亮点">技术亮点</a></h3>
+<ol>
+<li>
+<p><strong>灵活的安全性</strong>：</p>
+<ul>
+<li>支持时间窗口限制（validAfter/validBefore）</li>
+<li>支持取消未使用的授权</li>
+<li>支持智能合约钱包的签名（通过SignatureChecker）</li>
+</ul>
+</li>
+<li>
+<p><strong>改进的用户体验</strong>：</p>
+<ul>
+<li>用户可以离线签署多个转账</li>
+<li>接收方或第三方可代付气体费用</li>
+<li>允许创建未来生效的授权</li>
+</ul>
+</li>
+<li>
+<p><strong>防止常见攻击</strong>：</p>
+<ul>
+<li>使用nonce防止重放攻击</li>
+<li><code>receiveWithAuthorization</code>特别增加了调用者验证，防止抢跑</li>
+</ul>
+</li>
+</ol>
+<h3 id="实际应用场景"><a class="header" href="#实际应用场景">实际应用场景</a></h3>
+<ol>
+<li><strong>代付费用交易</strong>：第三方可以为用户支付气体费用</li>
+<li><strong>批量处理</strong>：离线收集多个签名后一次性处理</li>
+<li><strong>延迟执行</strong>：设置未来时间窗口的授权</li>
+<li><strong>接收方发起</strong>：允许接收方通过<code>receiveWithAuthorization</code>主动提取授权的资金</li>
+</ol>
+<p>这种模式极大地提高了代币的使用灵活性，特别适用于稳定币和高频使用的代币，可以明显降低与DeFi协议交互的摩擦成本。它与EIP-2612（授权机制）相辅相成，共同构成现代代币标准的重要组成部分。</p>
+<h3 id="离线签署的基本原理"><a class="header" href="#离线签署的基本原理">离线签署的基本原理</a></h3>
+<p>用户不需要直接与区块链交互，而是在自己的设备上创建并签署一条消息，这条消息包含了转账的所有必要信息。直接的理解就是写支票给别人去银行兑现，自己在这过程中无需与银行沟通。</p>
+<h3 id="签署过程详解"><a class="header" href="#签署过程详解">签署过程详解</a></h3>
+<ol>
+<li>
+<p><strong>构建结构化数据</strong>：</p>
+<ul>
+<li>根据交易类型（转账、接收或取消），构建一个遵循EIP-712标准的结构化数据</li>
+<li>包含发送方地址、接收方地址、金额、有效时间、nonce等信息</li>
+</ul>
+</li>
+<li>
+<p><strong>创建消息哈希</strong>：</p>
+<ul>
+<li>使用typeHash（如<code>TRANSFER_WITH_AUTHORIZATION_TYPEHASH</code>）</li>
+<li>将所有参数编码：<code>abi.encode(TYPEHASH, from, to, value, validAfter, validBefore, nonce)</code></li>
+<li>对编码后的数据进行keccak256哈希</li>
+</ul>
+</li>
+<li>
+<p><strong>应用EIP-712域分隔符</strong>：</p>
+<ul>
+<li>将消息哈希与域分隔符(<code>_domainSeparator()</code>)结合</li>
+<li>使用<code>MessageHashUtils.toTypedDataHash()</code>方法生成最终待签名哈希</li>
+</ul>
+</li>
+<li>
+<p><strong>使用私钥签名</strong>：</p>
+<ul>
+<li>用户使用自己的私钥对最终哈希进行签名</li>
+<li>生成签名组件(v, r, s)或打包的签名字节数组</li>
+</ul>
+</li>
+</ol>
+<h3 id="代码中的实现"><a class="header" href="#代码中的实现">代码中的实现</a></h3>
+<p>在代码中，这个过程对应于：</p>
+<pre><code class="language-solidity">// 创建消息哈希
+bytes32 dataHash = keccak256(
+    abi.encode(
+        TRANSFER_WITH_AUTHORIZATION_TYPEHASH,
+        from,
+        to,
+        value,
+        validAfter,
+        validBefore,
+        nonce
+    )
+);
+
+// 应用域分隔符并验证签名
+SignatureChecker.isValidSignatureNow(
+    signer,
+    MessageHashUtils.toTypedDataHash(_domainSeparator(), dataHash),
+    signature
+)
+</code></pre>
+<h3 id="实际工作流程"><a class="header" href="#实际工作流程">实际工作流程</a></h3>
+<ol>
+<li>
+<p><strong>用户端</strong>：</p>
+<ul>
+<li>用户使用钱包应用或库（如web3.js、ethers.js）</li>
+<li>创建转账意图（包含接收方、金额等）</li>
+<li>生成随机nonce和设定有效时间窗口</li>
+<li>构建结构化数据并使用私钥签名</li>
+<li>将签名和原始参数共享给执行者</li>
+</ul>
+</li>
+<li>
+<p><strong>执行者端</strong>：</p>
+<ul>
+<li>接收签名和参数</li>
+<li>调用合约的<code>transferWithAuthorization</code>或<code>receiveWithAuthorization</code></li>
+<li>提供签名和所有必要参数</li>
+<li>支付交易的gas费用</li>
+</ul>
+</li>
+</ol>
+<h3 id="安全性保障"><a class="header" href="#安全性保障">安全性保障</a></h3>
+<ul>
+<li><strong>确定性哈希</strong>：EIP-712确保不同应用为相同数据生成相同哈希</li>
+<li><strong>域分隔符</strong>：防止跨合约重放攻击</li>
+<li><strong>nonce机制</strong>：防止同一授权被多次使用</li>
+<li><strong>时间窗口</strong>：授权只在特定时间段有效</li>
+<li><strong>取消机制</strong>：授权者可以取消未使用的授权</li>
+</ul>
+<p>这种离线签署机制的最大优势是将签名创建（需要私钥）与交易提交（需要ETH支付gas）完全分离。</p>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP3009/EIP3009.png" target="_blank"><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP3009/EIP3009.png" alt="alt text" /></a></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { AbstractFiatTokenV2 } from "./AbstractFiatTokenV2.sol";
+import { EIP712Domain } from "./EIP712Domain.sol";
+import { SignatureChecker } from "../util/SignatureChecker.sol";
+import { MessageHashUtils } from "../util/MessageHashUtils.sol";
+
+/**
+ * @title EIP-3009
+ * @notice Provide internal implementation for gas-abstracted transfers
+ * @dev Contracts that inherit from this must wrap these with publicly
+ * accessible functions, optionally adding modifiers where necessary
+ */
+abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
+    // keccak256("TransferWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)")
+    bytes32
+        public constant TRANSFER_WITH_AUTHORIZATION_TYPEHASH = 0x7c7c6cdb67a18743f49ec6fa9b35f50d52ed05cbed4cc592e13b44501c1a2267;
+
+    // keccak256("ReceiveWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)")
+    bytes32
+        public constant RECEIVE_WITH_AUTHORIZATION_TYPEHASH = 0xd099cc98ef71107a616c4f0f941f04c322d8e254fe26b3c6668db87aae413de8;
+
+    // keccak256("CancelAuthorization(address authorizer,bytes32 nonce)")
+    bytes32
+        public constant CANCEL_AUTHORIZATION_TYPEHASH = 0x158b0a9edf7a828aad02f63cd515c68ef2f50ba807396f6d12842833a1597429;
+
+    /**
+     * @dev authorizer address =&gt; nonce =&gt; bool (true if nonce is used)
+     */
+    mapping(address =&gt; mapping(bytes32 =&gt; bool)) private _authorizationStates;
+
+    event AuthorizationUsed(address indexed authorizer, bytes32 indexed nonce);
+    event AuthorizationCanceled(
+        address indexed authorizer,
+        bytes32 indexed nonce
+    );
+
+    /**
+     * @notice Returns the state of an authorization
+     * @dev Nonces are randomly generated 32-byte data unique to the
+     * authorizer's address
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @return True if the nonce is used
+     */
+    function authorizationState(address authorizer, bytes32 nonce)
+        external
+        view
+        returns (bool)
+    {
+        return _authorizationStates[authorizer][nonce];
+    }
+
+    /**
+     * @notice Execute a transfer with a signed authorization
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _transferWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _transferWithAuthorization(
+            from,
+            to,
+            value,
+            validAfter,
+            validBefore,
+            nonce,
+            abi.encodePacked(r, s, v)
+        );
+    }
+
+    /**
+     * @notice Execute a transfer with a signed authorization
+     * @dev EOA wallet signatures should be packed in the order of r, s, v.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _transferWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        _requireValidAuthorization(from, nonce, validAfter, validBefore);
+        _requireValidSignature(
+            from,
+            keccak256(
+                abi.encode(
+                    TRANSFER_WITH_AUTHORIZATION_TYPEHASH,
+                    from,
+                    to,
+                    value,
+                    validAfter,
+                    validBefore,
+                    nonce
+                )
+            ),
+            signature
+        );
+
+        _markAuthorizationAsUsed(from, nonce);
+        _transfer(from, to, value);
+    }
+
+    /**
+     * @notice Receive a transfer with a signed authorization from the payer
+     * @dev This has an additional check to ensure that the payee's address
+     * matches the caller of this function to prevent front-running attacks.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _receiveWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _receiveWithAuthorization(
+            from,
+            to,
+            value,
+            validAfter,
+            validBefore,
+            nonce,
+            abi.encodePacked(r, s, v)
+        );
+    }
+
+    /**
+     * @notice Receive a transfer with a signed authorization from the payer
+     * @dev This has an additional check to ensure that the payee's address
+     * matches the caller of this function to prevent front-running attacks.
+     * EOA wallet signatures should be packed in the order of r, s, v.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _receiveWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        require(to == msg.sender, "FiatTokenV2: caller must be the payee");
+        _requireValidAuthorization(from, nonce, validAfter, validBefore);
+        _requireValidSignature(
+            from,
+            keccak256(
+                abi.encode(
+                    RECEIVE_WITH_AUTHORIZATION_TYPEHASH,
+                    from,
+                    to,
+                    value,
+                    validAfter,
+                    validBefore,
+                    nonce
+                )
+            ),
+            signature
+        );
+
+        _markAuthorizationAsUsed(from, nonce);
+        _transfer(from, to, value);
+    }
+
+    /**
+     * @notice Attempt to cancel an authorization
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _cancelAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _cancelAuthorization(authorizer, nonce, abi.encodePacked(r, s, v));
+    }
+
+    /**
+     * @notice Attempt to cancel an authorization
+     * @dev EOA wallet signatures should be packed in the order of r, s, v.
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _cancelAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        _requireUnusedAuthorization(authorizer, nonce);
+        _requireValidSignature(
+            authorizer,
+            keccak256(
+                abi.encode(CANCEL_AUTHORIZATION_TYPEHASH, authorizer, nonce)
+            ),
+            signature
+        );
+
+        _authorizationStates[authorizer][nonce] = true;
+        emit AuthorizationCanceled(authorizer, nonce);
+    }
+
+    /**
+     * @notice Validates that signature against input data struct
+     * @param signer        Signer's address
+     * @param dataHash      Hash of encoded data struct
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _requireValidSignature(
+        address signer,
+        bytes32 dataHash,
+        bytes memory signature
+    ) private view {
+        require(
+            SignatureChecker.isValidSignatureNow(
+                signer,
+                MessageHashUtils.toTypedDataHash(_domainSeparator(), dataHash),
+                signature
+            ),
+            "FiatTokenV2: invalid signature"
+        );
+    }
+
+    /**
+     * @notice Check that an authorization is unused
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     */
+    function _requireUnusedAuthorization(address authorizer, bytes32 nonce)
+        private
+        view
+    {
+        require(
+            !_authorizationStates[authorizer][nonce],
+            "FiatTokenV2: authorization is used or canceled"
+        );
+    }
+
+    /**
+     * @notice Check that authorization is valid
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     */
+    function _requireValidAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        uint256 validAfter,
+        uint256 validBefore
+    ) private view {
+        require(
+            now &gt; validAfter,
+            "FiatTokenV2: authorization is not yet valid"
+        );
+        require(now &lt; validBefore, "FiatTokenV2: authorization is expired");
+        _requireUnusedAuthorization(authorizer, nonce);
+    }
+
+    /**
+     * @notice Mark an authorization as used
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     */
+    function _markAuthorizationAsUsed(address authorizer, bytes32 nonce)
+        private
+    {
+        _authorizationStates[authorizer][nonce] = true;
+        emit AuthorizationUsed(authorizer, nonce);
+    }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="fiattokenv2_1"><a class="header" href="#fiattokenv2_1">FiatTokenV2_1</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="fiattokenv2_2"><a class="header" href="#fiattokenv2_2">FiatTokenV2_2</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="fiattokenv2"><a class="header" href="#fiattokenv2">FiatTokenV2</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><p>ignition再次部署合约报错</p>
 <p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>
 <pre><code>[ Transaction ] reconciliation failed ⛔
@@ -2506,6 +3713,22 @@ fn main() {
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

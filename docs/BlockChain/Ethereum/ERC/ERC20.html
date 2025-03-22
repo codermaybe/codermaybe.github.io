@@ -157,6 +157,39 @@
                     <main>
                         <h1 id="概念"><a class="header" href="#概念">概念</a></h1>
 <p>ERC-20 标准的 ABI 是一组函数和事件定义，用于在以太坊上实现可互换的代币标准。ERC-20 代币标准由以太坊社区提出，定义了一组基础接口和功能，如余额查询、转账和授权等。</p>
+<blockquote>
+<p>目前以太坊等支持evm的链上最活跃的合约标准，大量的加密货币依赖此合约进行交易。</p>
+</blockquote>
+<hr />
+<h3 id="erc-20-abi-说明"><a class="header" href="#erc-20-abi-说明">ERC-20 ABI 说明</a></h3>
+<ul>
+<li>
+<p><strong>Functions</strong>：</p>
+<ul>
+<li><code>totalSupply</code>：返回代币的总供应量。</li>
+<li><code>balanceOf</code>：查询指定地址的余额。</li>
+<li><code>transfer</code>：从发送者地址向指定地址发送代币。</li>
+<li><code>approve</code>：批准某个地址可以花费指定数量的代币。</li>
+<li><code>allowance</code>：查询某个地址对另一个地址授权的代币数量。</li>
+<li><code>transferFrom</code>：从指定地址向另一个地址转移代币（需要先批准）。</li>
+</ul>
+</li>
+<li>
+<p><strong>Events</strong>：</p>
+<ul>
+<li><code>Transfer</code>：代币转移事件，记录从一个地址向另一个地址转移的情况。</li>
+<li><code>Approval</code>：授权事件，记录某个地址被授权花费代币。</li>
+</ul>
+</li>
+<li>
+<p><strong>Metadata Functions</strong>（非强制但通常包含）：</p>
+<ul>
+<li><code>name</code>：代币的名称。</li>
+<li><code>symbol</code>：代币的符号。</li>
+<li><code>decimals</code>：代币的小数位数，通常是 18。</li>
+</ul>
+</li>
+</ul>
 <h3 id="erc-20-标准-abi"><a class="header" href="#erc-20-标准-abi">ERC-20 标准 ABI</a></h3>
 <p>以下是 <strong>ERC-20 标准 ABI</strong>，用于与符合 ERC-20 标准的合约进行交互：</p>
 <pre><code class="language-json">[
@@ -283,36 +316,6 @@
 ]
 </code></pre>
 <hr />
-<h3 id="erc-20-abi-说明"><a class="header" href="#erc-20-abi-说明">ERC-20 ABI 说明</a></h3>
-<ul>
-<li>
-<p><strong>Functions</strong>：</p>
-<ul>
-<li><code>totalSupply</code>：返回代币的总供应量。</li>
-<li><code>balanceOf</code>：查询指定地址的余额。</li>
-<li><code>transfer</code>：从发送者地址向指定地址发送代币。</li>
-<li><code>approve</code>：批准某个地址可以花费指定数量的代币。</li>
-<li><code>allowance</code>：查询某个地址对另一个地址授权的代币数量。</li>
-<li><code>transferFrom</code>：从指定地址向另一个地址转移代币（需要先批准）。</li>
-</ul>
-</li>
-<li>
-<p><strong>Events</strong>：</p>
-<ul>
-<li><code>Transfer</code>：代币转移事件，记录从一个地址向另一个地址转移的情况。</li>
-<li><code>Approval</code>：授权事件，记录某个地址被授权花费代币。</li>
-</ul>
-</li>
-<li>
-<p><strong>Metadata Functions</strong>（非强制但通常包含）：</p>
-<ul>
-<li><code>name</code>：代币的名称。</li>
-<li><code>symbol</code>：代币的符号。</li>
-<li><code>decimals</code>：代币的小数位数，通常是 18。</li>
-</ul>
-</li>
-</ul>
-<hr />
 <h3 id="如何使用-erc-20-abi"><a class="header" href="#如何使用-erc-20-abi">如何使用 ERC-20 ABI</a></h3>
 <p>使用上面的 ABI 和 <code>web3.js</code> 或 <code>ethers.js</code> 库，可以轻松与符合 ERC-20 标准的智能合约交互。</p>
 <h4 id="使用-ethersjs-示例"><a class="header" href="#使用-ethersjs-示例">使用 <code>ethers.js</code> 示例：</a></h4>
@@ -342,7 +345,7 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC712.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -356,13 +359,29 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC712.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 
         </div>
 
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
 
 
 

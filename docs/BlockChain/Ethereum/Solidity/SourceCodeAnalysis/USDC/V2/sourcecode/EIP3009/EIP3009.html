@@ -1,0 +1,742 @@
+<!DOCTYPE HTML>
+<html lang="en" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>EIP3009</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../../../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../../../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../../../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../../../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../../../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../../../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../../../../../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../../../../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../../../../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../../../../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
+<p>这段代码实现了EIP-3009标准，提供了一种气体抽象转账（gas-abstracted transfers）的内部实现。</p>
+<h3 id="主要功能"><a class="header" href="#主要功能">主要功能</a></h3>
+<p>EIP-3009允许用户通过离线签名消息授权他人代表自己执行代币转账，而无需亲自支付气体费用。这种模式类似于EIP-2612的授权机制，但专注于直接转账操作。</p>
+<h3 id="核心组件"><a class="header" href="#核心组件">核心组件</a></h3>
+<ol>
+<li>
+<p><strong>三种类型的交易</strong>：</p>
+<ul>
+<li><code>transferWithAuthorization</code>: 任何人都可以提交已签名的转账授权</li>
+<li><code>receiveWithAuthorization</code>: 只有指定的接收者可以提交已签名的转账授权</li>
+<li><code>cancelAuthorization</code>: 允许签名者取消之前未使用的授权</li>
+</ul>
+</li>
+<li>
+<p><strong>授权状态跟踪</strong>：</p>
+<ul>
+<li>使用<code>_authorizationStates</code>双重映射跟踪每个授权者的每个nonce的使用状态</li>
+<li>每个授权使用随机生成的32字节nonce来确保唯一性</li>
+</ul>
+</li>
+<li>
+<p><strong>事件通知</strong>：</p>
+<ul>
+<li><code>AuthorizationUsed</code>: 当授权被使用时发出</li>
+<li><code>AuthorizationCanceled</code>: 当授权被取消时发出</li>
+</ul>
+</li>
+</ol>
+<h3 id="工作流程"><a class="header" href="#工作流程">工作流程</a></h3>
+<ol>
+<li>
+<p><strong>创建授权</strong>：</p>
+<ul>
+<li>用户离线签署包含转账详情的消息（发送方、接收方、金额、有效期、nonce）</li>
+<li>签名使用EIP-712标准格式化数据以提高可读性和安全性</li>
+</ul>
+</li>
+<li>
+<p><strong>提交授权</strong>：</p>
+<ul>
+<li>对于<code>transferWithAuthorization</code>：任何人都可以提交授权</li>
+<li>对于<code>receiveWithAuthorization</code>：只有指定的接收方可以提交（防止抢跑攻击）</li>
+</ul>
+</li>
+<li>
+<p><strong>验证机制</strong>：</p>
+<ul>
+<li>确保授权在有效时间范围内</li>
+<li>验证nonce未被使用</li>
+<li>验证签名的有效性</li>
+<li>标记授权为已使用</li>
+<li>执行实际转账</li>
+</ul>
+</li>
+</ol>
+<h3 id="技术亮点"><a class="header" href="#技术亮点">技术亮点</a></h3>
+<ol>
+<li>
+<p><strong>灵活的安全性</strong>：</p>
+<ul>
+<li>支持时间窗口限制（validAfter/validBefore）</li>
+<li>支持取消未使用的授权</li>
+<li>支持智能合约钱包的签名（通过SignatureChecker）</li>
+</ul>
+</li>
+<li>
+<p><strong>改进的用户体验</strong>：</p>
+<ul>
+<li>用户可以离线签署多个转账</li>
+<li>接收方或第三方可代付气体费用</li>
+<li>允许创建未来生效的授权</li>
+</ul>
+</li>
+<li>
+<p><strong>防止常见攻击</strong>：</p>
+<ul>
+<li>使用nonce防止重放攻击</li>
+<li><code>receiveWithAuthorization</code>特别增加了调用者验证，防止抢跑</li>
+</ul>
+</li>
+</ol>
+<h3 id="实际应用场景"><a class="header" href="#实际应用场景">实际应用场景</a></h3>
+<ol>
+<li><strong>代付费用交易</strong>：第三方可以为用户支付气体费用</li>
+<li><strong>批量处理</strong>：离线收集多个签名后一次性处理</li>
+<li><strong>延迟执行</strong>：设置未来时间窗口的授权</li>
+<li><strong>接收方发起</strong>：允许接收方通过<code>receiveWithAuthorization</code>主动提取授权的资金</li>
+</ol>
+<p>这种模式极大地提高了代币的使用灵活性，特别适用于稳定币和高频使用的代币，可以明显降低与DeFi协议交互的摩擦成本。它与EIP-2612（授权机制）相辅相成，共同构成现代代币标准的重要组成部分。</p>
+<h3 id="离线签署的基本原理"><a class="header" href="#离线签署的基本原理">离线签署的基本原理</a></h3>
+<p>用户不需要直接与区块链交互，而是在自己的设备上创建并签署一条消息，这条消息包含了转账的所有必要信息。直接的理解就是写支票给别人去银行兑现，自己在这过程中无需与银行沟通。</p>
+<h3 id="签署过程详解"><a class="header" href="#签署过程详解">签署过程详解</a></h3>
+<ol>
+<li>
+<p><strong>构建结构化数据</strong>：</p>
+<ul>
+<li>根据交易类型（转账、接收或取消），构建一个遵循EIP-712标准的结构化数据</li>
+<li>包含发送方地址、接收方地址、金额、有效时间、nonce等信息</li>
+</ul>
+</li>
+<li>
+<p><strong>创建消息哈希</strong>：</p>
+<ul>
+<li>使用typeHash（如<code>TRANSFER_WITH_AUTHORIZATION_TYPEHASH</code>）</li>
+<li>将所有参数编码：<code>abi.encode(TYPEHASH, from, to, value, validAfter, validBefore, nonce)</code></li>
+<li>对编码后的数据进行keccak256哈希</li>
+</ul>
+</li>
+<li>
+<p><strong>应用EIP-712域分隔符</strong>：</p>
+<ul>
+<li>将消息哈希与域分隔符(<code>_domainSeparator()</code>)结合</li>
+<li>使用<code>MessageHashUtils.toTypedDataHash()</code>方法生成最终待签名哈希</li>
+</ul>
+</li>
+<li>
+<p><strong>使用私钥签名</strong>：</p>
+<ul>
+<li>用户使用自己的私钥对最终哈希进行签名</li>
+<li>生成签名组件(v, r, s)或打包的签名字节数组</li>
+</ul>
+</li>
+</ol>
+<h3 id="代码中的实现"><a class="header" href="#代码中的实现">代码中的实现</a></h3>
+<p>在代码中，这个过程对应于：</p>
+<pre><code class="language-solidity">// 创建消息哈希
+bytes32 dataHash = keccak256(
+    abi.encode(
+        TRANSFER_WITH_AUTHORIZATION_TYPEHASH,
+        from,
+        to,
+        value,
+        validAfter,
+        validBefore,
+        nonce
+    )
+);
+
+// 应用域分隔符并验证签名
+SignatureChecker.isValidSignatureNow(
+    signer,
+    MessageHashUtils.toTypedDataHash(_domainSeparator(), dataHash),
+    signature
+)
+</code></pre>
+<h3 id="实际工作流程"><a class="header" href="#实际工作流程">实际工作流程</a></h3>
+<ol>
+<li>
+<p><strong>用户端</strong>：</p>
+<ul>
+<li>用户使用钱包应用或库（如web3.js、ethers.js）</li>
+<li>创建转账意图（包含接收方、金额等）</li>
+<li>生成随机nonce和设定有效时间窗口</li>
+<li>构建结构化数据并使用私钥签名</li>
+<li>将签名和原始参数共享给执行者</li>
+</ul>
+</li>
+<li>
+<p><strong>执行者端</strong>：</p>
+<ul>
+<li>接收签名和参数</li>
+<li>调用合约的<code>transferWithAuthorization</code>或<code>receiveWithAuthorization</code></li>
+<li>提供签名和所有必要参数</li>
+<li>支付交易的gas费用</li>
+</ul>
+</li>
+</ol>
+<h3 id="安全性保障"><a class="header" href="#安全性保障">安全性保障</a></h3>
+<ul>
+<li><strong>确定性哈希</strong>：EIP-712确保不同应用为相同数据生成相同哈希</li>
+<li><strong>域分隔符</strong>：防止跨合约重放攻击</li>
+<li><strong>nonce机制</strong>：防止同一授权被多次使用</li>
+<li><strong>时间窗口</strong>：授权只在特定时间段有效</li>
+<li><strong>取消机制</strong>：授权者可以取消未使用的授权</li>
+</ul>
+<p>这种离线签署机制的最大优势是将签名创建（需要私钥）与交易提交（需要ETH支付gas）完全分离。</p>
+<p><a href="EIP3009.png" target="_blank"><img src="EIP3009.png" alt="alt text" /></a></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { AbstractFiatTokenV2 } from "./AbstractFiatTokenV2.sol";
+import { EIP712Domain } from "./EIP712Domain.sol";
+import { SignatureChecker } from "../util/SignatureChecker.sol";
+import { MessageHashUtils } from "../util/MessageHashUtils.sol";
+
+/**
+ * @title EIP-3009
+ * @notice Provide internal implementation for gas-abstracted transfers
+ * @dev Contracts that inherit from this must wrap these with publicly
+ * accessible functions, optionally adding modifiers where necessary
+ */
+abstract contract EIP3009 is AbstractFiatTokenV2, EIP712Domain {
+    // keccak256("TransferWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)")
+    bytes32
+        public constant TRANSFER_WITH_AUTHORIZATION_TYPEHASH = 0x7c7c6cdb67a18743f49ec6fa9b35f50d52ed05cbed4cc592e13b44501c1a2267;
+
+    // keccak256("ReceiveWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce)")
+    bytes32
+        public constant RECEIVE_WITH_AUTHORIZATION_TYPEHASH = 0xd099cc98ef71107a616c4f0f941f04c322d8e254fe26b3c6668db87aae413de8;
+
+    // keccak256("CancelAuthorization(address authorizer,bytes32 nonce)")
+    bytes32
+        public constant CANCEL_AUTHORIZATION_TYPEHASH = 0x158b0a9edf7a828aad02f63cd515c68ef2f50ba807396f6d12842833a1597429;
+
+    /**
+     * @dev authorizer address =&gt; nonce =&gt; bool (true if nonce is used)
+     */
+    mapping(address =&gt; mapping(bytes32 =&gt; bool)) private _authorizationStates;
+
+    event AuthorizationUsed(address indexed authorizer, bytes32 indexed nonce);
+    event AuthorizationCanceled(
+        address indexed authorizer,
+        bytes32 indexed nonce
+    );
+
+    /**
+     * @notice Returns the state of an authorization
+     * @dev Nonces are randomly generated 32-byte data unique to the
+     * authorizer's address
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @return True if the nonce is used
+     */
+    function authorizationState(address authorizer, bytes32 nonce)
+        external
+        view
+        returns (bool)
+    {
+        return _authorizationStates[authorizer][nonce];
+    }
+
+    /**
+     * @notice Execute a transfer with a signed authorization
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _transferWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _transferWithAuthorization(
+            from,
+            to,
+            value,
+            validAfter,
+            validBefore,
+            nonce,
+            abi.encodePacked(r, s, v)
+        );
+    }
+
+    /**
+     * @notice Execute a transfer with a signed authorization
+     * @dev EOA wallet signatures should be packed in the order of r, s, v.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _transferWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        _requireValidAuthorization(from, nonce, validAfter, validBefore);
+        _requireValidSignature(
+            from,
+            keccak256(
+                abi.encode(
+                    TRANSFER_WITH_AUTHORIZATION_TYPEHASH,
+                    from,
+                    to,
+                    value,
+                    validAfter,
+                    validBefore,
+                    nonce
+                )
+            ),
+            signature
+        );
+
+        _markAuthorizationAsUsed(from, nonce);
+        _transfer(from, to, value);
+    }
+
+    /**
+     * @notice Receive a transfer with a signed authorization from the payer
+     * @dev This has an additional check to ensure that the payee's address
+     * matches the caller of this function to prevent front-running attacks.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _receiveWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _receiveWithAuthorization(
+            from,
+            to,
+            value,
+            validAfter,
+            validBefore,
+            nonce,
+            abi.encodePacked(r, s, v)
+        );
+    }
+
+    /**
+     * @notice Receive a transfer with a signed authorization from the payer
+     * @dev This has an additional check to ensure that the payee's address
+     * matches the caller of this function to prevent front-running attacks.
+     * EOA wallet signatures should be packed in the order of r, s, v.
+     * @param from          Payer's address (Authorizer)
+     * @param to            Payee's address
+     * @param value         Amount to be transferred
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     * @param nonce         Unique nonce
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _receiveWithAuthorization(
+        address from,
+        address to,
+        uint256 value,
+        uint256 validAfter,
+        uint256 validBefore,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        require(to == msg.sender, "FiatTokenV2: caller must be the payee");
+        _requireValidAuthorization(from, nonce, validAfter, validBefore);
+        _requireValidSignature(
+            from,
+            keccak256(
+                abi.encode(
+                    RECEIVE_WITH_AUTHORIZATION_TYPEHASH,
+                    from,
+                    to,
+                    value,
+                    validAfter,
+                    validBefore,
+                    nonce
+                )
+            ),
+            signature
+        );
+
+        _markAuthorizationAsUsed(from, nonce);
+        _transfer(from, to, value);
+    }
+
+    /**
+     * @notice Attempt to cancel an authorization
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param v             v of the signature
+     * @param r             r of the signature
+     * @param s             s of the signature
+     */
+    function _cancelAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        _cancelAuthorization(authorizer, nonce, abi.encodePacked(r, s, v));
+    }
+
+    /**
+     * @notice Attempt to cancel an authorization
+     * @dev EOA wallet signatures should be packed in the order of r, s, v.
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _cancelAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        bytes memory signature
+    ) internal {
+        _requireUnusedAuthorization(authorizer, nonce);
+        _requireValidSignature(
+            authorizer,
+            keccak256(
+                abi.encode(CANCEL_AUTHORIZATION_TYPEHASH, authorizer, nonce)
+            ),
+            signature
+        );
+
+        _authorizationStates[authorizer][nonce] = true;
+        emit AuthorizationCanceled(authorizer, nonce);
+    }
+
+    /**
+     * @notice Validates that signature against input data struct
+     * @param signer        Signer's address
+     * @param dataHash      Hash of encoded data struct
+     * @param signature     Signature byte array produced by an EOA wallet or a contract wallet
+     */
+    function _requireValidSignature(
+        address signer,
+        bytes32 dataHash,
+        bytes memory signature
+    ) private view {
+        require(
+            SignatureChecker.isValidSignatureNow(
+                signer,
+                MessageHashUtils.toTypedDataHash(_domainSeparator(), dataHash),
+                signature
+            ),
+            "FiatTokenV2: invalid signature"
+        );
+    }
+
+    /**
+     * @notice Check that an authorization is unused
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     */
+    function _requireUnusedAuthorization(address authorizer, bytes32 nonce)
+        private
+        view
+    {
+        require(
+            !_authorizationStates[authorizer][nonce],
+            "FiatTokenV2: authorization is used or canceled"
+        );
+    }
+
+    /**
+     * @notice Check that authorization is valid
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     * @param validAfter    The time after which this is valid (unix time)
+     * @param validBefore   The time before which this is valid (unix time)
+     */
+    function _requireValidAuthorization(
+        address authorizer,
+        bytes32 nonce,
+        uint256 validAfter,
+        uint256 validBefore
+    ) private view {
+        require(
+            now &gt; validAfter,
+            "FiatTokenV2: authorization is not yet valid"
+        );
+        require(now &lt; validBefore, "FiatTokenV2: authorization is expired");
+        _requireUnusedAuthorization(authorizer, nonce);
+    }
+
+    /**
+     * @notice Mark an authorization as used
+     * @param authorizer    Authorizer's address
+     * @param nonce         Nonce of the authorization
+     */
+    function _markAuthorizationAsUsed(address authorizer, bytes32 nonce)
+        private
+    {
+        _authorizationStates[authorizer][nonce] = true;
+        emit AuthorizationUsed(authorizer, nonce);
+    }
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP2612/EIP2612.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2_1/FiatTokenV2_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP2612/EIP2612.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2_1/FiatTokenV2_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../../../../../../elasticlunr.min.js"></script>
+        <script src="../../../../../../../../mark.min.js"></script>
+        <script src="../../../../../../../../searcher.js"></script>
+
+        <script src="../../../../../../../../clipboard.min.js"></script>
+        <script src="../../../../../../../../highlight.js"></script>
+        <script src="../../../../../../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
