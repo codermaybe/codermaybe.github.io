@@ -156,12 +156,69 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="fiattokenv2_1"><a class="header" href="#fiattokenv2_1">FiatTokenV2_1</a></h1>
+<p><img src="FiatTokenV2_1.png" alt="alt text" /></p>
+<pre><code class="language-solidity">/**
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright (c) 2023, Circle Internet Financial, LLC.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+pragma solidity 0.6.12;
+
+import { FiatTokenV2 } from "./FiatTokenV2.sol";
+
+// solhint-disable func-name-mixedcase
+
+/**
+ * @title FiatToken V2.1
+ * @notice ERC20 Token backed by fiat reserves, version 2.1
+ */
+contract FiatTokenV2_1 is FiatTokenV2 {
+    /**
+     * @notice Initialize v2.1
+     * @param lostAndFound  The address to which the locked funds are sent
+     */
+    function initializeV2_1(address lostAndFound) external {
+        // solhint-disable-next-line reason-string
+        require(_initializedVersion == 1);
+
+        uint256 lockedAmount = _balanceOf(address(this));
+        if (lockedAmount &gt; 0) {
+            _transfer(address(this), lostAndFound, lockedAmount);
+        }
+        _blacklist(address(this));
+
+        _initializedVersion = 2;
+    }
+
+    /**
+     * @notice Version string for the EIP712 domain separator
+     * @return Version string
+     */
+    function version() external pure returns (string memory) {
+        return "2";
+    }
+}
+
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP3009/EIP3009.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2/FiatTokenV2.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
@@ -175,7 +232,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/EIP3009/EIP3009.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2/FiatTokenV2.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
