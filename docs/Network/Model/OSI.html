@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>特征</title>
+        <title>OSI</title>
 
 
         <!-- Custom HTML head -->
@@ -155,88 +155,132 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="通过泛型和特征实现不同结构体实现相同效果"><a class="header" href="#通过泛型和特征实现不同结构体实现相同效果">通过泛型和特征实现不同结构体实现相同效果</a></h1>
-<pre><pre class="playground"><code class="language-rust">use std::fmt::format;
-
-#[derive(Debug)]
-pub struct Teacher {
-    age: i32,
-    name: String,
-    skill: String,
-}
-pub struct Student {
-    age: i32,
-    name: String,
-    class: u32,
-}
-pub trait TellInfo {
-    fn Sayage(&amp;self);
-    fn SelfIntroduction(&amp;self) -&gt; String;
-    
-}
-
-impl TellInfo for Teacher {
-    fn Sayage(&amp;self) {
-        println!("Teacher {}'s age is {}", self.name, self.age);
-    }
-    fn SelfIntroduction(&amp;self) -&gt; String {
-        let brief_intro = format!(
-            "As a teacher,my name is {},i'm {} years old and my skill includes {}",
-            self.name, self.age, self.skill
-        );
-        brief_intro
-    }
-}
-
-impl TellInfo for Student {
-    fn Sayage(&amp;self) {
-        println!("Student {}'s age is {}", self.name, self.age);
-    }
-    fn SelfIntroduction(&amp;self) -&gt; String {
-        let brief_intro = format!(
-            "As a student,my name is {},i'm {} years old and my come from NO.{} class",
-            self.name, self.age, self.class
-        );
-        brief_intro
-    }
-}
-
- fn StageSpeech(T: &amp;impl TellInfo) { //引入特征变量
-        let Info = T.SelfIntroduction();
-        println!("{}", &amp;Info);
-    }
-
-fn main() {
-   
-
-    let Teacher1 = Teacher {
-        age: 33,
-        name: "Tom".to_string(),
-        skill: "Math/english/phyisc".to_string(),
-    };
-    let Student1 = Student {
-        age: 14,
-        name: "charles".to_string(),
-        class: 3,
-    };
-    StageSpeech(&amp;Teacher1);
-    StageSpeech(&amp;Student1);
-}</code></pre></pre>
+                        <h1 id="网络osi模型"><a class="header" href="#网络osi模型">网络OSI模型</a></h1>
+<p>OSI（Open Systems Interconnection，开放系统互连）模型是国际标准化组织（ISO）于1984年提出的网络通信框架，旨在标准化网络体系结构，促进不同系统间的互联互通。它将网络通信划分为七个层次，每层负责特定功能，共同实现数据从发送端到接收端的可靠传输。本文将详细介绍OSI模型的七层结构及其核心职责。</p>
+<hr />
+<h3 id="一osi模型概述"><a class="header" href="#一osi模型概述">一、OSI模型概述</a></h3>
+<p>OSI模型并非具体协议，而是抽象参考框架，为网络协议设计提供了分层思路。每一层为上一层提供服务，并依赖下一层的支持。通过分层，复杂网络通信被分解为模块化、可管理的部分。实际网络（如TCP/IP）常参考OSI模型，但层级划分可能有所简化。</p>
+<hr />
+<h3 id="二七层结构详解"><a class="header" href="#二七层结构详解">二、七层结构详解</a></h3>
+<ol>
+<li>
+<p><strong>物理层（Physical Layer）</strong></p>
 <ul>
-<li>特征类似于java等类语言中的接口，用于给自定义类型或者常见类型变量实现指定的方法</li>
-<li>常见声明如下 <code>pub trait trait1 { fn a(&amp;self)-&gt;Self{};}</code>,常用于声明和定义方法和函数：方法和函数的区别在于 方法中引用变量自身作为参数传入 ，而函数不依赖</li>
-<li>特征变量：从各类变量中抽象出来，仅作为有某一特定特征的变量 调用方式:1. 在函数声明中直接声明，例 <code>fn a(T:&amp;impl Display)</code>  2. Box<dyn Display> 使用智能指针封装并调用。</li>
+<li><strong>职责</strong>：负责比特流的物理传输，包括电压、信号、接口标准等。</li>
+<li><strong>功能</strong>：定义硬件规范（如网线、光纤、连接器类型 RJ45）、电气特性（如信号电平）、传输介质（如双绞线、同轴电缆）。</li>
+<li><strong>示例</strong>：以太网的1000BASE-T标准（千兆以太网）通过双绞线传输0和1的比特流。</li>
+<li><strong>关键点</strong>：物理层不关心数据含义，只传输原始比特。</li>
 </ul>
+</li>
+<li>
+<p><strong>数据链路层（Data Link Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：在相邻节点间提供可靠的数据传输，解决物理层不可靠性问题。</li>
+<li><strong>功能</strong>：将比特封装成帧（Frame），实现错误检测与纠正（如CRC校验）、流量控制和介质访问控制（MAC）。</li>
+<li><strong>示例</strong>：以太网（IEEE 802.3）使用MAC地址标识设备，Wi-Fi（IEEE 802.11）通过CSMA/CA避免冲突。</li>
+<li><strong>关键点</strong>：分为子层——LLC（逻辑链路控制）和MAC（介质访问控制）。</li>
+</ul>
+</li>
+<li>
+<p><strong>网络层（Network Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：负责数据包在网络间的路由和转发。</li>
+<li><strong>功能</strong>：提供逻辑寻址（如IP地址）、路径选择（路由算法，如OSPF、BGP）和数据包分片/重组。</li>
+<li><strong>示例</strong>：IP协议（IPv4/IPv6）定义地址格式，路由器根据路由表转发数据包。</li>
+<li><strong>关键点</strong>：网络层关注端到端传输，而非单跳链接。</li>
+</ul>
+</li>
+<li>
+<p><strong>传输层（Transport Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：提供主机间可靠的数据传输服务。</li>
+<li><strong>功能</strong>：实现分段与重组、流量控制、错误重传和连接管理。</li>
+<li><strong>示例</strong>：TCP提供可靠传输（通过序号和确认机制），UDP提供无连接快速传输。</li>
+<li><strong>关键点</strong>：引入端口号（如80、443），区分同一主机上的不同应用。</li>
+</ul>
+</li>
+<li>
+<p><strong>会话层（Session Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：管理应用程序间的会话，建立、维护和终止通信。</li>
+<li><strong>功能</strong>：支持会话同步（如断点续传）、对话控制（如半双工/全双工）。</li>
+<li><strong>示例</strong>：远程登录协议（如NetBIOS）中，会话层协调客户端与服务器的连接状态。</li>
+<li><strong>关键点</strong>：在实际协议中，常与传输层或应用层合并。</li>
+</ul>
+</li>
+<li>
+<p><strong>表示层（Presentation Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：处理数据的表示形式，确保应用层能正确解析。</li>
+<li><strong>功能</strong>：负责数据加密/解密（如SSL/TLS）、压缩/解压、格式转换（如JPEG、XML）。</li>
+<li><strong>示例</strong>：HTTPS中，TLS加密由表示层完成；浏览器解析HTML也涉及表示层逻辑。</li>
+<li><strong>关键点</strong>：关注数据语法与语义，而非传输。</li>
+</ul>
+</li>
+<li>
+<p><strong>应用层（Application Layer）</strong></p>
+<ul>
+<li><strong>职责</strong>：为用户或应用程序提供网络服务接口。</li>
+<li><strong>功能</strong>：支持具体应用协议，如文件传输（FTP）、电子邮件（SMTP）、网页浏览（HTTP）。</li>
+<li><strong>示例</strong>：浏览器通过HTTP/HTTPS请求网页，邮件客户端使用IMAP接收邮件。</li>
+<li><strong>关键点</strong>：直接面向用户，是协议的最终体现。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="三osi模型的工作流程"><a class="header" href="#三osi模型的工作流程">三、OSI模型的工作流程</a></h3>
+<p>假设用户通过浏览器访问网页：</p>
+<ol>
+<li><strong>应用层</strong>：HTTP生成请求消息。</li>
+<li><strong>表示层</strong>：数据加密为HTTPS，格式化为HTML。</li>
+<li><strong>会话层</strong>：维持浏览器与服务器的会话。</li>
+<li><strong>传输层</strong>：TCP分段数据并添加端口号（如443）。</li>
+<li><strong>网络层</strong>：IP封装数据包，确定路由路径。</li>
+<li><strong>数据链路层</strong>：以太网帧封装，添加MAC地址。</li>
+<li><strong>物理层</strong>：比特流通过网线或Wi-Fi传输。<br />
+接收端按相反顺序解封装，最终呈现网页。</li>
+</ol>
+<hr />
+<h3 id="四osi模型的意义与局限"><a class="header" href="#四osi模型的意义与局限">四、OSI模型的意义与局限</a></h3>
+<ol>
+<li>
+<p><strong>意义</strong></p>
+<ul>
+<li><strong>标准化</strong>：为网络协议设计提供通用框架，促进设备互操作性。</li>
+<li><strong>模块化</strong>：分层简化开发与调试，便于教育和理解。</li>
+<li><strong>灵活性</strong>：支持多种协议栈（如TCP/IP映射到OSI）。</li>
+</ul>
+</li>
+<li>
+<p><strong>局限</strong></p>
+<ul>
+<li><strong>理论性强</strong>：未直接实现为具体协议，实际网络（如TCP/IP）仅用4-5层。</li>
+<li><strong>复杂性</strong>：七层划分有时过于细化，会话层和表示层功能常被合并。</li>
+<li><strong>历史背景</strong>：1984年提出时，TCP/IP已占主导，OSI普及受限。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="五与tcpip模型的对比"><a class="header" href="#五与tcpip模型的对比">五、与TCP/IP模型的对比</a></h3>
+<p>TCP/IP模型是实际网络的主流实现，与OSI的对应关系如下：</p>
+<ul>
+<li><strong>应用层（TCP/IP）</strong> ≈ OSI的应用层+表示层+会话层</li>
+<li><strong>传输层</strong> ≈ OSI的传输层</li>
+<li><strong>网络层（Internet层）</strong> ≈ OSI的网络层</li>
+<li><strong>网络接口层</strong> ≈ OSI的数据链路层+物理层<br />
+TCP/IP更简洁实用，但OSI更适合理论分析。</li>
+</ul>
+<p>OSI模型作为网络通信的经典框架，清晰地展示了数据传输的分层逻辑。尽管在现代网络中，TCP/IP占据主导地位，但OSI仍以其模块化思维和标准化理念，持续影响着网络技术的发展。理解OSI模型，不仅是掌握网络基础的第一步，也是深入探索通信技术的钥匙。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../Rust/Basic/Variables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../Rust/Basic/Trait.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../Network/Model/OSI.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../Network/Model/TCP_IP.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -246,11 +290,11 @@ fn main() {
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../Rust/Basic/Variables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../Rust/Basic/Trait.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../Network/Model/OSI.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../Network/Model/TCP_IP.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -194,4 +194,4 @@ ERC-20 标准 ABI 包含了代币的核心功能，如代币转移、余额查�
 
 # 如何调用任意ERC20合约
 
-详见github项目[BlockChain_InteractTools](https://github.com/codermaybe/BlockChain_InteractTools/graphs/traffic)
+详见github项目[BlockChain_InteractTools](https://github.com/codermaybe/BlockChain_InteractTools)

@@ -155,7 +155,95 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id=""><a class="header" href="#"></a></h1>
+                        <h1 id="区块链基础"><a class="header" href="#区块链基础">区块链基础</a></h1>
+<h2 id="自2008年比特币诞生以来区块链技术逐渐成为重构信任机制的核心支柱其本质是通过分布式账本和密码学算法实现去中心化不可篡改的数据记录与价值传递"><a class="header" href="#自2008年比特币诞生以来区块链技术逐渐成为重构信任机制的核心支柱其本质是通过分布式账本和密码学算法实现去中心化不可篡改的数据记录与价值传递">自2008年比特币诞生以来，区块链技术逐渐成为重构信任机制的核心支柱。其本质是通过分布式账本和密码学算法，实现去中心化、不可篡改的数据记录与价值传递。</a></h2>
+<h3 id="一区块链的核心原理"><a class="header" href="#一区块链的核心原理">一、区块链的核心原理</a></h3>
+<ol>
+<li>
+<p><strong>分布式账本</strong><br />
+区块链通过将数据存储于全网多个节点，构建去中心化的数据库。每个节点持有完整账本副本，交易需经多数节点验证后写入。例如，比特币网络由约12,000个节点（截至2025年3月）共同维护，确保数据一致性。节点数的动态变化反映了网络的开放性与活力。</p>
+</li>
+<li>
+<p><strong>共识机制</strong><br />
+共识算法是节点达成数据一致性的关键，常见类型包括：</p>
+<ul>
+<li><strong>工作量证明（PoW）</strong>：比特币通过算力竞争验证交易，安全性高但能耗巨大。</li>
+<li><strong>权益证明（PoS）</strong>：以太坊2.0采用质押机制，能耗降低约<a href="https://ethereum.org/en/roadmap/merge/">99%</a>，已成为主流趋势。</li>
+<li><strong>实用拜占庭容错（PBFT）</strong>：适用于联盟链，通过多数派投票高效达成共识。</li>
+</ul>
+</li>
+<li>
+<p><strong>不可篡改性</strong><br />
+每个区块包含前序区块的哈希值，形成链式结构。修改任一数据需重算后续所有区块，计算难度呈指数级增长。以比特币为例，截至2025年3月，其区块链已累积约83万个区块，篡改成本近乎天文数字。</p>
+</li>
+</ol>
+<hr />
+<h3 id="二区块链的技术架构"><a class="header" href="#二区块链的技术架构">二、区块链的技术架构</a></h3>
+<p>区块链可分为三层结构：</p>
+<ol>
+<li>
+<p><strong>协议层</strong></p>
+<ul>
+<li><strong>存储层</strong>：采用Merkle树结构存储交易数据，支持高效验证。</li>
+<li><strong>网络层</strong>：基于P2P协议（如比特币的TCP通信）实现节点间数据同步。</li>
+<li><strong>加密层</strong>：依托非对称加密（如ECDSA）和哈希算法（如SHA-256），保障交易安全。</li>
+</ul>
+</li>
+<li>
+<p><strong>扩展层</strong><br />
+提供开发接口以支持复杂应用。例如，以太坊通过Solidity语言实现智能合约，比特币闪电网络提升交易速度。2025年，Layer 2技术（如Rollups）进一步优化了扩展性。</p>
+</li>
+<li>
+<p><strong>应用层</strong><br />
+覆盖多领域典型应用：</p>
+<ul>
+<li><strong>DeFi</strong>：去中心化交易所Uniswap和借贷平台Aave推动金融革新。</li>
+<li><strong>溯源</strong>：京东区块链防伪平台已覆盖超60万种商品（截至2024年数据，2025年预计更多）。</li>
+<li><strong>司法存证</strong>：杭州互联网法院利用区块链固化电子证据，提升司法效率。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="三区块链的分类与典型场景"><a class="header" href="#三区块链的分类与典型场景">三、区块链的分类与典型场景</a></h3>
+<ol>
+<li>
+<p><strong>分类</strong></p>
+<ul>
+<li><strong>公有链</strong>：完全开放，如比特币和以太坊，无中心化控制。</li>
+<li><strong>联盟链</strong>：多方共管，如R3 Corda和蚂蚁链，适用于金融结算。</li>
+<li><strong>私有链</strong>：企业内部使用，如沃尔玛供应链管理，兼顾效率与隐私。</li>
+</ul>
+</li>
+<li>
+<p><strong>典型场景</strong></p>
+<ul>
+<li><strong>跨境支付</strong>：传统SWIFT需3-5天，Ripple将时间缩短至2-3小时，已与Santander等银行合作。</li>
+<li><strong>供应链金融</strong>：区块链将应收账款数字化，降低中小企业融资门槛。</li>
+<li><strong>数字身份</strong>：新加坡“乌敏岛项目”通过区块链管理公民数据，提升隐私与安全性。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h3 id="四挑战与未来方向"><a class="header" href="#四挑战与未来方向">四、挑战与未来方向</a></h3>
+<ol>
+<li>
+<p><strong>现存问题</strong></p>
+<ul>
+<li><strong>可扩展性</strong>：比特币每秒处理7笔交易（TPS），远低于VISA的65,000 TPS。</li>
+<li><strong>能源消耗</strong>：PoW机制年耗电量约60 TWh，相当于瑞士全年用电。</li>
+<li><strong>监管缺失</strong>：DeFi的匿名性增加了非法资金流动风险。</li>
+</ul>
+</li>
+<li>
+<p><strong>技术演进</strong></p>
+<ul>
+<li><strong>分片技术</strong>：以太坊2.0通过64个分片将TPS提升至数万，2025年已初见成效。</li>
+<li><strong>零知识证明</strong>：Zcash的zk-SNARKs技术实现交易隐私保护，广泛应用于隐私链。</li>
+<li><strong>跨链互操作</strong>：Polkadot和Cosmos推动链间资产互通，加速Web3生态融合。</li>
+<li><strong>Layer 2普及</strong>：Arbitrum等解决方案大幅提升吞吐量，成为2025年技术热点。</li>
+</ul>
+</li>
+</ol>
 
                     </main>
 
