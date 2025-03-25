@@ -1,8 +1,19 @@
 #
 
+## 引导
+✔️❌标志文章更新时刻仍在维护
+
+### 市值记录
+
 
 ### 区块链开发部署工具
 #### ✔️[hardhat](https://hardhat.org/)
+- 从开发到部署全覆盖的工具，内置hardhat node等内部测试链。
+- 工具全面但相对比较臃肿，类似hardhat-ethers、hardhat-viem等包均涉及，想将大部分内容包含进生态中。
+- 基础的开发部署命令例如hardhat deploy等已经具备部署能力，又有hardhat ignition这类新加入的工具提供同样的效果，增加链上合约管理等功能。工具之间同质化较麻烦。
+
+#### ✔️[Foundry-登链社区中文翻译](https://learnblockchain.cn/docs/foundry/i18n/zh/)
+- 后起之秀，工具集健全，目前没有过于臃肿。
 
 ### 区块链交互工具
 

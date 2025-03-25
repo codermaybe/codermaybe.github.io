@@ -158,9 +158,12 @@
                     <main>
                         <h1 id="免责声明"><a class="header" href="#免责声明">免责声明</a></h1>
 <p>本站为<a href="index.html"><strong>个人博客</strong></a>，分享记录个人学习过程和相关信息。所有内容如有外部来源，将会在分享时明确标注，如有遗漏，请通过<a href="mailto://web3test1@outlook.com">邮件</a>联系以便及时删除。未标注来源的部分（如代码等），读者可以自由使用，但需自行承担使用可能带来的后果。关于信息的准确性请读者自行鉴别，这不是科普，绝大多数情况下无法做到精准描述。</p>
+<h1 id="about-languages"><a class="header" href="#about-languages">About languages</a></h1>
+<p>If you have some difficulties in reading Chinese, usually because you are not a native Chinese speaker. It is recommended to use the Chrome plugin <a href="https://immersivetranslate.com/en/">Immersive Translate</a> to read this blog. Welcome everyone to learn about my learning experience.</p>
 <h1 id="关于个人"><a class="header" href="#关于个人">关于个人</a></h1>
 <p>我是 <strong>徐</strong> ，此博客旨在分享技术学习和个人见解。欢迎查阅我的简历，部分信息<a href="./Personal/%E7%AE%80%E5%8E%86.html">在此</a>。</p>
-<p>希望能找到一个对于区块链行业有热忱的团队一起奋进。如果我的技术栈刚好符合你的需求，可以通过<a href="mailto://web3test1@outlook.com">邮件</a>与我进一步联系。部分技术栈不匹配的问题也可以后续跟进。</p>
+<p>希望能找到一个对于区块链行业有热忱的团队一起奋进。如果我的技术栈刚好符合你的需求，可以通过<a href="mailto://web3test1@outlook.com">邮件</a>与我进一步联系。部分技术栈不匹配的问题也可以后续跟进。
+<img src="image.png" alt="alt text" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="资源导航"><a class="header" href="#资源导航">资源导航</a></h1>
 <blockquote>
 <p>遇到收费等情况自行斟酌，仅做推荐</p>
@@ -178,6 +181,9 @@
 <p><a href="https://yinghezhinan.com/">硬核指南</a></p>
 <p><a href="https://ddys.pro/">低端影视</a></p>
 <p><a href="https://www.nfyingshi.com/">奈菲影视</a></p>
+<h2 id="前端部分"><a class="header" href="#前端部分">前端部分</a></h2>
+<p><a href="https://www.emojiall.com/">emoji</a></p>
+<p><a href="https://cssgradient.io/">css渐变样式</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="联系方式"><a class="header" href="#联系方式">联系方式</a></h1>
 <ul>
 <li>
@@ -379,7 +385,7 @@
 <p><strong>Smart Contracts</strong>:</p>
 <ul>
 <li>ERC-20/721/777/1155/4626 implementation</li>
-<li>OpenZeppelin (RBAC/Ownable2) integration</li>
+<li>OpenZeppelin (RBAC/Ownable2steps) integration</li>
 <li>Uniswap/USDT code analysis</li>
 </ul>
 </li>
@@ -1316,8 +1322,20 @@ fn main() {
 <li><strong>不要自行实现密码学</strong>：直接使用标准库。</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id=""><a class="header" href="#"></a></h1>
+<h2 id="引导"><a class="header" href="#引导">引导</a></h2>
+<p>✔️❌标志文章更新时刻仍在维护</p>
+<h3 id="市值记录"><a class="header" href="#市值记录">市值记录</a></h3>
 <h3 id="区块链开发部署工具"><a class="header" href="#区块链开发部署工具">区块链开发部署工具</a></h3>
 <h4 id="hardhat"><a class="header" href="#hardhat">✔️<a href="https://hardhat.org/">hardhat</a></a></h4>
+<ul>
+<li>从开发到部署全覆盖的工具，内置hardhat node等内部测试链。</li>
+<li>工具全面但相对比较臃肿，类似hardhat-ethers、hardhat-viem等包均涉及，想将大部分内容包含进生态中。</li>
+<li>基础的开发部署命令例如hardhat deploy等已经具备部署能力，又有hardhat ignition这类新加入的工具提供同样的效果，增加链上合约管理等功能。工具之间同质化较麻烦。</li>
+</ul>
+<h4 id="foundry-登链社区中文翻译"><a class="header" href="#foundry-登链社区中文翻译">✔️<a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">Foundry-登链社区中文翻译</a></a></h4>
+<ul>
+<li>后起之秀，工具集健全，目前没有过于臃肿。</li>
+</ul>
 <h3 id="区块链交互工具-1"><a class="header" href="#区块链交互工具-1">区块链交互工具</a></h3>
 <h4 id="web3js"><a class="header" href="#web3js">❌<s><a href="https://docs.web3js.org/">web3.js</a></s></a></h4>
 <ul>
@@ -2202,6 +2220,10 @@ console.log("公钥:", publicKey);
 <h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
 <p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc常用实战"><a class="header" href="#erc常用实战">ERC常用实战</a></h1>
+<p>ERC20</p>
+<p>ERC721</p>
+<p>ERC1155</p>
+<p>ERC4626</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="wbnb"><a class="header" href="#wbnb">WBNB</a></h1>
 <p><mark>币安链的原生代币为BNB，与以太坊的ETH类似。</mark>
 币安链和以太坊链不是完全相同。币安智能链(BSC)上的BEP标准和以太坊的EIP标准是两个不同的体系，但有意设计得相互兼容：</p>

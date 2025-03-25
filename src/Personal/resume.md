@@ -49,7 +49,7 @@
 #### **Blockchain Expertise**  
 1. **Smart Contracts**:  
    - ERC-20/721/777/1155/4626 implementation  
-   - OpenZeppelin (RBAC/Ownable2) integration  
+   - OpenZeppelin (RBAC/Ownable2steps) integration  
    - Uniswap/USDT code analysis  
 
 2. **Ecosystem Knowledge**:  

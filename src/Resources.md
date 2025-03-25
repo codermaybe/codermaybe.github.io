@@ -24,3 +24,8 @@
 [低端影视](https://ddys.pro/) 
 
 [奈菲影视](https://www.nfyingshi.com/) 
+
+## 前端部分
+[emoji](https://www.emojiall.com/)
+
+[css渐变样式](https://cssgradient.io/)
