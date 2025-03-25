@@ -2182,6 +2182,92 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612"><a class="header" href="#eip2612">EIP2612</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip4626"><a class="header" href="#eip4626">EIP4626</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
+<p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20提案中approve函数声明</a>提过的一种数据攻击。</p>
+<h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
+<p>在区块链中，**授权竞争攻击（Approval Race Condition）**是一种与代币授权机制（如ERC-20标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
+<hr />
+<h3 id="1-背景erc-20的授权机制"><a class="header" href="#1-背景erc-20的授权机制">1. <strong>背景：ERC-20的授权机制</strong></a></h3>
+<p>在ERC-20代币标准中，<code>approve</code>函数允许用户授权某个地址（通常是智能合约）代表自己花费一定数量的代币。例如：</p>
+<ul>
+<li>用户A调用<code>approve(合约地址, 100)</code>，授权某个合约从A的账户中转移100个代币。</li>
+<li>随后，合约可以通过<code>transferFrom</code>函数执行实际的代币转移。</li>
+</ul>
+<p>这种机制广泛用于DeFi协议、NFT市场等场景。然而，如果用户需要调整授权额度，就会引发潜在的竞争条件问题。</p>
+<hr />
+<h3 id="2-授权竞争攻击的原理"><a class="header" href="#2-授权竞争攻击的原理">2. <strong>授权竞争攻击的原理</strong></a></h3>
+<p>授权竞争攻击的核心在于以下步骤：</p>
+<ol>
+<li><strong>初始授权</strong>：用户A已经授权了一个攻击者控制的合约（或恶意DApp）一定的代币额度，比如100个代币。</li>
+<li><strong>用户调整授权</strong>：用户A发现需要更改授权额度（例如从100减少到50，或增加到200），于是调用<code>approve</code>函数发起新交易。</li>
+<li><strong>攻击者抢跑</strong>：攻击者监控区块链的内存池（mempool），发现用户A的新<code>approve</code>交易尚未确认。攻击者在用户交易确认前，迅速提交一笔<code>transferFrom</code>交易，使用旧的授权额度（100个代币）提取代币。</li>
+<li><strong>结果</strong>：用户A的新授权交易最终确认，但攻击者已经利用旧授权偷走了代币。</li>
+</ol>
+<p>这种攻击利用了区块链交易的<strong>非原子性</strong>（即交易不是瞬间完成，而是需要时间确认）和<strong>公开性</strong>（内存池中的交易对所有人可见）。</p>
+<hr />
+<h3 id="3-攻击流程示例"><a class="header" href="#3-攻击流程示例">3. <strong>攻击流程示例</strong></a></h3>
+<p>假设用户A的代币余额为200，攻击者控制的合约为<code>MaliciousContract</code>：</p>
+<ol>
+<li>用户A调用<code>approve(MaliciousContract, 100)</code>，授权100个代币。</li>
+<li>后来，用户A决定减少授权，调用<code>approve(MaliciousContract, 50)</code>，并等待交易确认。</li>
+<li>攻击者看到内存池中的<code>approve(MaliciousContract, 50)</code>交易，立即调用<code>transferFrom(A, 攻击者地址, 100)</code>，使用旧的授权提取100个代币。</li>
+<li>用户A的<code>approve(MaliciousContract, 50)</code>交易确认，但此时100个代币已被转移，攻击得逞。</li>
+</ol>
+<hr />
+<h3 id="4-为什么会发生"><a class="header" href="#4-为什么会发生">4. <strong>为什么会发生？</strong></a></h3>
+<ul>
+<li><strong>授权不是原子操作</strong>：<code>approve</code>函数只更新授权额度，而不撤销之前的转移能力。在新授权生效前，旧授权仍然有效。</li>
+<li><strong>内存池透明</strong>：攻击者可以实时监控未确认交易，并抢先提交自己的交易（通过提高Gas费用实现“抢跑”）。</li>
+<li><strong>用户行为</strong>：许多用户直接调整授权额度，而不是先将授权设为0再设为新值。</li>
+</ul>
+<hr />
+<h3 id="5-防范措施"><a class="header" href="#5-防范措施">5. <strong>防范措施</strong></a></h3>
+<h4 id="1安全的授权流程"><a class="header" href="#1安全的授权流程">（1）<strong>安全的授权流程</strong></a></h4>
+<ul>
+<li>用户在调整授权时，应采用“先清零，再设置新值”的两步操作：
+<ol>
+<li>调用<code>approve(合约地址, 0)</code>，等待确认。</li>
+<li>确认后，再调用<code>approve(合约地址, 新额度)</code>。</li>
+</ol>
+</li>
+<li>这种方法确保旧授权被撤销，消除竞争窗口。</li>
+<li><mark>注意</mark><code>approve(合约地址, 0)</code>同样<b>无法完全避免攻击者抢跑的问题</b>。交易未确认前，旧授权仍然有效，攻击者可以抢先调用transferFrom。
+它仅能保证新授权顺利执行：一旦清零交易确认，旧授权被撤销，新授权可以在安全状态下生效。
+新授权后再次被转走的风险：取决于后续操作和合约的可信度。如果用户授权给了恶意合约，新授权的代币仍可能被转走，但这属于另一类问题（非竞争攻击）。</li>
+</ul>
+<h4 id="2使用increaseallowance和decreaseallowance"><a class="header" href="#2使用increaseallowance和decreaseallowance">（2）<strong>使用<code>increaseAllowance</code>和<code>decreaseAllowance</code></strong></a></h4>
+<ul>
+<li>ERC-20扩展函数<code>increaseAllowance</code>和<code>decreaseAllowance</code>允许用户增量调整授权，而无需直接覆盖旧值。</li>
+<li>例如：<code>increaseAllowance(合约地址, 50)</code>增加50个代币的授权，而不是直接调用<code>approve</code>。</li>
+<li>实现示例如USDC，可以查看本博客源码解析篇<mark>FiatTokenV2_2</mark></li>
+</ul>
+<h4 id="3合约端的保护"><a class="header" href="#3合约端的保护">（3）<strong>合约端的保护</strong></a></h4>
+<ul>
+<li>智能合约开发者可以在<code>transferFrom</code>中添加检查，确保调用时的授权额度与预期一致，避免滥用旧授权。</li>
+<li>使用一次性授权（Nonce）或时间锁，限制授权的有效期。</li>
+</ul>
+<h4 id="4用户教育"><a class="header" href="#4用户教育">（4）<strong>用户教育</strong></a></h4>
+<ul>
+<li>提醒用户谨慎授权，尤其是对未知合约，避免直接调整授权额度。</li>
+<li>使用支持“撤销授权”的钱包（如MetaMask），定期检查并清理不必要的授权。</li>
+</ul>
+<h4 id="5gas竞争应对"><a class="header" href="#5gas竞争应对">（5）<strong>Gas竞争应对</strong></a></h4>
+<ul>
+<li>用户可以提高Gas费用，确保自己的<code>approve</code>交易尽快确认，减少攻击者的抢跑机会。</li>
+</ul>
+<hr />
+<h3 id="6-实际案例"><a class="header" href="#6-实际案例">6. <strong>实际案例</strong></a></h3>
+<ul>
+<li><strong>Uniswap早期问题</strong>：早期版本的Uniswap用户在调整流动性池授权时，偶尔会遇到类似问题，导致代币被恶意合约窃取。</li>
+<li><strong>DeFi协议漏洞</strong>：一些小型DeFi项目因未提醒用户安全授权流程，遭受过授权竞争攻击。</li>
+</ul>
+<hr />
+<h3 id="7-改进建议与新标准"><a class="header" href="#7-改进建议与新标准">7. <strong>改进建议与新标准</strong></a></h3>
+<p>为了彻底解决这个问题，一些新代币标准（如ERC-777、ERC-1155）尝试改进授权机制：</p>
+<ul>
+<li><strong>ERC-777</strong>：引入<code>operator</code>机制和回调函数，允许更灵活的授权管理。</li>
+<li><strong>Permit函数</strong>（EIP-2612）：允许用户通过签名离线授权，避免直接调用<code>approve</code>，从而减少链上竞争风险。</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rollup"><a class="header" href="#rollup">Rollup</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="zk"><a class="header" href="#zk">ZK</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
@@ -2224,6 +2310,203 @@ console.log("公钥:", publicKey);
 <p>ERC721</p>
 <p>ERC1155</p>
 <p>ERC4626</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="自定义erc20代币-v1版本"><a class="header" href="#自定义erc20代币-v1版本">自定义ERC20代币 V1版本</a></h1>
+<ul>
+<li>完整实现ERC20标准</li>
+<li>approve函数未做安全处理（缺陷），未引用openzepplin安全库。</li>
+<li>完整的项目包含测试等将后续更新在<a href="https://github.com/codermaybe">github仓库</a>里</li>
+</ul>
+<pre><code class="language-solidity">// SPDX-License-Identifier: MIT
+
+/**
+ * @title CustomizedERC20
+ * @author github.com/codermaybe
+ * @dev CustomizedERC20 is a customized ERC20 token with a few additional features.
+ * @dev 本合约仅用于学习和研究。所有复现均按照eip20标准。详见：https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md
+ * @dev 自行复现的erc20各项功能。
+ * @dev V1版本特性：1.除复现各标准函数外增加 _contractOwner字段，增加erc20未定义但常用方法 mint()、burn()。暂无增加角色地址池，特殊操作均有合约拥有者控制。
+ */
+
+pragma solidity ^0.8.28;
+
+contract CE20V1 {
+    address private _contractOwner; //自行设定，为合约拥有者
+    string private _name;
+    string private _symbol;
+    uint8 private _decimals;
+    uint256 private _totalSupply;
+    mapping(address =&gt; uint256) private _balances;
+    mapping(address =&gt; mapping(address =&gt; uint256)) _allowances;
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(
+        address indexed _owner,
+        address indexed _spender,
+        uint256 _value
+    );
+
+    constructor(
+        string memory name,
+        string memory symbol,
+        uint8 decimals,
+        uint256 totalSupply
+    ) {
+        _contractOwner = msg.sender;
+        _name = name;
+        _symbol = symbol;
+        _decimals = decimals;
+        _totalSupply = totalSupply;
+        _balances[msg.sender] = totalSupply;
+        emit Transfer(address(0), msg.sender, totalSupply);
+    }
+
+    /*
+    name
+    Returns the name of the token - e.g. "MyToken".
+    OPTIONAL - This method can be used to improve usability, but interfaces and other contracts MUST NOT expect these values to be present. */
+    function name() public view returns (string memory) {
+        return _name;
+    }
+
+    /*
+    symbol
+    Returns the symbol of the token. E.g. "HIX".
+    OPTIONAL - This method can be used to improve usability, but interfaces and other contracts MUST NOT expect these values to be present. */
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
+
+    /*
+    decimals
+    Returns the number of decimals the token uses - e.g. 8, means to divide the token amount by 100000000 to get its user representation.
+    OPTIONAL - This method can be used to improve usability, but interfaces and other contracts MUST NOT expect these values to be present.*/
+    function decimals() public view returns (uint8) {
+        return _decimals;
+    }
+
+    /*
+    totalSupply
+    Returns the total token supply.*/
+
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
+    /*
+    balanceOf
+    Returns the account balance of another account with address _owner. */
+    function balanceOf(address _owner) public view returns (uint256) {
+        return _balances[_owner];
+    }
+
+    /*
+    transfer
+    Transfers _value amount of tokens to address _to, and MUST fire the Transfer event. 
+    The function SHOULD throw if the message caller's account balance does not have enough tokens to spend.
+    Note Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event. */
+
+    function transfer(address _to, uint256 _value) public returns (bool) {
+        require(_to != address(0), unicode"不可向0地址转账");
+        require(_balances[msg.sender] &gt;= _value, unicode"余额不足");
+        require(_balances[_to] + _value &gt; _balances[_to], unicode"数值溢出");
+        _balances[msg.sender] -= _value;
+        _balances[_to] += _value;
+        emit Transfer(msg.sender, _to, _value);
+        return true;
+    }
+
+    /*
+    transferFrom
+    Transfers _value amount of tokens from address _from to address _to, and MUST fire the Transfer event.
+    The transferFrom method is used for a withdraw workflow, allowing contracts to transfer tokens on your behalf. 
+    This can be used for example to allow a contract to transfer tokens on your behalf and/or to charge fees in sub-currencies. 
+    The function SHOULD throw unless the _from account has deliberately authorized the sender of the message via some mechanism.
+    Note Transfers of 0 values MUST be treated as normal transfers and fire the Transfer event. */
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    ) public returns (bool success) {
+        require(_to != address(0), unicode"不可向0地址转账");
+        require(
+            _allowances[_from][msg.sender] &gt;= _value,
+            unicode"授权额度不足"
+        );
+        require(_balances[_from] &gt;= _value, unicode"转账账户额度不足");
+        require(_balances[_to] + _value &gt; _balances[_to], unicode"余额溢出");
+        _allowances[_from][msg.sender] -= _value;
+        _balances[_from] -= _value;
+        _balances[_to] += _value;
+        emit Transfer(_from, _to, _value);
+        return true;
+    }
+
+    /*
+    approve
+    Allows _spender to withdraw from your account multiple times, up to the _value amount. 
+    If this function is called again it overwrites the current allowance with _value.
+    NOTE: To prevent attack vectors like the one described here and discussed here, clients SHOULD make sure to create user interfaces in such a way that they set the allowance first to 0 before setting it to another value for the same spender. 
+    THOUGH The contract itself shouldn't enforce it, to allow backwards compatibility with contracts deployed before */
+    function approve(
+        //此版本未解决重入攻击,安全版本可检查CE20V1_openzepplin.sol
+        address _spender,
+        uint256 _value
+    ) public returns (bool success) {
+        require(
+            _allowances[msg.sender][_spender] + _value &gt;
+                _allowances[msg.sender][_spender],
+            unicode"授权额度溢出"
+        );
+        require(_spender != address(0), unicode"转账地址为0");
+
+        _allowances[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
+        return true;
+    }
+
+    /*
+    allowance
+    Returns the amount which _spender is still allowed to withdraw from _owner.*/
+    function allowance(
+        address _owner,
+        address _spender
+    ) public view returns (uint256 remaining) {
+        return _allowances[_owner][_spender];
+    }
+
+    /*自定义方法实现，使用mint派生代币 */
+    event Mint(address _to, uint256 _value);
+
+    function mint(address _to, uint256 _value) public {
+        require(
+            msg.sender == _contractOwner,
+            unicode"非合约拥有者无法派生代币"
+        );
+        require(_balances[_to] + _value &gt; _balances[_to], unicode"余额溢出");
+        require(_totalSupply + _value &gt; _totalSupply, unicode"总代币量将溢出");
+        _balances[_to] += _value;
+        _totalSupply += _value;
+        emit Transfer(address(0), _to, _value);
+        emit Mint(_to, _value);
+    }
+
+    /*自定义方法实现，使用burn燃烧代币 */
+    event Burn(address _from, uint256 _value);
+
+    function burn(address _from, uint256 _value) public {
+        require(
+            msg.sender == _contractOwner,
+            unicode"非合约拥有者无法派生代币"
+        );
+        require(
+            _balances[_from] &gt;= _value,
+            unicode"检查燃烧的代币数量，超过用户余额"
+        );
+        _balances[_from] -= _value;
+        _totalSupply -= _value;
+        emit Burn(_from, _value);
+    }
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="wbnb"><a class="header" href="#wbnb">WBNB</a></h1>
 <p><mark>币安链的原生代币为BNB，与以太坊的ETH类似。</mark>
 币安链和以太坊链不是完全相同。币安智能链(BSC)上的BEP标准和以太坊的EIP标准是两个不同的体系，但有意设计得相互兼容：</p>
@@ -3153,6 +3436,338 @@ contract BNB is SafeMath{
 <p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/./V1.1/USDCV1_1.html">USDC V1.1</a></p>
 <h2 id="usdc-v20"><a class="header" href="#usdc-v20">USDC V2.0</a></h2>
 <p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/">USDC V2.0</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="fiattokenproxy"><a class="header" href="#fiattokenproxy">FiatTokenProxy</a></h1>
+<p><img src="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/FiatTokenProxy/FiatTokenProxy.png" alt="alt text" /></p>
+<pre><code class="language-solidity">pragma solidity ^0.4.24;
+
+// File: zos-lib/contracts/upgradeability/Proxy.sol
+
+/**
+ * @title Proxy
+ * @dev Implements delegation of calls to other contracts, with proper
+ * forwarding of return values and bubbling of failures.
+ * It defines a fallback function that delegates all calls to the address
+ * returned by the abstract _implementation() internal function.
+ */
+contract Proxy {
+  /**
+   * @dev Fallback function.
+   * Implemented entirely in `_fallback`.
+   */
+  function () payable external {
+    _fallback();
+  }
+
+  /**
+   * @return The Address of the implementation.
+   */
+  function _implementation() internal view returns (address);
+
+  /**
+   * @dev Delegates execution to an implementation contract.
+   * This is a low level function that doesn't return to its internal call site.
+   * It will return to the external caller whatever the implementation returns.
+   * @param implementation Address to delegate.
+   */
+  function _delegate(address implementation) internal {
+    assembly {
+      // Copy msg.data. We take full control of memory in this inline assembly
+      // block because it will not return to Solidity code. We overwrite the
+      // Solidity scratch pad at memory position 0.
+      calldatacopy(0, 0, calldatasize)
+
+      // Call the implementation.
+      // out and outsize are 0 because we don't know the size yet.
+      let result := delegatecall(gas, implementation, 0, calldatasize, 0, 0)
+
+      // Copy the returned data.
+      returndatacopy(0, 0, returndatasize)
+
+      switch result
+      // delegatecall returns 0 on error.
+      case 0 { revert(0, returndatasize) }
+      default { return(0, returndatasize) }
+    }
+  }
+
+  /**
+   * @dev Function that is run as the first thing in the fallback function.
+   * Can be redefined in derived contracts to add functionality.
+   * Redefinitions must call super._willFallback().
+   */
+  function _willFallback() internal {
+  }
+
+  /**
+   * @dev fallback implementation.
+   * Extracted to enable manual triggering.
+   */
+  function _fallback() internal {
+    _willFallback();
+    _delegate(_implementation());
+  }
+}
+
+// File: openzeppelin-solidity/contracts/AddressUtils.sol
+
+/**
+ * Utility library of inline functions on addresses
+ */
+library AddressUtils {
+
+  /**
+   * Returns whether the target address is a contract
+   * @dev This function will return false if invoked during the constructor of a contract,
+   * as the code is not actually created until after the constructor finishes.
+   * @param addr address to check
+   * @return whether the target address is a contract
+   */
+  function isContract(address addr) internal view returns (bool) {
+    uint256 size;
+    // XXX Currently there is no better way to check if there is a contract in an address
+    // than to check the size of the code at that address.
+    // See https://ethereum.stackexchange.com/a/14016/36603
+    // for more details about how this works.
+    // TODO Check this again before the Serenity release, because all addresses will be
+    // contracts then.
+    // solium-disable-next-line security/no-inline-assembly
+    assembly { size := extcodesize(addr) }
+    return size &gt; 0;
+  }
+
+}
+
+// File: zos-lib/contracts/upgradeability/UpgradeabilityProxy.sol
+
+/**
+ * @title UpgradeabilityProxy
+ * @dev This contract implements a proxy that allows to change the
+ * implementation address to which it will delegate.
+ * Such a change is called an implementation upgrade.
+ */
+contract UpgradeabilityProxy is Proxy {
+  /**
+   * @dev Emitted when the implementation is upgraded.
+   * @param implementation Address of the new implementation.
+   */
+  event Upgraded(address implementation);
+
+  /**
+   * @dev Storage slot with the address of the current implementation.
+   * This is the keccak-256 hash of "org.zeppelinos.proxy.implementation", and is
+   * validated in the constructor.
+   */
+  bytes32 private constant IMPLEMENTATION_SLOT = 0x7050c9e0f4ca769c69bd3a8ef740bc37934f8e2c036e5a723fd8ee048ed3f8c3;
+
+  /**
+   * @dev Contract constructor.
+   * @param _implementation Address of the initial implementation.
+   */
+  constructor(address _implementation) public {
+    assert(IMPLEMENTATION_SLOT == keccak256("org.zeppelinos.proxy.implementation"));
+
+    _setImplementation(_implementation);
+  }
+
+  /**
+   * @dev Returns the current implementation.
+   * @return Address of the current implementation
+   */
+  function _implementation() internal view returns (address impl) {
+    bytes32 slot = IMPLEMENTATION_SLOT;
+    assembly {
+      impl := sload(slot)
+    }
+  }
+
+  /**
+   * @dev Upgrades the proxy to a new implementation.
+   * @param newImplementation Address of the new implementation.
+   */
+  function _upgradeTo(address newImplementation) internal {
+    _setImplementation(newImplementation);
+    emit Upgraded(newImplementation);
+  }
+
+  /**
+   * @dev Sets the implementation address of the proxy.
+   * @param newImplementation Address of the new implementation.
+   */
+  function _setImplementation(address newImplementation) private {
+    require(AddressUtils.isContract(newImplementation), "Cannot set a proxy implementation to a non-contract address");
+
+    bytes32 slot = IMPLEMENTATION_SLOT;
+
+    assembly {
+      sstore(slot, newImplementation)
+    }
+  }
+}
+
+// File: zos-lib/contracts/upgradeability/AdminUpgradeabilityProxy.sol
+
+/**
+ * @title AdminUpgradeabilityProxy
+ * @dev This contract combines an upgradeability proxy with an authorization
+ * mechanism for administrative tasks.
+ * All external functions in this contract must be guarded by the
+ * `ifAdmin` modifier. See ethereum/solidity#3864 for a Solidity
+ * feature proposal that would enable this to be done automatically.
+ */
+contract AdminUpgradeabilityProxy is UpgradeabilityProxy {
+  /**
+   * @dev Emitted when the administration has been transferred.
+   * @param previousAdmin Address of the previous admin.
+   * @param newAdmin Address of the new admin.
+   */
+  event AdminChanged(address previousAdmin, address newAdmin);
+
+  /**
+   * @dev Storage slot with the admin of the contract.
+   * This is the keccak-256 hash of "org.zeppelinos.proxy.admin", and is
+   * validated in the constructor.
+   */
+  bytes32 private constant ADMIN_SLOT = 0x10d6a54a4754c8869d6886b5f5d7fbfa5b4522237ea5c60d11bc4e7a1ff9390b;
+
+  /**
+   * @dev Modifier to check whether the `msg.sender` is the admin.
+   * If it is, it will run the function. Otherwise, it will delegate the call
+   * to the implementation.
+   */
+  modifier ifAdmin() {
+    if (msg.sender == _admin()) {
+      _;
+    } else {
+      _fallback();
+    }
+  }
+
+  /**
+   * Contract constructor.
+   * It sets the `msg.sender` as the proxy administrator.
+   * @param _implementation address of the initial implementation.
+   */
+  constructor(address _implementation) UpgradeabilityProxy(_implementation) public {
+    assert(ADMIN_SLOT == keccak256("org.zeppelinos.proxy.admin"));
+
+    _setAdmin(msg.sender);
+  }
+
+  /**
+   * @return The address of the proxy admin.
+   */
+  function admin() external view ifAdmin returns (address) {
+    return _admin();
+  }
+
+  /**
+   * @return The address of the implementation.
+   */
+  function implementation() external view ifAdmin returns (address) {
+    return _implementation();
+  }
+
+  /**
+   * @dev Changes the admin of the proxy.
+   * Only the current admin can call this function.
+   * @param newAdmin Address to transfer proxy administration to.
+   */
+  function changeAdmin(address newAdmin) external ifAdmin {
+    require(newAdmin != address(0), "Cannot change the admin of a proxy to the zero address");
+    emit AdminChanged(_admin(), newAdmin);
+    _setAdmin(newAdmin);
+  }
+
+  /**
+   * @dev Upgrade the backing implementation of the proxy.
+   * Only the admin can call this function.
+   * @param newImplementation Address of the new implementation.
+   */
+  function upgradeTo(address newImplementation) external ifAdmin {
+    _upgradeTo(newImplementation);
+  }
+
+  /**
+   * @dev Upgrade the backing implementation of the proxy and call a function
+   * on the new implementation.
+   * This is useful to initialize the proxied contract.
+   * @param newImplementation Address of the new implementation.
+   * @param data Data to send as msg.data in the low level call.
+   * It should include the signature and the parameters of the function to be
+   * called, as described in
+   * https://solidity.readthedocs.io/en/develop/abi-spec.html#function-selector-and-argument-encoding.
+   */
+  function upgradeToAndCall(address newImplementation, bytes data) payable external ifAdmin {
+    _upgradeTo(newImplementation);
+    require(address(this).call.value(msg.value)(data));
+  }
+
+  /**
+   * @return The admin slot.
+   */
+  function _admin() internal view returns (address adm) {
+    bytes32 slot = ADMIN_SLOT;
+    assembly {
+      adm := sload(slot)
+    }
+  }
+
+  /**
+   * @dev Sets the address of the proxy admin.
+   * @param newAdmin Address of the new proxy admin.
+   */
+  function _setAdmin(address newAdmin) internal {
+    bytes32 slot = ADMIN_SLOT;
+
+    assembly {
+      sstore(slot, newAdmin)
+    }
+  }
+
+  /**
+   * @dev Only fall back when the sender is not the admin.
+   */
+  function _willFallback() internal {
+    require(msg.sender != _admin(), "Cannot call fallback function from the proxy admin");
+    super._willFallback();
+  }
+}
+
+// File: contracts/FiatTokenProxy.sol
+
+/**
+* Copyright CENTRE SECZ 2018
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy 
+* of this software and associated documentation files (the "Software"), to deal 
+* in the Software without restriction, including without limitation the rights 
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+* copies of the Software, and to permit persons to whom the Software is furnished to 
+* do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all 
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+* CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+pragma solidity ^0.4.24;
+
+
+/**
+ * @title FiatTokenProxy
+ * @dev This contract proxies FiatToken calls and enables FiatToken upgrades
+*/ 
+contract FiatTokenProxy is AdminUpgradeabilityProxy {
+    constructor(address _implementation) public AdminUpgradeabilityProxy(_implementation) {
+    }
+}
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="usdc源码解析-1"><a class="header" href="#usdc源码解析-1">USDC源码解析</a></h1>
 <p><a href="https://etherscan.io/token/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48#code">USDC 源码链接</a></p>
 <p>V1设计结构

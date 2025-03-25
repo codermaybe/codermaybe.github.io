@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>ERC常用实战</title>
+        <title>授权竞争攻击</title>
 
 
         <!-- Custom HTML head -->
@@ -155,21 +155,102 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="erc常用实战"><a class="header" href="#erc常用实战">ERC常用实战</a></h1>
-<p>ERC20</p>
-<p>ERC721</p>
-<p>ERC1155</p>
-<p>ERC4626</p>
+                        <h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
+<p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20提案中approve函数声明</a>提过的一种数据攻击。</p>
+<h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
+<p>在区块链中，**授权竞争攻击（Approval Race Condition）**是一种与代币授权机制（如ERC-20标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
+<hr />
+<h3 id="1-背景erc-20的授权机制"><a class="header" href="#1-背景erc-20的授权机制">1. <strong>背景：ERC-20的授权机制</strong></a></h3>
+<p>在ERC-20代币标准中，<code>approve</code>函数允许用户授权某个地址（通常是智能合约）代表自己花费一定数量的代币。例如：</p>
+<ul>
+<li>用户A调用<code>approve(合约地址, 100)</code>，授权某个合约从A的账户中转移100个代币。</li>
+<li>随后，合约可以通过<code>transferFrom</code>函数执行实际的代币转移。</li>
+</ul>
+<p>这种机制广泛用于DeFi协议、NFT市场等场景。然而，如果用户需要调整授权额度，就会引发潜在的竞争条件问题。</p>
+<hr />
+<h3 id="2-授权竞争攻击的原理"><a class="header" href="#2-授权竞争攻击的原理">2. <strong>授权竞争攻击的原理</strong></a></h3>
+<p>授权竞争攻击的核心在于以下步骤：</p>
+<ol>
+<li><strong>初始授权</strong>：用户A已经授权了一个攻击者控制的合约（或恶意DApp）一定的代币额度，比如100个代币。</li>
+<li><strong>用户调整授权</strong>：用户A发现需要更改授权额度（例如从100减少到50，或增加到200），于是调用<code>approve</code>函数发起新交易。</li>
+<li><strong>攻击者抢跑</strong>：攻击者监控区块链的内存池（mempool），发现用户A的新<code>approve</code>交易尚未确认。攻击者在用户交易确认前，迅速提交一笔<code>transferFrom</code>交易，使用旧的授权额度（100个代币）提取代币。</li>
+<li><strong>结果</strong>：用户A的新授权交易最终确认，但攻击者已经利用旧授权偷走了代币。</li>
+</ol>
+<p>这种攻击利用了区块链交易的<strong>非原子性</strong>（即交易不是瞬间完成，而是需要时间确认）和<strong>公开性</strong>（内存池中的交易对所有人可见）。</p>
+<hr />
+<h3 id="3-攻击流程示例"><a class="header" href="#3-攻击流程示例">3. <strong>攻击流程示例</strong></a></h3>
+<p>假设用户A的代币余额为200，攻击者控制的合约为<code>MaliciousContract</code>：</p>
+<ol>
+<li>用户A调用<code>approve(MaliciousContract, 100)</code>，授权100个代币。</li>
+<li>后来，用户A决定减少授权，调用<code>approve(MaliciousContract, 50)</code>，并等待交易确认。</li>
+<li>攻击者看到内存池中的<code>approve(MaliciousContract, 50)</code>交易，立即调用<code>transferFrom(A, 攻击者地址, 100)</code>，使用旧的授权提取100个代币。</li>
+<li>用户A的<code>approve(MaliciousContract, 50)</code>交易确认，但此时100个代币已被转移，攻击得逞。</li>
+</ol>
+<hr />
+<h3 id="4-为什么会发生"><a class="header" href="#4-为什么会发生">4. <strong>为什么会发生？</strong></a></h3>
+<ul>
+<li><strong>授权不是原子操作</strong>：<code>approve</code>函数只更新授权额度，而不撤销之前的转移能力。在新授权生效前，旧授权仍然有效。</li>
+<li><strong>内存池透明</strong>：攻击者可以实时监控未确认交易，并抢先提交自己的交易（通过提高Gas费用实现“抢跑”）。</li>
+<li><strong>用户行为</strong>：许多用户直接调整授权额度，而不是先将授权设为0再设为新值。</li>
+</ul>
+<hr />
+<h3 id="5-防范措施"><a class="header" href="#5-防范措施">5. <strong>防范措施</strong></a></h3>
+<h4 id="1安全的授权流程"><a class="header" href="#1安全的授权流程">（1）<strong>安全的授权流程</strong></a></h4>
+<ul>
+<li>用户在调整授权时，应采用“先清零，再设置新值”的两步操作：
+<ol>
+<li>调用<code>approve(合约地址, 0)</code>，等待确认。</li>
+<li>确认后，再调用<code>approve(合约地址, 新额度)</code>。</li>
+</ol>
+</li>
+<li>这种方法确保旧授权被撤销，消除竞争窗口。</li>
+<li><mark>注意</mark><code>approve(合约地址, 0)</code>同样<b>无法完全避免攻击者抢跑的问题</b>。交易未确认前，旧授权仍然有效，攻击者可以抢先调用transferFrom。
+它仅能保证新授权顺利执行：一旦清零交易确认，旧授权被撤销，新授权可以在安全状态下生效。
+新授权后再次被转走的风险：取决于后续操作和合约的可信度。如果用户授权给了恶意合约，新授权的代币仍可能被转走，但这属于另一类问题（非竞争攻击）。</li>
+</ul>
+<h4 id="2使用increaseallowance和decreaseallowance"><a class="header" href="#2使用increaseallowance和decreaseallowance">（2）<strong>使用<code>increaseAllowance</code>和<code>decreaseAllowance</code></strong></a></h4>
+<ul>
+<li>ERC-20扩展函数<code>increaseAllowance</code>和<code>decreaseAllowance</code>允许用户增量调整授权，而无需直接覆盖旧值。</li>
+<li>例如：<code>increaseAllowance(合约地址, 50)</code>增加50个代币的授权，而不是直接调用<code>approve</code>。</li>
+<li>实现示例如USDC，可以查看本博客源码解析篇<mark>FiatTokenV2_2</mark></li>
+</ul>
+<h4 id="3合约端的保护"><a class="header" href="#3合约端的保护">（3）<strong>合约端的保护</strong></a></h4>
+<ul>
+<li>智能合约开发者可以在<code>transferFrom</code>中添加检查，确保调用时的授权额度与预期一致，避免滥用旧授权。</li>
+<li>使用一次性授权（Nonce）或时间锁，限制授权的有效期。</li>
+</ul>
+<h4 id="4用户教育"><a class="header" href="#4用户教育">（4）<strong>用户教育</strong></a></h4>
+<ul>
+<li>提醒用户谨慎授权，尤其是对未知合约，避免直接调整授权额度。</li>
+<li>使用支持“撤销授权”的钱包（如MetaMask），定期检查并清理不必要的授权。</li>
+</ul>
+<h4 id="5gas竞争应对"><a class="header" href="#5gas竞争应对">（5）<strong>Gas竞争应对</strong></a></h4>
+<ul>
+<li>用户可以提高Gas费用，确保自己的<code>approve</code>交易尽快确认，减少攻击者的抢跑机会。</li>
+</ul>
+<hr />
+<h3 id="6-实际案例"><a class="header" href="#6-实际案例">6. <strong>实际案例</strong></a></h3>
+<ul>
+<li><strong>Uniswap早期问题</strong>：早期版本的Uniswap用户在调整流动性池授权时，偶尔会遇到类似问题，导致代币被恶意合约窃取。</li>
+<li><strong>DeFi协议漏洞</strong>：一些小型DeFi项目因未提醒用户安全授权流程，遭受过授权竞争攻击。</li>
+</ul>
+<hr />
+<h3 id="7-改进建议与新标准"><a class="header" href="#7-改进建议与新标准">7. <strong>改进建议与新标准</strong></a></h3>
+<p>为了彻底解决这个问题，一些新代币标准（如ERC-777、ERC-1155）尝试改进授权机制：</p>
+<ul>
+<li><strong>ERC-777</strong>：引入<code>operator</code>机制和回调函数，允许更灵活的授权管理。</li>
+<li><strong>Permit函数</strong>（EIP-2612）：允许用户通过签名离线授权，避免直接调用<code>approve</code>，从而减少链上竞争风险。</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../../BlockChain/Ethereum/ERC/ERC4626.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Solidity/Basic/ErcImplementation/ERC20/CustomizedERC20V1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/Rollup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -179,11 +260,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/PrivatekeyCovert.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../../BlockChain/Ethereum/ERC/ERC4626.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Solidity/Basic/ErcImplementation/ERC20/CustomizedERC20V1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/Rollup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
