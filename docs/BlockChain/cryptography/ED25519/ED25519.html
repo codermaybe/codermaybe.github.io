@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>EIP4626</title>
+        <title>ED25519</title>
 
 
         <!-- Custom HTML head -->
@@ -155,17 +155,162 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="eip4626"><a class="header" href="#eip4626">EIP4626</a></h1>
+                        <h1 id="ed25519现代数字签名算法的原理与应用附-rust-实现"><a class="header" href="#ed25519现代数字签名算法的原理与应用附-rust-实现"><strong>Ed25519：现代数字签名算法的原理与应用（附 Rust 实现）</strong></a></h1>
+<h2 id="请务必阅读此小章关于密码学"><a class="header" href="#请务必阅读此小章关于密码学">请务必阅读此小章<a href="../cryptography.html">关于密码学</a></a></h2>
+<ul>
+<li>
+<p><a href="https://ed25519.cr.yp.to/">推荐链接</a> <mark>偏通识</mark></p>
+</li>
+<li>
+<p><a href="https://crypto-in-action.github.io/intro-ed25519/190930-ed25519-theory-speed.pdf">不太推荐但是放上来的链接</a>            <mark>需要丰富的密码学相关经验</mark></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc8032">RFC 8032: EdDSA for Curve25519</a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/ed25519-dalek/latest/ed25519_dalek/">ed25519-dalek 文档</a></p>
+</li>
+<li>
+<p><a href="https://docs.solana.com/developing/programming-model/calling-between-programs#signature-verification">Solana 密钥规范</a></p>
+</li>
+</ul>
+<h2 id="1-什么是-ed25519"><a class="header" href="#1-什么是-ed25519"><strong>1. 什么是 Ed25519？</strong></a></h2>
+<p>Ed25519 是一种基于 <strong>Edwards-curve Digital Signature Algorithm (EdDSA)</strong> 的高效签名方案，使用 <strong>Curve25519</strong> 椭圆曲线。其特点包括：</p>
+<ul>
+<li><strong>128 位安全性</strong>（抗量子计算暴力破解）。</li>
+<li><strong>确定性签名</strong>：无需随机数生成器，避免 ECDSA 的随机数重用风险。</li>
+<li><strong>64 字节签名</strong>：紧凑且易于处理。</li>
+<li><strong>高性能</strong>：比 RSA 和传统 ECDSA 更快。</li>
+</ul>
+<hr />
+<h2 id="2-核心原理"><a class="header" href="#2-核心原理"><strong>2. 核心原理</strong></a></h2>
+<h3 id="密钥生成"><a class="header" href="#密钥生成"><strong>密钥生成</strong></a></h3>
+<ul>
+<li><strong>私钥</strong>：32 字节随机种子（通常来自 CSPRNG）。</li>
+<li><strong>公钥</strong>：通过私钥计算 <code>A = d * B</code>，其中 <code>B</code> 是曲线基点，<code>d</code> 是私钥哈希。</li>
+</ul>
+<h3 id="签名"><a class="header" href="#签名"><strong>签名</strong></a></h3>
+<ol>
+<li>计算 <code>r = Hash(私钥 + 消息)</code>。</li>
+<li>生成临时点 <code>R = r * B</code>。</li>
+<li>计算 <code>s = (r + Hash(R || A || 消息) * d) mod L</code>。</li>
+<li>输出 <code>(R, s)</code>（共 64 字节）。</li>
+</ol>
+<h3 id="验证"><a class="header" href="#验证"><strong>验证</strong></a></h3>
+<p>检查：<br />
+<code>s * B == R + Hash(R || A || 消息) * A</code>。</p>
+<hr />
+<h2 id="3-rust-实现示例"><a class="header" href="#3-rust-实现示例"><strong>3. Rust 实现示例</strong></a></h2>
+<p>以下代码演示如何在 Rust 中使用 Ed25519 为代币交易签名。</p>
+<h3 id="步骤-1添加依赖"><a class="header" href="#步骤-1添加依赖"><strong>步骤 1：添加依赖</strong></a></h3>
+<pre><code class="language-toml"># Cargo.toml
+[dependencies]
+ed25519-dalek = { version = "2.0.0", features = ["rand_core"] }
+rand_core = { version = "0.6.4", features = ["getrandom"] }
+</code></pre>
+<h3 id="步骤-2生成密钥对"><a class="header" href="#步骤-2生成密钥对"><strong>步骤 2：生成密钥对</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use ed25519_dalek::{Keypair, Signer, Verifier, Signature};
+use rand_core::OsRng;
+
+fn generate_keypair() -&gt; Keypair {
+    // 从安全随机源生成密钥对
+    let mut csprng = OsRng;
+    Keypair::generate(&amp;mut csprng)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="步骤-3签名与验证"><a class="header" href="#步骤-3签名与验证"><strong>步骤 3：签名与验证</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn sign_and_verify() {
+    // 1. 生成密钥对
+    let keypair = generate_keypair();
+    let public_key = keypair.public();
+
+    // 2. 签名一条消息（例如代币交易）
+    let message = b"Transfer 100 tokens to Alice";
+    let signature: Signature = keypair.sign(message);
+
+    // 3. 验证签名
+    match public_key.verify(message, &amp;signature) {
+        Ok(_) =&gt; println!("Signature is valid!"),
+        Err(_) =&gt; println!("Signature is invalid!"),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="步骤-4完整代币交易示例"><a class="header" href="#步骤-4完整代币交易示例"><strong>步骤 4：完整代币交易示例</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust">struct TokenTransaction {
+    sender: String,
+    receiver: String,
+    amount: u64,
+}
+
+impl TokenTransaction {
+    fn sign(&amp;self, keypair: &amp;Keypair) -&gt; Signature {
+        let message = serde_json::to_vec(self).unwrap();
+        keypair.sign(&amp;message)
+    }
+
+    fn verify(&amp;self, signature: &amp;Signature, public_key: &amp;PublicKey) -&gt; bool {
+        let message = serde_json::to_vec(self).unwrap();
+        public_key.verify(&amp;message, signature).is_ok()
+    }
+}
+
+fn main() {
+    let keypair = generate_keypair();
+    let transaction = TokenTransaction {
+        sender: "Bob".to_string(),
+        receiver: "Alice".to_string(),
+        amount: 100,
+    };
+
+    // 签名交易
+    let signature = transaction.sign(&amp;keypair);
+
+    // 验证交易
+    let is_valid = transaction.verify(&amp;signature, &amp;keypair.public_key());
+    println!("Transaction valid? {}", is_valid);
+}</code></pre></pre>
+<hr />
+<h2 id="4-为什么选择-ed25519"><a class="header" href="#4-为什么选择-ed25519"><strong>4. 为什么选择 Ed25519？</strong></a></h2>
+<ol>
+<li><strong>安全性</strong>
+<ul>
+<li>无随机数风险（对比 ECDSA）。</li>
+<li>抗侧信道攻击（恒定时间操作）。</li>
+</ul>
+</li>
+<li><strong>性能</strong>
+<ul>
+<li>签名速度比 RSA-2048 快约 <strong>10 倍</strong>。</li>
+<li>签名验证速度极快。</li>
+</ul>
+</li>
+<li><strong>标准化</strong>
+<ul>
+<li>被 IETF (RFC 8032)、OpenSSH、Solana 等广泛采用。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="5-注意事项"><a class="header" href="#5-注意事项"><strong>5. 注意事项</strong></a></h2>
+<ul>
+<li><strong>私钥管理</strong>：必须安全存储种子（32 字节）。</li>
+<li><strong>库的选择</strong>：优先使用审计过的库（如 <code>ed25519-dalek</code>）。</li>
+<li><strong>不要自行实现密码学</strong>：直接使用标准库。</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC3009.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/cryptography/cryptography.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/Rollup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/./General/TechGuides/techguides.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -175,11 +320,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC3009.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/cryptography/cryptography.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/Rollup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/./General/TechGuides/techguides.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

@@ -1164,6 +1164,178 @@ PoH不决定区块生产者，而是为PoS提供时间框架，由质押的验�
 <li><strong>性能攻击脆弱性</strong>：在某些情况下，恶意节点可能通过分叉攻击降低吞吐量。</li>
 </ul>
 <p>针对这些问题，后续研究提出了改进版本，如Fast-HotStuff（两阶段优化）和HotStuff-2（简化投票流程），进一步提升效率和鲁棒性。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="此小节记录部分个人学习密码学所阅读的读物"><a class="header" href="#此小节记录部分个人学习密码学所阅读的读物">此小节记录部分个人学习密码学所阅读的读物</a></h1>
+<h2 id="保命声明"><a class="header" href="#保命声明">保命声明！！！</a></h2>
+<p>非网安、信安专业，非密码学精通人士。</p>
+<p>个人阅读并汇总的资料,极少量的代码实现。实现算法的逻辑仅做收集，个人无法目前设计和完全实现。</p>
+<p>附大量引导链接，尽可能不误导读者。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ed25519现代数字签名算法的原理与应用附-rust-实现"><a class="header" href="#ed25519现代数字签名算法的原理与应用附-rust-实现"><strong>Ed25519：现代数字签名算法的原理与应用（附 Rust 实现）</strong></a></h1>
+<h2 id="请务必阅读此小章关于密码学"><a class="header" href="#请务必阅读此小章关于密码学">请务必阅读此小章<a href="BlockChain/cryptography/ED25519/../cryptography.html">关于密码学</a></a></h2>
+<ul>
+<li>
+<p><a href="https://ed25519.cr.yp.to/">推荐链接</a> <mark>偏通识</mark></p>
+</li>
+<li>
+<p><a href="https://crypto-in-action.github.io/intro-ed25519/190930-ed25519-theory-speed.pdf">不太推荐但是放上来的链接</a>            <mark>需要丰富的密码学相关经验</mark></p>
+</li>
+<li>
+<p><a href="https://tools.ietf.org/html/rfc8032">RFC 8032: EdDSA for Curve25519</a></p>
+</li>
+<li>
+<p><a href="https://docs.rs/ed25519-dalek/latest/ed25519_dalek/">ed25519-dalek 文档</a></p>
+</li>
+<li>
+<p><a href="https://docs.solana.com/developing/programming-model/calling-between-programs#signature-verification">Solana 密钥规范</a></p>
+</li>
+</ul>
+<h2 id="1-什么是-ed25519"><a class="header" href="#1-什么是-ed25519"><strong>1. 什么是 Ed25519？</strong></a></h2>
+<p>Ed25519 是一种基于 <strong>Edwards-curve Digital Signature Algorithm (EdDSA)</strong> 的高效签名方案，使用 <strong>Curve25519</strong> 椭圆曲线。其特点包括：</p>
+<ul>
+<li><strong>128 位安全性</strong>（抗量子计算暴力破解）。</li>
+<li><strong>确定性签名</strong>：无需随机数生成器，避免 ECDSA 的随机数重用风险。</li>
+<li><strong>64 字节签名</strong>：紧凑且易于处理。</li>
+<li><strong>高性能</strong>：比 RSA 和传统 ECDSA 更快。</li>
+</ul>
+<hr />
+<h2 id="2-核心原理"><a class="header" href="#2-核心原理"><strong>2. 核心原理</strong></a></h2>
+<h3 id="密钥生成"><a class="header" href="#密钥生成"><strong>密钥生成</strong></a></h3>
+<ul>
+<li><strong>私钥</strong>：32 字节随机种子（通常来自 CSPRNG）。</li>
+<li><strong>公钥</strong>：通过私钥计算 <code>A = d * B</code>，其中 <code>B</code> 是曲线基点，<code>d</code> 是私钥哈希。</li>
+</ul>
+<h3 id="签名"><a class="header" href="#签名"><strong>签名</strong></a></h3>
+<ol>
+<li>计算 <code>r = Hash(私钥 + 消息)</code>。</li>
+<li>生成临时点 <code>R = r * B</code>。</li>
+<li>计算 <code>s = (r + Hash(R || A || 消息) * d) mod L</code>。</li>
+<li>输出 <code>(R, s)</code>（共 64 字节）。</li>
+</ol>
+<h3 id="验证"><a class="header" href="#验证"><strong>验证</strong></a></h3>
+<p>检查：<br />
+<code>s * B == R + Hash(R || A || 消息) * A</code>。</p>
+<hr />
+<h2 id="3-rust-实现示例"><a class="header" href="#3-rust-实现示例"><strong>3. Rust 实现示例</strong></a></h2>
+<p>以下代码演示如何在 Rust 中使用 Ed25519 为代币交易签名。</p>
+<h3 id="步骤-1添加依赖"><a class="header" href="#步骤-1添加依赖"><strong>步骤 1：添加依赖</strong></a></h3>
+<pre><code class="language-toml"># Cargo.toml
+[dependencies]
+ed25519-dalek = { version = "2.0.0", features = ["rand_core"] }
+rand_core = { version = "0.6.4", features = ["getrandom"] }
+</code></pre>
+<h3 id="步骤-2生成密钥对"><a class="header" href="#步骤-2生成密钥对"><strong>步骤 2：生成密钥对</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>use ed25519_dalek::{Keypair, Signer, Verifier, Signature};
+use rand_core::OsRng;
+
+fn generate_keypair() -&gt; Keypair {
+    // 从安全随机源生成密钥对
+    let mut csprng = OsRng;
+    Keypair::generate(&amp;mut csprng)
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="步骤-3签名与验证"><a class="header" href="#步骤-3签名与验证"><strong>步骤 3：签名与验证</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn sign_and_verify() {
+    // 1. 生成密钥对
+    let keypair = generate_keypair();
+    let public_key = keypair.public();
+
+    // 2. 签名一条消息（例如代币交易）
+    let message = b"Transfer 100 tokens to Alice";
+    let signature: Signature = keypair.sign(message);
+
+    // 3. 验证签名
+    match public_key.verify(message, &amp;signature) {
+        Ok(_) =&gt; println!("Signature is valid!"),
+        Err(_) =&gt; println!("Signature is invalid!"),
+    }
+}
+<span class="boring">}</span></code></pre></pre>
+<h3 id="步骤-4完整代币交易示例"><a class="header" href="#步骤-4完整代币交易示例"><strong>步骤 4：完整代币交易示例</strong></a></h3>
+<pre><pre class="playground"><code class="language-rust">struct TokenTransaction {
+    sender: String,
+    receiver: String,
+    amount: u64,
+}
+
+impl TokenTransaction {
+    fn sign(&amp;self, keypair: &amp;Keypair) -&gt; Signature {
+        let message = serde_json::to_vec(self).unwrap();
+        keypair.sign(&amp;message)
+    }
+
+    fn verify(&amp;self, signature: &amp;Signature, public_key: &amp;PublicKey) -&gt; bool {
+        let message = serde_json::to_vec(self).unwrap();
+        public_key.verify(&amp;message, signature).is_ok()
+    }
+}
+
+fn main() {
+    let keypair = generate_keypair();
+    let transaction = TokenTransaction {
+        sender: "Bob".to_string(),
+        receiver: "Alice".to_string(),
+        amount: 100,
+    };
+
+    // 签名交易
+    let signature = transaction.sign(&amp;keypair);
+
+    // 验证交易
+    let is_valid = transaction.verify(&amp;signature, &amp;keypair.public_key());
+    println!("Transaction valid? {}", is_valid);
+}</code></pre></pre>
+<hr />
+<h2 id="4-为什么选择-ed25519"><a class="header" href="#4-为什么选择-ed25519"><strong>4. 为什么选择 Ed25519？</strong></a></h2>
+<ol>
+<li><strong>安全性</strong>
+<ul>
+<li>无随机数风险（对比 ECDSA）。</li>
+<li>抗侧信道攻击（恒定时间操作）。</li>
+</ul>
+</li>
+<li><strong>性能</strong>
+<ul>
+<li>签名速度比 RSA-2048 快约 <strong>10 倍</strong>。</li>
+<li>签名验证速度极快。</li>
+</ul>
+</li>
+<li><strong>标准化</strong>
+<ul>
+<li>被 IETF (RFC 8032)、OpenSSH、Solana 等广泛采用。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="5-注意事项"><a class="header" href="#5-注意事项"><strong>5. 注意事项</strong></a></h2>
+<ul>
+<li><strong>私钥管理</strong>：必须安全存储种子（32 字节）。</li>
+<li><strong>库的选择</strong>：优先使用审计过的库（如 <code>ed25519-dalek</code>）。</li>
+<li><strong>不要自行实现密码学</strong>：直接使用标准库。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id=""><a class="header" href="#"></a></h1>
+<h3 id="区块链开发部署工具"><a class="header" href="#区块链开发部署工具">区块链开发部署工具</a></h3>
+<h4 id="hardhat"><a class="header" href="#hardhat">✔️<a href="https://hardhat.org/">hardhat</a></a></h4>
+<h3 id="区块链交互工具-1"><a class="header" href="#区块链交互工具-1">区块链交互工具</a></h3>
+<h4 id="web3js"><a class="header" href="#web3js">❌<s><a href="https://docs.web3js.org/">web3.js</a></s></a></h4>
+<ul>
+<li>当前使用量最高的交互工具，大量的开发项目使用此库进行开发</li>
+<li>doc文档丰富且全面，指引较多</li>
+<li>截止2025.3.4号已经停更，详情可见<a href="https://blog.chainsafe.io/web3-js-sunset/">ChainSafe</a></li>
+</ul>
+<h4 id="ethersjs"><a class="header" href="#ethersjs">✔️<a href="https://ethers.org/">ethers.js</a></a></h4>
+<ul>
+<li>截止2025.3.25仍在更新的交互工具</li>
+<li>doc内容偏应用，没有太多说明</li>
+</ul>
+<h4 id="viem"><a class="header" href="#viem">✔️<a href="https://viem.sh/">viem</a></a></h4>
+<ul>
+<li>截止2025.3.25仍在更新的交互工具</li>
+<li>性能不错，<a href="https://viem.sh/docs/introduction#performance">相关对比测试</a>。暂未发现第三方的实验数据，按照官方文档看来处理交互数据速度极快，似乎相当适合cex/dex高频交易？对于链上追踪聪明钱并短线跟投谋利的公司具有<strong>较强</strong>吸引力。</li>
+<li>ts库，在纯 JavaScript 项目中使用 Viem 时，无法利用 TypeScript 提供的类型检查功能。需要自行确保传递给 Viem 函数的参数类型正确</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ethereum"><a class="header" href="#ethereum">Ethereum</a></h1>
 <h2 id="概览官方介绍"><a class="header" href="#概览官方介绍">概览(<a href="https://ethereum.org/zh/what-is-ethereum/">官方介绍</a>)</a></h2>
 <p>什么是以太坊？</p>
@@ -1992,6 +2164,8 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612"><a class="header" href="#eip2612">EIP2612</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip4626"><a class="header" href="#eip4626">EIP4626</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="rollup"><a class="header" href="#rollup">Rollup</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="zk"><a class="header" href="#zk">ZK</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
 <h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
 <p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
@@ -5427,6 +5601,131 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 <h2 id="入门指南书"><a class="header" href="#入门指南书">入门指南书</a></h2>
 <p><a href="https://book.getfoundry.sh/">官网导航</a></p>
 <p><a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">中文版-登链社区</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="账户模型"><a class="header" href="#账户模型">账户模型</a></h1>
+<p><a href="https://solana.com/nl/docs/core/accounts">官方链接</a></p>
+<p><img src="BlockChain/Solana/Basic/accountmodel/image.png" alt="alt text" /></p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub struct Account{
+    pub lamports:u64,
+    pub data:Vec&lt;u8&gt;,
+    pub owner:Pubkey,
+    pub excutable:bool,
+    pub rent_epoch:Epoch,
+}
+<span class="boring">}</span></code></pre></pre>
+<p>结构分析：</p>
+<table>
+  <tr>
+    <th>字段</th>
+    <th>类型</th>
+    <th>作用</th>
+  </tr>
+  <tr>
+    <td>lamports</td>
+    <td>u64</td>
+    <td>表示账户的 SOL 余额，以 Lamports 为单位。1 SOL = 1,000,000,000 Lamports(10^9)。用于支付交易费用和账户租金。</td>
+  </tr>
+  <tr>
+    <td>data</td>
+    <td>Vec<u8></td>
+    <td>存储账户的实际数据内容。对于普通账户，可以存储任意应用数据；对于程序账户，存储智能合约的二进制代码。</td>
+  </tr>
+  <tr>
+    <td>owner</td>
+    <td>Pubkey</td>
+    <td>表示账户的所有者，即拥有和控制该账户的公钥。决定谁可以修改账户数据或转移余额。</td>
+  </tr>
+  <tr>
+    <td>executable</td>
+    <td>bool</td>
+    <td>标识该账户是否为可执行账户。当为 `true` 时，表示账户存储的是可执行的智能合约；否则，为普通账户。</td>
+  </tr>
+  <tr>
+    <td>rent_epoch</td>
+    <td>Epoch</td>
+    <td>表示账户的租金周期，用于管理账户的存储租金。帮助系统确定是否需要收取新的租金或清除未支付租金的账户。</td>
+  </tr>
+</table>
+<h3 id="关键字说明"><a class="header" href="#关键字说明">关键字说明</a></h3>
+<p>• <strong>lamports (<code>u64</code>)</strong>：
+• <strong>类型</strong>：无符号 64 位整数 (<code>u64</code>)。
+• <strong>作用</strong>：账户的 SOL 余额，以 Lamports 为单位。用于支付交易费用和账户租金，确保账户持有足够的余额以维持其在区块链上的存在。</p>
+<p>• <strong>data (<code>Vec&lt;u8&gt;</code>)</strong>：
+• <strong>类型</strong>：动态字节向量 (<code>Vec&lt;u8&gt;</code>)。
+• <strong>作用</strong>：存储账户的实际数据。对于普通账户，可以存储任意应用数据，如代币余额、NFT 元数据等；对于程序账户，存储智能合约的二进制代码，决定账户的行为和功能。</p>
+<p>• <strong>owner (<code>Pubkey</code>)</strong>：
+• <strong>类型</strong>：公钥 (<code>Pubkey</code>) <mark>--solana自定义类型，非rust原生</mark>。
+• <strong>作用</strong>：标识账户的所有者。只有所有者（或被授权的程序）才能修改账户数据或转移账户余额。公钥用于验证交易的签名，确保账户的安全性和控制权。</p>
+<p>• <strong>executable (<code>bool</code>)</strong>：
+• <strong>类型</strong>：布尔值 (<code>bool</code>)。
+• <strong>作用</strong>：标识账户是否为可执行账户。当设置为 <code>true</code> 时，表示该账户存储的是可执行的智能合约；否则，为普通账户，用于存储数据和资产。</p>
+<p>• <strong>rent_epoch (<code>Epoch</code>)</strong>：
+• <strong>类型</strong>：Epoch 类型，表示区块链的一个时间周期<mark>--solana自定义类型，非rust原生</mark>。
+• <strong>作用</strong>：用于管理账户的存储租金。系统根据账户的 <code>rent_epoch</code> 来确定是否需要收取新的租金，或者是否因未支付租金而清除账户数据，以优化存储资源的使用。</p>
+<blockquote>
+<p>rent_epoch ：这是从 Solana 有定期从账户扣除 lamports 的机制时遗留下来的一个旧字段。虽然这个字段在 Account 类型中仍然存在，但由于租金收集已被弃用，它不再被使用。</p>
+</blockquote>
+<h3 id="示例"><a class="header" href="#示例">示例</a></h3>
+<p>假设你有一个 Solana 账户，其 <code>Account</code> 结构体实例可能如下所示：</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let account = Account {
+    lamports: 1_000_000_000, // 1 SOL
+    data: vec![0, 1, 2, 3],  // 存储的数据
+    owner: "G1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF".parse().unwrap(), // 所有者公钥
+    executable: false,       // 普通账户
+    rent_epoch: 123,         // 当前租金周期
+};
+<span class="boring">}</span></code></pre></pre>
+<h2 id="原生程序native-programs"><a class="header" href="#原生程序native-programs">原生程序(Native Programs)</a></h2>
+<blockquote>
+<p>以下大部分为对solana官方文档的翻译，如有谬误请联系指正！</p>
+</blockquote>
+<h4 id="系统程序"><a class="header" href="#系统程序">系统程序：</a></h4>
+<p>1.创建链上所有的新账户</p>
+<p>2.为账户分配数据空间</p>
+<p>3.转移账户所有权到自定义程序中</p>
+<h4 id="bpf加载器"><a class="header" href="#bpf加载器">BPF加载器</a></h4>
+<p>全称Berkeley Packet Filter Loader（伯克利包过滤器加载器），但在Solana中演变为自定义程序的托管者
+1.所有已部署的自定义程序的所有者</p>
+<p>2.处理程序部署和升级</p>
+<ul>
+<li>
+<h3 id="系统程序system-program"><a class="header" href="#系统程序system-program">系统程序(System Program)</a></h3>
+所有在 Solana 上的“钱包”账户都只是由系统程序拥有的账户。这些账户中存储的 lamport 余额代表钱包拥有的 SOL 数量。只有由系统程序拥有的账户才能用作交易费用支付者。
+<img src="BlockChain/Solana/Basic/accountmodel/image-1.png" alt="alt text" /></li>
+<li>
+<h3 id="bpf-loader"><a class="header" href="#bpf-loader">BPF Loader</a></h3>
+BPF 加载器是网络上所有自定义程序的所有者，不包括其他原生程序。它负责部署、升级和执行自定义程序。</li>
+</ul>
+<hr/>
+<h2 id="系统变量账户sysvar-accounts"><a class="header" href="#系统变量账户sysvar-accounts">系统变量账户(Sysvar Accounts)</a></h2>
+<p>Sysvar 账户是位于预定义地址的特殊账户，提供对集群状态数据的访问。这些账户会动态更新关于网络集群的数据。您可以在<a href="https://docs.anza.xyz/runtime/sysvars">此处</a>找到 Sysvar 账户的完整列表。</p>
+<h2 id="自定义程序custom-programs"><a class="header" href="#自定义程序custom-programs">自定义程序(Custom Programs)</a></h2>
+<p>在 Solana 上，“智能合约”被称为程序。程序是包含可执行代码的账户。您可以通过“可执行”标志设置为 true 来识别程序账户。
+程序被部署到网络中，可以被用户和其他程序调用以执行它们的指令。</p>
+<h2 id="程序账户program-account"><a class="header" href="#程序账户program-account">程序账户(Program Account)</a></h2>
+<p>当新的程序目前在 Solana 上部署时，技术上会创建三个独立的账户：</p>
+<ul>
+<li>程序账户：代表链上程序的账户。此账户存储可执行数据账户的地址（存储编译后的程序代码）以及程序的更新权限（有权对程序进行更改的地址）。</li>
+<li>程序可执行数据账户：包含程序可执行代码的账户。</li>
+<li>缓冲账户：在程序部署或升级期间创建的临时账户，用于存储程序的执行代码。成功部署后，代码将被移动到程序执行数据账户，缓冲账户将被关闭。</li>
+</ul>
+<p>例如，以下是 Token Extensions Program Account 及其对应的 Program Executable Data Account 在 Solana Explorer 中的链接。
+<img src="BlockChain/Solana/Basic/accountmodel/image-2.png" alt="alt text" />
+为了简单起见，你可以将程序账户视为程序本身。当调用程序的指令时，你指定程序账户的地址（通常称为“程序 ID”）。关于两个独立账户的详细信息主要是为了理解程序是如何部署和升级的。
+<img src="BlockChain/Solana/Basic/accountmodel/image-3.png" alt="alt text" /></p>
+<h2 id="数据账户data-account"><a class="header" href="#数据账户data-account">数据账户(Data Account)</a></h2>
+<p>Solana 上的程序是“无状态的”，这意味着程序账户仅存储可执行代码，不存储用于读取的数据。
+为了维护状态，程序定义指令以创建由程序拥有的单独账户。每个账户都有自己的唯一地址，可以存储程序定义的任何任意数据。
+<img src="BlockChain/Solana/Basic/accountmodel/image-4.png" alt="alt text" />
+注意，只有系统程序可以创建新的账户。一旦系统程序创建了账户，它就可以将新账户的所有权转让给另一个程序。
+换句话说，为自定义程序创建数据账户需要两个步骤：</p>
+<p>1.调用系统程序创建账户，然后将其所有权转让给自定义程序</p>
+<p>2.调用现在拥有账户的自定义程序，然后初始化程序指令定义的账户数据</p>
+<p>这个账户创建过程通常被抽象为单一步骤。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="交易和指令-transactions-and-instructions"><a class="header" href="#交易和指令-transactions-and-instructions">交易和指令 (Transactions and Instructions)</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rust"><a class="header" href="#rust">Rust</a></h1>
 <blockquote>
 <p>引用（摘自Rust权威指南）译者序</p>
@@ -5762,7 +6061,12 @@ fn main() {
 <ul>
 <li>特征类似于java等类语言中的接口，用于给自定义类型或者常见类型变量实现指定的方法</li>
 <li>常见声明如下 <code>pub trait trait1 { fn a(&amp;self)-&gt;Self{};}</code>,常用于声明和定义方法和函数：方法和函数的区别在于 方法中引用变量自身作为参数传入 ，而函数不依赖</li>
-<li>特征变量：从各类变量中抽象出来，仅作为有某一特定特征的变量 调用方式:1. 在函数声明中直接声明，例 <code>fn a(T:&amp;impl Display)</code>  2. Box<dyn Display> 使用智能指针封装并调用。</li>
+<li>特征变量：从各类变量中抽象出来，仅作为有某一特定特征的变量 调用方式:
+<ol>
+<li>在函数声明中直接声明，例 <code>fn a(T:&amp;impl Display)</code></li>
+<li>Box<dyn Display> 使用智能指针封装并调用。</li>
+</ol>
+</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="网络osi模型"><a class="header" href="#网络osi模型">网络OSI模型</a></h1>
 <p>OSI（Open Systems Interconnection，开放系统互连）模型是国际标准化组织（ISO）于1984年提出的网络通信框架，旨在标准化网络体系结构，促进不同系统间的互联互通。它将网络通信划分为七个层次，每层负责特定功能，共同实现数据从发送端到接收端的可靠传输。本文将详细介绍OSI模型的七层结构及其核心职责。</p>

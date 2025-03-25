@@ -19,11 +19,14 @@
     - [PBFT](./BlockChain/General/Consensus/pbft.md)
     - [BFT]() 
     - [HOTSTUFF](./BlockChain/General/Consensus/hotstuff.md)
-  - [技术概览]()
+  - [密码学](./BlockChain/cryptography/cryptography.md)
+    - [ED25519](./BlockChain/cryptography/ED25519/ED25519.md)
+  - [技术概览](./BlockChain/./General/TechGuides/techguides.md)
   - [商机&&危机]()
 - [Ethereum](./BlockChain/Ethereum/ethereum.md)
   - [以太坊基础](./BlockChain/Ethereum/Basic/EthereumBasic.md)
-    
+  - [Ethers]()
+    - [以太坊简单合约交互]()
   - [ERC标准](./BlockChain/Ethereum/ERC/ERC.md)
     - [ERC20](./BlockChain/Ethereum/ERC/ERC20.md)
     - [ERC712](./BlockChain/Ethereum/ERC/ERC712.md)
@@ -33,6 +36,8 @@
     - [EIP3009](./BlockChain/Ethereum/ERC/ERC3009.md)
     - [EIP4626](./BlockChain/Ethereum/ERC/ERC4626.md)
   - [以太坊进阶]()
+    - [Rollup](./BlockChain/Ethereum/Advanced/Rollup.md)
+    - [ZK](./BlockChain/Ethereum/Advanced/ZK.md)
     - [私钥还原](./BlockChain/Ethereum/Advanced/PrivatekeyCovert.md)
 - [Solana]()
 - [Solidity]()
@@ -59,16 +64,17 @@
       - [FiatTokenV2](./BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2/FiatTokenV2.md)
       - [FiatTokenV2_1](./BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2_1/FiatTokenV2_1.md)
       - [FiatTokenV2_2](./BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/FiatTokenV2_2/FiatTokenV2_2.md)
-- [Ethers]()
-  - [以太坊简单合约交互]()
+
 - [Hardhat]()
    - [Hardhat-ignition]()
         - [Hardhat-ignition再次部署问题](./BlockChain/Hardhat/Hardhat-Ignition/redeploy/ignition-redeploy.md)
 - [Foundry](./BlockChain/Foundry/FoundryGuide.md)
   - [基础学习]()
 - [Solana]()
-- [Rollup]()
-- [ZK]()
+  - [基础学习]()
+    - [账户模型](./BlockChain/Solana/Basic/accountmodel/accountmodel.md)
+    - [交易和指令](./BlockChain/Solana/Basic/Transactions&Instructions/transactions&instructions.md)
+
 
 
 ---
