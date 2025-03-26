@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>技术概览</title>
+        <title>RSA</title>
 
 
         <!-- Custom HTML head -->
@@ -155,49 +155,178 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id=""><a class="header" href="#"></a></h1>
-<h2 id="引导"><a class="header" href="#引导">引导</a></h2>
-<p>✔️❌标志文章更新时刻仍在维护</p>
-<h3 id="市值记录"><a class="header" href="#市值记录">市值记录</a></h3>
-<h3 id="区块链开发部署工具"><a class="header" href="#区块链开发部署工具">区块链开发部署工具</a></h3>
-<h4 id="hardhat"><a class="header" href="#hardhat">✔️<a href="https://hardhat.org/">hardhat</a></a></h4>
+                        <h1 id="rsa-加密算法"><a class="header" href="#rsa-加密算法">RSA 加密算法</a></h1>
+<h2 id="相关链接"><a class="header" href="#相关链接">相关链接</a></h2>
 <ul>
-<li>从开发到部署全覆盖的工具，内置hardhat node等内部测试链。</li>
-<li>工具全面但相对比较臃肿，类似hardhat-ethers、hardhat-viem等包均涉及，想将大部分内容包含进生态中。</li>
-<li>基础的开发部署命令例如hardhat deploy等已经具备部署能力，又有hardhat ignition这类新加入的工具提供同样的效果，增加链上合约管理等功能。工具之间同质化较麻烦。</li>
+<li>
+<p><a href="https://baike.baidu.com/item/RSA%E7%AE%97%E6%B3%95/263310">百度百科</a></p>
+</li>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/450180396">知乎</a></p>
+</li>
 </ul>
-<h4 id="foundry-登链社区中文翻译"><a class="header" href="#foundry-登链社区中文翻译">✔️<a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">Foundry-登链社区中文翻译</a></a></h4>
+<p>RSA（Rivest-Shamir-Adleman）是一种非对称加密算法，由 Ron Rivest、Adi Shamir 和 Leonard Adleman 在 1977 年提出。它是目前最广泛使用的公钥加密算法之一。</p>
+<h2 id="基本原理"><a class="header" href="#基本原理">基本原理</a></h2>
+<p>RSA 的安全性基于大数分解的困难性。具体来说，它依赖于以下数学原理：</p>
+<ol>
+<li>欧拉函数：对于两个互质的正整数 p 和 q，有 φ(pq) = (p-1)(q-1)</li>
+<li>欧拉定理：如果 a 和 n 互质，则 a^φ(n) ≡ 1 (mod n)</li>
+<li>大数分解的困难性：将一个大数分解为其质因数的乘积在计算上是困难的</li>
+</ol>
+<h2 id="密钥生成过程"><a class="header" href="#密钥生成过程">密钥生成过程</a></h2>
+<ol>
+<li>选择两个大素数 p 和 q</li>
+<li>计算 n = p × q</li>
+<li>计算欧拉函数 φ(n) = (p-1)(q-1)</li>
+<li>选择一个与 φ(n) 互质的整数 e（通常选择 65537）</li>
+<li>计算 e 关于 φ(n) 的模反元素 d，即满足 e × d ≡ 1 (mod φ(n))</li>
+<li>公钥为 (n, e)，私钥为 (n, d)</li>
+</ol>
+<h2 id="加密和解密过程"><a class="header" href="#加密和解密过程">加密和解密过程</a></h2>
+<h3 id="加密"><a class="header" href="#加密">加密</a></h3>
+<p>对于明文 M，密文 C 的计算公式为：
+C = M^e mod n</p>
+<h3 id="解密"><a class="header" href="#解密">解密</a></h3>
+<p>对于密文 C，明文 M 的计算公式为：
+M = C^d mod n</p>
+<h2 id="安全性考虑"><a class="header" href="#安全性考虑">安全性考虑</a></h2>
+<ol>
+<li>密钥长度：现代应用中通常使用 2048 位或更长的密钥</li>
+<li>素数选择：p 和 q 应该足够大且随机</li>
+<li>填充方案：实际应用中需要使用适当的填充方案（如 PKCS#1）</li>
+<li>侧信道攻击防护：实现时需要考虑时序攻击等侧信道攻击</li>
+</ol>
+<h2 id="应用场景"><a class="header" href="#应用场景">应用场景</a></h2>
+<ol>
+<li>数字签名</li>
+<li>安全通信（如 HTTPS）</li>
+<li>软件分发</li>
+<li>数字证书</li>
+<li>安全电子邮件</li>
+</ol>
+<h2 id="优缺点"><a class="header" href="#优缺点">优缺点</a></h2>
+<h3 id="优点"><a class="header" href="#优点">优点</a></h3>
 <ul>
-<li>后起之秀，工具集健全，目前没有过于臃肿。</li>
+<li>安全性高</li>
+<li>应用广泛</li>
+<li>支持数字签名</li>
+<li>密钥分发方便</li>
 </ul>
-<h3 id="区块链交互工具"><a class="header" href="#区块链交互工具">区块链交互工具</a></h3>
-<h4 id="web3js"><a class="header" href="#web3js">❌<s><a href="https://docs.web3js.org/">web3.js</a></s></a></h4>
+<h3 id="缺点"><a class="header" href="#缺点">缺点</a></h3>
 <ul>
-<li>当前使用量最高的交互工具，大量的开发项目使用此库进行开发</li>
-<li>doc文档丰富且全面，指引较多</li>
-<li>截止2025.3.4号已经停更，详情可见<a href="https://blog.chainsafe.io/web3-js-sunset/">ChainSafe</a></li>
+<li>计算速度较慢</li>
+<li>密钥长度较长</li>
+<li>不适合加密大量数据</li>
+<li>需要妥善保管私钥</li>
 </ul>
-<h4 id="ethersjs"><a class="header" href="#ethersjs">✔️<a href="https://ethers.org/">ethers.js</a></a></h4>
-<ul>
-<li>截止2025.3.25仍在更新的交互工具</li>
-<li>doc内容偏应用，没有太多说明</li>
-</ul>
-<h4 id="viem"><a class="header" href="#viem">✔️<a href="https://viem.sh/">viem</a></a></h4>
-<ul>
-<li>截止2025.3.25仍在更新的交互工具</li>
-<li>性能不错，<a href="https://viem.sh/docs/introduction#performance">相关对比测试</a>。暂未发现第三方的实验数据，按照官方文档看来处理交互数据速度极快，似乎相当适合cex/dex高频交易？对于链上追踪聪明钱并短线跟投谋利的公司具有<strong>较强</strong>吸引力。</li>
-<li>ts库，在纯 JavaScript 项目中使用 Viem 时，无法利用 TypeScript 提供的类型检查功能。需要自行确保传递给 Viem 函数的参数类型正确</li>
-</ul>
+<h2 id="代码示例"><a class="header" href="#代码示例">代码示例</a></h2>
+<p>以下是一个 Rust 实现示例。首先需要在 <code>Cargo.toml</code> 中添加依赖：</p>
+<pre><code class="language-toml">[dependencies]
+num-bigint = "0.4"
+num-traits = "0.2"
+</code></pre>
+<p>然后是 Rust 实现代码：</p>
+<pre><pre class="playground"><code class="language-rust">use num_bigint::{BigInt, Sign};
+use num_traits::{One, Zero};
+
+fn generate_key_pair(p: u64, q: u64) -&gt; ((BigInt, BigInt), (BigInt, BigInt)) {
+    // 将输入转换为 BigInt
+    let p = BigInt::from(p);
+    let q = BigInt::from(q);
+    
+    // 计算 n = p * q
+    let n = &amp;p * &amp;q;
+    
+    // 计算 φ(n) = (p-1)(q-1)
+    let phi = (&amp;p - BigInt::one()) * (&amp;q - BigInt::one());
+    
+    // 选择公钥 e (通常使用 65537)
+    let e = BigInt::from(65537u64);
+    
+    // 计算私钥 d = e^(-1) mod φ(n)
+    let d = mod_inverse(&amp;e, &amp;phi).unwrap();
+    
+    ((n.clone(), e), (n, d))
+}
+
+fn encrypt(message: u64, public_key: &amp;(BigInt, BigInt)) -&gt; BigInt {
+    let (n, e) = public_key;
+    let m = BigInt::from(message);
+    
+    // 计算 C = M^e mod n
+    m.modpow(e, n)
+}
+
+fn decrypt(ciphertext: &amp;BigInt, private_key: &amp;(BigInt, BigInt)) -&gt; BigInt {
+    let (n, d) = private_key;
+    
+    // 计算 M = C^d mod n
+    ciphertext.modpow(d, n)
+}
+
+// 计算模反元素
+fn mod_inverse(a: &amp;BigInt, m: &amp;BigInt) -&gt; Option&lt;BigInt&gt; {
+    let mut t = BigInt::zero();
+    let mut newt = BigInt::one();
+    let mut r = m.clone();
+    let mut newr = a.clone();
+    
+    while !newr.is_zero() {
+        let quotient = &amp;r / &amp;newr;
+        let temp = newt.clone();
+        newt = t - &amp;quotient * &amp;temp;
+        t = temp;
+        
+        let temp = newr.clone();
+        newr = r - &amp;quotient * &amp;temp;
+        r = temp;
+    }
+    
+    if r &gt; BigInt::one() {
+        None
+    } else {
+        if t &lt; BigInt::zero() {
+            t = t + m;
+        }
+        Some(t)
+    }
+}
+
+fn main() {
+    // 示例使用（注意：实际应用中应使用更大的素数）
+    let p = 61u64;
+    let q = 53u64;
+    
+    let (public_key, private_key) = generate_key_pair(p, q);
+    
+    let message = 42u64;
+    let ciphertext = encrypt(message, &amp;public_key);
+    let decrypted = decrypt(&amp;ciphertext, &amp;private_key);
+    
+    println!("原始消息: {}", message);
+    println!("加密后: {}", ciphertext);
+    println!("解密后: {}", decrypted);
+}</code></pre></pre>
+<h2 id="最佳实践"><a class="header" href="#最佳实践">最佳实践</a></h2>
+<ol>
+<li>使用足够长的密钥（至少 2048 位）</li>
+<li>使用安全的随机数生成器</li>
+<li>实现适当的填充方案</li>
+<li>定期更新密钥</li>
+<li>使用经过验证的密码库</li>
+<li>注意密钥的安全存储</li>
+<li>考虑使用混合加密系统（RSA + 对称加密）</li>
+</ol>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/cryptography/RSA/RSA.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/cryptography/ED25519/ED25519.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/./General/TechGuides/techguides.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -207,11 +336,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/cryptography/RSA/RSA.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/cryptography/ED25519/ED25519.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ethereum.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/./General/TechGuides/techguides.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
