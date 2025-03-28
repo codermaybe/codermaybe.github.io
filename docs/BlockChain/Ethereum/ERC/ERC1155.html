@@ -156,6 +156,433 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="eip1155"><a class="header" href="#eip1155">EIP1155</a></h1>
+<p><a href="https://ethereum.org/zh/developers/docs/standards/tokens/erc-1155/">官方文档</a>
+<a href="https://github.com/ethereum/ERCs/blob/master/ERCS/erc-1155.md">官方开发文档</a></p>
+<p>ERC-1155 是一种以太坊代币标准，它定义了一种智能合约接口，可以管理多种代币类型。与 ERC-721（非同质化代币）和 ERC-20（同质化代币）不同，ERC-1155 允许在一个智能合约中同时处理这两种类型的代币，甚至还支持“半同质化”代币。</p>
+<p><strong>ERC-1155 的关键特性：</strong></p>
+<ul>
+<li><strong>多重代币支持：</strong>
+<ul>
+<li>ERC-1155 合约可以管理多种代币类型，包括：
+<ul>
+<li>同质化代币（如游戏中的金币或虚拟货币）</li>
+<li>非同质化代币（如独特的游戏道具或数字艺术品）</li>
+<li>半同质化代币（例如，一定数量的游戏门票，这些门票具有相同的属性，但是总数有限）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>批量转移：</strong>
+<ul>
+<li>ERC-1155 允许一次交易转移多种代币，从而显著提高了效率并降低了 gas 成本。</li>
+</ul>
+</li>
+<li><strong>高效性：</strong>
+<ul>
+<li>通过共享相同的合约逻辑，ERC-1155 减少了部署和管理多个合约的需要，从而节省了 gas 费用。</li>
+</ul>
+</li>
+<li><strong>元数据 URI：</strong>
+<ul>
+<li>ERC-1155 定义了一种标准的方法来存储代币的元数据（如名称、描述和图像），从而简化了数字资产的管理和显示。</li>
+</ul>
+</li>
+<li><strong>安全转移：</strong>
+<ul>
+<li>ERC-1155定义了安全转移代币的机制，避免了代币意外丢失或者被盗的情况。</li>
+</ul>
+</li>
+</ul>
+<p><strong>ERC-1155 的应用场景：</strong></p>
+<ul>
+<li><strong>游戏：</strong>
+<ul>
+<li>管理游戏中的各种资产，如道具、角色和货币。</li>
+</ul>
+</li>
+<li><strong>数字艺术品：</strong>
+<ul>
+<li>表示限量版数字艺术品或收藏品。</li>
+</ul>
+</li>
+<li><strong>供应链管理：</strong>
+<ul>
+<li>跟踪和管理供应链中的各种资产。</li>
+</ul>
+</li>
+<li><strong>票务：</strong>
+<ul>
+<li>管理活动门票，优惠券等等。</li>
+</ul>
+</li>
+</ul>
+<p><strong>ERC-1155 的优势：</strong></p>
+<ul>
+<li>提高了代币管理的灵活性和效率。</li>
+<li>降低了交易成本。</li>
+<li>简化了数字资产的开发和集成。</li>
+</ul>
+<p><strong>ERC-1155 方法：</strong></p>
+<ul>
+<li><strong><code>balanceOf(address account, uint256 id)</code>:</strong>
+<ul>
+<li>查询指定账户拥有的指定 ID 的代币数量。</li>
+</ul>
+</li>
+<li><strong><code>balanceOfBatch(address[] accounts, uint256[] ids)</code>:</strong>
+<ul>
+<li>批量查询多个账户拥有的多个 ID 的代币数量。</li>
+</ul>
+</li>
+<li><strong><code>safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)</code>:</strong>
+<ul>
+<li>安全地将指定数量的指定 ID 的代币从一个账户转移到另一个账户。</li>
+</ul>
+</li>
+<li><strong><code>safeBatchTransferFrom(address from, address to, uint256[] ids, uint256[] amounts, bytes data)</code>:</strong>
+<ul>
+<li>安全地批量将多个 ID 的代币从一个账户转移到另一个账户。</li>
+</ul>
+</li>
+<li><strong><code>setApprovalForAll(address operator, bool approved)</code>:</strong>
+<ul>
+<li>允许或禁止指定操作员代表调用者管理其所有代币。</li>
+</ul>
+</li>
+<li><strong><code>isApprovedForAll(address account, address operator)</code>:</strong>
+<ul>
+<li>查询指定操作员是否被授权代表指定账户管理其所有代币。</li>
+</ul>
+</li>
+</ul>
+<p><strong>ERC-1155 事件：</strong></p>
+<ul>
+<li><strong><code>TransferSingle(address operator, address from, address to, uint256 id, uint256 value)</code>:</strong>
+<ul>
+<li>当单个代币被转移时发出。</li>
+</ul>
+</li>
+<li><strong><code>TransferBatch(address operator, address from, address to, uint256[] ids, uint256[] values)</code>:</strong>
+<ul>
+<li>当多个代币被批量转移时发出。</li>
+</ul>
+</li>
+<li><strong><code>ApprovalForAll(address operator, address account, bool value)</code>:</strong>
+<ul>
+<li>当操作员的授权状态发生变化时发出。</li>
+</ul>
+</li>
+<li><strong><code>URI(string value, uint256 id)</code>:</strong>
+<ul>
+<li>当代币的 URI（统一资源标识符）发生变化时发出。URI 通常指向包含代币元数据的 JSON 文件。</li>
+</ul>
+</li>
+</ul>
+<p><strong>关键概念：</strong></p>
+<ul>
+<li><strong>ID：</strong>
+<ul>
+<li>用于唯一标识 ERC-1155 合约中不同代币的标识符。</li>
+</ul>
+</li>
+<li><strong>Amount：</strong>
+<ul>
+<li>表示要转移或查询的代币数量。</li>
+</ul>
+</li>
+<li><strong>Operator：</strong>
+<ul>
+<li>被授权代表账户管理代币的地址。</li>
+</ul>
+</li>
+<li><strong>URI：</strong>
+<ul>
+<li>统一资源标识符，指向代币元数据。</li>
+</ul>
+</li>
+<li><strong>元数据：</strong>
+<ul>
+<li>对tokenId的描述，通常包括名称，描述，图片url等等信息。</li>
+</ul>
+</li>
+</ul>
+<pre><code class="language-json">[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "accounts",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256[]",
+        "name": "ids",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "balanceOfBatch",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+    {
+    "inputs": [
+        {
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+        },
+        {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        },
+        {
+            "internalType": "uint256[]",
+            "name": "ids",
+            "type": "uint256[]"
+        },
+        {
+            "internalType": "uint256[]",
+            "name": "amounts",
+            "type": "uint256[]"
+        },
+        {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+        }
+    ],
+    "name": "safeBatchTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+    {
+    "inputs": [
+        {
+            "internalType": "address",
+            "name": "from",
+            "type": "address"
+        },
+        {
+            "internalType": "address",
+            "name": "to",
+            "type": "address"
+        },
+        {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+        },
+        {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+        },
+        {
+            "internalType": "bytes",
+            "name": "data",
+            "type": "bytes"
+        }
+    ],
+    "name": "safeTransferFrom",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
+    "name": "setApprovalForAll",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "isApprovedForAll",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "ids",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "values",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "TransferBatch",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "TransferSingle",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "operator",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "bool",
+                "name": "value",
+                "type": "bool"
+            }
+        ],
+        "name": "ApprovalForAll",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "value",
+                "type": "string"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "id",
+                "type": "uint256"
+            }
+        ],
+        "name": "URI",
+        "type": "event"
+    }
+]
+</code></pre>
 
                     </main>
 
