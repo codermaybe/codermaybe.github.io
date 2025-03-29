@@ -5,6 +5,9 @@
 ### **1. 金融领域深化应用（核心方向）**
 
 - **去中心化金融（DeFi）**：基于以太坊等公链构建借贷、交易、衍生品平台，2023年DeFi总锁仓量已突破千亿美元。
+ #### [Uniswap]([app.uni](https://app.uniswap.org/))
+ <iframe src="https://app.uniswap.org/" width="100%" height="800" frameborder="10"></iframe>
+
 - **供应链金融**：通过区块链实现多方信息透明共享，降低信任成本，解决中小企业融资难题。
 - **跨境支付与结算**：如瑞波币（Ripple）通过联盟链提升跨境支付效率，减少中间环节费用。
 - **数字资产证券化**：利用智能合约实现资产Token化，提升流动性，典型案例如房地产和艺术品投资。
@@ -27,6 +30,9 @@
 
 ### **4. 技术创新与生态扩展**
 - **跨链技术**：解决多链互通问题，Polkadot、Cosmos等项目推动跨链协议发展，支撑价值互联网构建。
+#### [cosmos sdk](https://cosmos.network/)
+<iframe src="https://cosmos.network/" width="100%" height="800" frameborder="10"></iframe>
+
 - **Layer2扩容方案**：如Optimism、zkSync通过Rollup技术提升以太坊交易吞吐量，降低Gas费用。
 - **隐私计算结合**：零知识证明（ZKP）与同态加密技术增强交易隐私性，应用于匿名币（如Zcash）和合规金融场景。
 
