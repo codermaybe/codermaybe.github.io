@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>USDC_V2 源码解析</title>
+        <title>闭包</title>
 
 
         <!-- Custom HTML head -->
@@ -12,32 +12,32 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="../../../../../../favicon.svg">
-        <link rel="shortcut icon" href="../../../../../../favicon.png">
-        <link rel="stylesheet" href="../../../../../../css/variables.css">
-        <link rel="stylesheet" href="../../../../../../css/general.css">
-        <link rel="stylesheet" href="../../../../../../css/chrome.css">
-        <link rel="stylesheet" href="../../../../../../css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="../../../../../../FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="../../../../../../fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="../../../../../../highlight.css">
-        <link rel="stylesheet" href="../../../../../../tomorrow-night.css">
-        <link rel="stylesheet" href="../../../../../../ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "../../../../../../";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "rust";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../../../../../toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -89,7 +89,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="../../../../../../toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -123,7 +123,7 @@
                     <h1 class="menu-title"></h1>
 
                     <div class="right-buttons">
-                        <a href="../../../../../../print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
@@ -155,34 +155,70 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="usdc_v2源码解析"><a class="header" href="#usdc_v2源码解析">USDC_V2源码解析</a></h1>
-<p>V2设计结构
-<img src="USDCV2.jpg" alt="alt text" /></p>
-<h2 id="逐模块分析"><a class="header" href="#逐模块分析">逐模块分析</a></h2>
-<h3 id="abstractfiattokenv2sol"><a class="header" href="#abstractfiattokenv2sol">AbstractFiatTokenV2.sol</a></h3>
-<p><a href="./sourcecode/AbstractFiatTokenV2/AbstractFiatTokenV2.html">AbstractFiatTokenV2</a></p>
-<h3 id="eip712domainsol"><a class="header" href="#eip712domainsol">EIP712Domain.sol</a></h3>
-<p><a href="./sourcecode/EIP712Domian/EIP712Domain.html">EIP712Domain</a></p>
-<h3 id="eip2612sol"><a class="header" href="#eip2612sol">EIP2612.sol</a></h3>
-<p><a href="./sourcecode/EIP2612/EIP2612.html">EIP2612</a></p>
-<h3 id="eip3009sol"><a class="header" href="#eip3009sol">EIP3009.sol</a></h3>
-<p><a href="./sourcecode/EIP3009/EIP3009.html">EIP3009</a></p>
-<h3 id="fiattokenv2sol--重要"><a class="header" href="#fiattokenv2sol--重要">FiatTokenV2.sol  (重要)</a></h3>
-<p><a href="./sourcecode/FiatTokenV2/FiatTokenV2.html">FiatTokenV2</a></p>
-<h3 id="fiattokenv2_1sol-重要"><a class="header" href="#fiattokenv2_1sol-重要">FiatTokenV2_1.sol （重要）</a></h3>
-<p><a href="./sourcecode/FiatTokenV2_1/FiatTokenV2_1.html">FiatTokenV2_1</a></p>
-<h3 id="fiattokenv2_2sol-重要"><a class="header" href="#fiattokenv2_2sol-重要">FiatTokenV2_2.sol (重要)</a></h3>
-<p><a href="./sourcecode/FiatTokenV2_2/FiatTokenV2_2.html">FiatTokenV2_2</a></p>
+                        <h1 id="闭包"><a class="header" href="#闭包">闭包</a></h1>
+<ul>
+<li>
+<p>闭包是一种特殊的匿名函数，rust 中声明形式为|x|{x},或者|x|-&gt;{x};前段部分|x|为参数部分，代表传入参数 x。后段部分{}代表函数体，示例中为返回 x 的值。</p>
+</li>
+<li>
+<p>可以手动声明闭包的变量类型(推荐)，如 |x:i32|{y:f64},当然，编译器的功能也是很强大的,很多情况下会自行推断</p>
+</li>
+</ul>
+<p>以下展示闭包的基本用法</p>
+<p>正确用法</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
+    println!("{}",x(1,2));
+}</code></pre></pre>
+<ul>
+<li>当 rust 函数中第一次调用闭包时，此闭包的的参数类型会被确定下来。(当然，配合特征变量可以实现对符合特征的变量做统一操作)
+错误用法</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
+    println!("{}",x(1,2));
+    println!("{}",x(1.0,2.0));
+}</code></pre></pre>
+<blockquote>
+<p>这里的闭包被编译器检查后认定是|a:i32,b:i32|-&gt;i32，所以无法再接受 f64 类型的参数。而且编译器在此情况下不会将两个参数类型一起考虑，将变量类型归类为特征变量。后续添加特殊实现方法，让闭包可以支持多种类型。</p>
+</blockquote>
+<ul>
+<li>与普通函数仅能接收传入的指定参数不同，闭包可以捕获其所在环境中的变量，这些变量可以在闭包内部使用，也可以在闭包外部修改。</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    let outside = 1;
+    let x =|a|{println!("{}",outside+a)};
+    x(1);
+}</code></pre></pre>
+<ul>
+<li>闭包能捕获的范围是什么:当前闭包声明函数出现之前的变量。</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    //这里改变声明顺序，然后报错
+    let x =|a|{println!("{}",outside+a)};
+    let outside = 1;
+    x(1);
+}</code></pre></pre>
+<p>闭包声明本身这条语句呢，如果使用 let 语句让 x 重新绑定变量值会发生什么:x 被覆盖，输出的 x 为临时声明的变量 5</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = || {
+        let x = 5; //x被覆盖
+        let y: i32 = 6; //正常是声明
+        println!("{}", x);
+        println!("{}", y);
+    };
+    x();
+}</code></pre></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../Rust/Basic/generics.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/AbstractFiatTokenV2/AbstractFiatTokenV2.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../Network/Model/OSI.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -192,11 +228,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V1.1/sourcecode/Rescuable/Rescuable.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../Rust/Basic/generics.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/USDC/V2/sourcecode/AbstractFiatTokenV2/AbstractFiatTokenV2.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../Network/Model/OSI.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -227,13 +263,13 @@
         </script>
 
 
-        <script src="../../../../../../elasticlunr.min.js"></script>
-        <script src="../../../../../../mark.min.js"></script>
-        <script src="../../../../../../searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="../../../../../../clipboard.min.js"></script>
-        <script src="../../../../../../highlight.js"></script>
-        <script src="../../../../../../book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

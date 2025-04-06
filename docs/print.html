@@ -1862,6 +1862,71 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <h1 id="如何调用任意erc20合约"><a class="header" href="#如何调用任意erc20合约">如何调用任意ERC20合约</a></h1>
 <p>详见github项目<a href="https://github.com/codermaybe/BlockChain_InteractTools">BlockChain_InteractTools</a></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc712"><a class="header" href="#erc712">ERC712</a></h1>
+<p><a href="https://learnblockchain.cn/2019/04/24/token-EIP712/">登链社区</a></p>
+<p>在以太坊生态系统中，链下签名是一种重要的优化手段，它允许用户在不直接发送交易到区块链的情况下签署消息，从而节省 Gas 费用并提高效率。然而，在 ERC-712 标准出现之前，各种应用在实现链下签名时缺乏统一的规范，导致用户体验不佳，并且存在潜在的安全风险。ERC-712 的诞生正是为了解决这些问题，它为结构化数据的链下签名提供了一个明确且标准化的框架。</p>
+<p><strong>ERC-712 的核心目标：提升用户体验和安全性</strong></p>
+<p>ERC-712 的主要目标在于：</p>
+<ul>
+<li><strong>提升用户可读性：</strong> 在用户签署消息之前，能够以人类可读的方式清晰地展示他们正在签署的内容，避免盲签带来的风险。</li>
+<li><strong>增强安全性：</strong> 通过引入类型化的结构化数据和明确的签名域，降低恶意应用伪造签名的可能性。</li>
+<li><strong>实现标准化：</strong> 为不同的去中心化应用（DApps）提供一个统一的链下签名实现标准，方便钱包等客户端进行集成和支持，提升用户在不同应用间的体验一致性。</li>
+</ul>
+<p><strong>ERC-712 的关键概念</strong></p>
+<p>ERC-712 引入了几个关键概念，共同构成了其标准化框架：</p>
+<ol>
+<li>
+<p><strong>结构化数据 (Structured Data):</strong> ERC-712 允许对复杂的数据结构进行签名，而不仅仅是简单的哈希值。这些数据结构通过定义明确的类型和字段来描述。</p>
+</li>
+<li>
+<p><strong>类型哈希 (Type Hash):</strong> 对于每种结构化数据类型，ERC-712 定义了一种计算其唯一哈希值的方法。这个类型哈希包含了类型的名称和所有字段的名称及类型。</p>
+</li>
+<li>
+<p><strong>域分隔符 (Domain Separator):</strong> 为了防止签名在不同的应用或上下文中被重用，ERC-712 引入了域分隔符。域分隔符是一个包含特定于应用或协议信息的结构化数据，例如合约地址、链 ID 和协议名称。对消息进行签名时，域分隔符的哈希会与消息内容的哈希一起被考虑。</p>
+</li>
+<li>
+<p><strong>主类型 (Primary Type):</strong> 在一个复杂的结构化数据中，会指定一个“主类型”，签名实际上是对这个主类型及其依赖的所有类型进行哈希计算的结果进行签名。</p>
+</li>
+<li>
+<p><strong>编码方案 (Encoding Scheme):</strong> ERC-712 定义了一套标准的编码规则，用于将结构化数据、类型哈希和域分隔符编码成最终的签名消息。</p>
+</li>
+</ol>
+<p><strong>ERC-712 的工作流程</strong></p>
+<p>当一个 DApp 需要用户进行链下签名时，其工作流程通常如下：</p>
+<ol>
+<li>
+<p><strong>构建结构化数据：</strong> DApp 根据需要签署的信息构建一个符合 ERC-712 规范的结构化数据对象。这个对象包含明确的类型定义和具体的数据字段。</p>
+</li>
+<li>
+<p><strong>生成类型哈希：</strong> DApp 根据结构化数据的类型定义，按照 ERC-712 的规则计算出类型哈希。</p>
+</li>
+<li>
+<p><strong>构建域分隔符：</strong> DApp 构建一个包含其应用特定信息的域分隔符结构，并计算其哈希值。</p>
+</li>
+<li>
+<p><strong>编码签名消息：</strong> DApp 将域分隔符哈希、主类型哈希以及编码后的结构化数据按照 ERC-712 定义的规则组合成最终的待签名消息。</p>
+</li>
+<li>
+<p><strong>请求用户签名：</strong> DApp 将编码后的消息发送给用户的钱包。</p>
+</li>
+<li>
+<p><strong>钱包处理和展示：</strong> 遵循 ERC-712 标准的钱包能够解析接收到的消息，根据类型定义和数据字段以人类可读的方式向用户展示他们正在签署的内容，包括应用名称、链 ID 以及具体的交易或操作细节。</p>
+</li>
+<li>
+<p><strong>用户签名：</strong> 用户在确认信息无误后，使用其私钥对编码后的消息进行签名，生成 ECDSA 签名（v, r, s）。</p>
+</li>
+<li>
+<p><strong>链上验证：</strong> DApp 将用户的签名、原始的结构化数据和签名者的地址发送到智能合约。智能合约可以使用 <code>ecrecover</code> 函数结合 ERC-712 的编码规则，重新计算出原始消息的哈希，并验证签名是否由声明的签名者生成。</p>
+</li>
+</ol>
+<p><strong>ERC-712 的优势</strong></p>
+<ul>
+<li><strong>显著提升用户体验：</strong> 用户在签名之前可以清晰地了解他们正在授权的操作，降低了误操作的风险。</li>
+<li><strong>增强安全性：</strong> 类型化的数据和域分隔符有效防止了签名被恶意重用或伪造。</li>
+<li><strong>促进生态系统标准化：</strong> 统一的标准使得钱包和 DApp 之间的集成更加 সহজ，提升了整个以太坊生态系统的互操作性。</li>
+<li><strong>降低开发复杂性：</strong> 开发者可以依赖标准的库和工具来实现 ERC-712 签名，减少了自定义实现的复杂性和潜在错误。</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>ERC-712 不仅仅是一个技术标准，更是提升以太坊用户体验和安全性的重要基石。通过引入结构化数据签名、类型哈希和域分隔符等关键概念，ERC-712 为链下签名提供了一个清晰、安全且标准化的解决方案。随着以太坊生态的不断发展，ERC-712 的重要性将愈发凸显，它将继续赋能开发者构建更加安全和用户友好的去中心化应用。理解和支持 ERC-712 对于所有参与以太坊生态的开发者、用户和钱包提供商来说都至关重要。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc721概念"><a class="header" href="#erc721概念">ERC721概念</a></h1>
 <p><a href="https://ethereum.org/zh/developers/docs/standards/tokens/erc-721/">推荐链接-ethereum</a></p>
 <p>NFT的标准实现，作为同质化代币的合约标准。具有存储元数据及拥有者，以及对应的查询、管理功能。</p>
@@ -2197,6 +2262,482 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
     ],
     "stateMutability": "view",
     "type": "function"
+  }
+]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc-777-token-standard"><a class="header" href="#erc-777-token-standard">ERC-777: Token Standard</a></h1>
+<h2 id="与-erc-20-的异同点"><a class="header" href="#与-erc-20-的异同点">与 ERC-20 的异同点</a></h2>
+<h3 id="相同点"><a class="header" href="#相同点">相同点</a></h3>
+<ol>
+<li>
+<p><strong>基本功能</strong>：</p>
+<ul>
+<li>都支持代币的转账和余额查询</li>
+<li>都实现了代币的基本属性（名称、符号、精度等）</li>
+<li>都支持代币的授权机制</li>
+</ul>
+</li>
+<li>
+<p><strong>兼容性</strong>：</p>
+<ul>
+<li>ERC-777 完全兼容 ERC-20</li>
+<li>可以通过 ERC-20 接口访问 ERC-777 代币</li>
+<li>支持相同的代币查询方法</li>
+</ul>
+</li>
+</ol>
+<h3 id="不同点"><a class="header" href="#不同点">不同点</a></h3>
+<ol>
+<li>
+<p><strong>授权机制</strong>：</p>
+<ul>
+<li>ERC-20：使用 approve/transferFrom 模式，需要两步操作</li>
+<li>ERC-777：使用操作者（Operator）机制，更灵活且支持批量操作</li>
+</ul>
+</li>
+<li>
+<p><strong>转账通知</strong>：</p>
+<ul>
+<li>ERC-20：无内置通知机制，需要额外的事件监听</li>
+<li>ERC-777：提供内置的钩子函数（tokensReceived/tokensToSend）</li>
+</ul>
+</li>
+<li>
+<p><strong>数据支持</strong>：</p>
+<ul>
+<li>ERC-20：不支持在转账时附加额外数据</li>
+<li>ERC-777：支持在转账时附加任意数据（data 和 operatorData）</li>
+</ul>
+</li>
+<li>
+<p><strong>燃烧机制</strong>：</p>
+<ul>
+<li>ERC-20：无标准燃烧接口，需要自行实现</li>
+<li>ERC-777：提供标准燃烧接口，支持操作者燃烧</li>
+</ul>
+</li>
+<li>
+<p><strong>安全性</strong>：</p>
+<ul>
+<li>ERC-20：存在 approve/transferFrom 的安全隐患</li>
+<li>ERC-777：提供更安全的操作者机制和钩子函数</li>
+</ul>
+</li>
+<li>
+<p><strong>功能扩展</strong>：</p>
+<ul>
+<li>ERC-20：功能相对简单，扩展性有限</li>
+<li>ERC-777：支持更复杂的业务逻辑，扩展性更强</li>
+</ul>
+</li>
+</ol>
+<p>ERC-777 是一个以太坊代币标准，它在 ERC-20 的基础上进行了改进，提供了更高级的功能和更好的安全性。该标准由 Jacques Dafflon、Jordi Baylina 和 Thomas Shababi 于 2017 年 11 月提出。</p>
+<h2 id="标准概述"><a class="header" href="#标准概述">标准概述</a></h2>
+<p>ERC-777 的主要目标是：</p>
+<ol>
+<li>提供更直观的代币操作方式</li>
+<li>改进 ERC-20 的批准机制</li>
+<li>增加代币发送和接收的钩子函数</li>
+<li>保持与 ERC-20 的向后兼容性</li>
+</ol>
+<h2 id="核心接口"><a class="header" href="#核心接口">核心接口</a></h2>
+<pre><code class="language-solidity">interface IERC777 {
+    // 返回代币名称
+    function name() external view returns (string memory);
+
+    // 返回代币符号
+    function symbol() external view returns (string memory);
+
+    // 返回代币精度
+    function granularity() external view returns (uint256);
+
+    // 返回总供应量
+    function totalSupply() external view returns (uint256);
+
+    // 返回账户余额
+    function balanceOf(address holder) external view returns (uint256);
+
+    // 发送代币
+    function send(address recipient, uint256 amount, bytes calldata data) external;
+
+    // 燃烧代币
+    function burn(uint256 amount, bytes calldata data) external;
+
+    // 检查是否是操作者
+    function isOperatorFor(address operator, address tokenHolder) external view returns (bool);
+
+    // 授权操作者
+    function authorizeOperator(address operator) external;
+
+    // 撤销操作者
+    function revokeOperator(address operator) external;
+
+    // 默认操作者发送代币
+    function operatorSend(
+        address sender,
+        address recipient,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+
+    // 默认操作者燃烧代币
+    function operatorBurn(
+        address account,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+}
+
+interface IERC777Recipient {
+    // 代币接收钩子
+    function tokensReceived(
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+}
+
+interface IERC777Sender {
+    // 代币发送钩子
+    function tokensToSend(
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+}
+</code></pre>
+<h2 id="主要特性"><a class="header" href="#主要特性">主要特性</a></h2>
+<ol>
+<li>
+<p><strong>钩子函数</strong>：</p>
+<ul>
+<li><code>tokensReceived</code>：接收代币时的回调</li>
+<li><code>tokensToSend</code>：发送代币时的回调</li>
+<li>允许合约在代币转移时执行自定义逻辑</li>
+</ul>
+</li>
+<li>
+<p><strong>操作者机制</strong>：</p>
+<ul>
+<li>替代 ERC-20 的 approve/transferFrom 模式</li>
+<li>更灵活和安全的授权系统</li>
+<li>支持批量操作</li>
+</ul>
+</li>
+<li>
+<p><strong>数据字段</strong>：</p>
+<ul>
+<li>支持在转账时附加额外数据</li>
+<li>便于实现更复杂的业务逻辑</li>
+</ul>
+</li>
+<li>
+<p><strong>向后兼容性</strong>：</p>
+<ul>
+<li>完全兼容 ERC-20</li>
+<li>可以通过 ERC-20 接口访问</li>
+</ul>
+</li>
+</ol>
+<h2 id="安全考虑"><a class="header" href="#安全考虑">安全考虑</a></h2>
+<ol>
+<li>
+<p><strong>重入攻击防护</strong>：</p>
+<ul>
+<li>钩子函数可能被用于重入攻击</li>
+<li>实现时需要使用重入锁或检查-效果-交互模式</li>
+</ul>
+</li>
+<li>
+<p><strong>操作者权限</strong>：</p>
+<ul>
+<li>需要仔细管理操作者权限</li>
+<li>建议实现操作者白名单机制</li>
+</ul>
+</li>
+<li>
+<p><strong>数据验证</strong>：</p>
+<ul>
+<li>需要验证传入的数据</li>
+<li>防止恶意数据导致合约异常</li>
+</ul>
+</li>
+</ol>
+<h2 id="应用场景"><a class="header" href="#应用场景">应用场景</a></h2>
+<ol>
+<li>
+<p><strong>代币化资产</strong>：</p>
+<ul>
+<li>股票、债券等金融工具</li>
+<li>房地产等实物资产</li>
+</ul>
+</li>
+<li>
+<p><strong>支付系统</strong>：</p>
+<ul>
+<li>自动支付处理</li>
+<li>订阅服务</li>
+</ul>
+</li>
+<li>
+<p><strong>投票系统</strong>：</p>
+<ul>
+<li>代币持有者投票</li>
+<li>治理机制</li>
+</ul>
+</li>
+<li>
+<p><strong>奖励系统</strong>：</p>
+<ul>
+<li>忠诚度计划</li>
+<li>空投分发</li>
+</ul>
+</li>
+</ol>
+<h2 id="最佳实践"><a class="header" href="#最佳实践">最佳实践</a></h2>
+<ol>
+<li>
+<p><strong>实现检查</strong>：</p>
+<ul>
+<li>实现所有必需的功能</li>
+<li>确保符合 ERC-777 标准</li>
+</ul>
+</li>
+<li>
+<p><strong>事件记录</strong>：</p>
+<ul>
+<li>记录所有重要操作</li>
+<li>包括发送、接收、授权等</li>
+</ul>
+</li>
+<li>
+<p><strong>错误处理</strong>：</p>
+<ul>
+<li>提供清晰的错误信息</li>
+<li>使用 revert 而不是 require</li>
+</ul>
+</li>
+<li>
+<p><strong>测试覆盖</strong>：</p>
+<ul>
+<li>编写完整的测试用例</li>
+<li>包括钩子函数和操作者功能</li>
+</ul>
+</li>
+</ol>
+<h2 id="与-erc-20-的区别"><a class="header" href="#与-erc-20-的区别">与 ERC-20 的区别</a></h2>
+<ol>
+<li>
+<p><strong>授权机制</strong>：</p>
+<ul>
+<li>ERC-20：使用 approve/transferFrom</li>
+<li>ERC-777：使用操作者机制</li>
+</ul>
+</li>
+<li>
+<p><strong>转账通知</strong>：</p>
+<ul>
+<li>ERC-20：无通知机制</li>
+<li>ERC-777：提供钩子函数</li>
+</ul>
+</li>
+<li>
+<p><strong>数据支持</strong>：</p>
+<ul>
+<li>ERC-20：不支持额外数据</li>
+<li>ERC-777：支持附加数据</li>
+</ul>
+</li>
+<li>
+<p><strong>燃烧机制</strong>：</p>
+<ul>
+<li>ERC-20：无标准燃烧接口</li>
+<li>ERC-777：提供标准燃烧接口</li>
+</ul>
+</li>
+</ol>
+<p>ERC-777 是一个功能更强大的代币标准，它在保持与 ERC-20 兼容的同时，提供了更灵活和安全的代币操作方式。通过钩子函数和操作者机制，它能够支持更复杂的业务场景，同时提供了更好的安全性保障。在实现时，需要注意安全性、兼容性和用户体验等方面。</p>
+<h2 id="abi-定义"><a class="header" href="#abi-定义">ABI 定义</a></h2>
+<pre><code class="language-json">[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [{ "name": "", "type": "string" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{ "name": "", "type": "string" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "granularity",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [{ "name": "holder", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "recipient", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" }
+    ],
+    "name": "send",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" }
+    ],
+    "name": "burn",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "name": "operator", "type": "address" },
+      { "name": "tokenHolder", "type": "address" }
+    ],
+    "name": "isOperatorFor",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "name": "operator", "type": "address" }],
+    "name": "authorizeOperator",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "name": "operator", "type": "address" }],
+    "name": "revokeOperator",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "sender", "type": "address" },
+      { "name": "recipient", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" },
+      { "name": "operatorData", "type": "bytes" }
+    ],
+    "name": "operatorSend",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "account", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" },
+      { "name": "operatorData", "type": "bytes" }
+    ],
+    "name": "operatorBurn",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "to", "type": "address" },
+      { "indexed": true, "name": "from", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" },
+      { "indexed": false, "name": "data", "type": "bytes" },
+      { "indexed": false, "name": "operatorData", "type": "bytes" }
+    ],
+    "name": "Sent",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "from", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" },
+      { "indexed": false, "name": "data", "type": "bytes" },
+      { "indexed": false, "name": "operatorData", "type": "bytes" }
+    ],
+    "name": "Burned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "tokenHolder", "type": "address" }
+    ],
+    "name": "AuthorizedOperator",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "tokenHolder", "type": "address" }
+    ],
+    "name": "RevokedOperator",
+    "type": "event"
   }
 ]
 </code></pre>
@@ -2630,44 +3171,375 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612"><a class="header" href="#eip2612">EIP2612</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="eip4626"><a class="header" href="#eip4626">EIP4626</a></h1>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
-<p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20提案中approve函数声明</a>提过的一种数据攻击。</p>
-<h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
-<p>在区块链中，**授权竞争攻击（Approval Race Condition）**是一种与代币授权机制（如ERC-20标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
-<hr />
-<h3 id="1-背景erc-20的授权机制"><a class="header" href="#1-背景erc-20的授权机制">1. <strong>背景：ERC-20的授权机制</strong></a></h3>
-<p>在ERC-20代币标准中，<code>approve</code>函数允许用户授权某个地址（通常是智能合约）代表自己花费一定数量的代币。例如：</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc-4626-tokenized-vault-standard"><a class="header" href="#erc-4626-tokenized-vault-standard">ERC-4626: Tokenized Vault Standard</a></h1>
+<p>ERC-4626 是一个以太坊代币化金库（Tokenized Vault）标准，它定义了一个用于代币化金库的接口，这些金库代表对底层代币（如 ERC-20）的份额。该标准由 Joey Santoro 等人于 2022 年 3 月提出。</p>
+<h2 id="标准概述-1"><a class="header" href="#标准概述-1">标准概述</a></h2>
+<p>ERC-4626 的主要目标是标准化代币化金库的接口，使得：</p>
+<ol>
+<li>金库可以统一地表示和管理资产</li>
+<li>集成者可以构建通用的工具来与任何 ERC-4626 金库交互</li>
+<li>用户可以轻松比较不同金库的特性</li>
+</ol>
+<h2 id="核心接口-1"><a class="header" href="#核心接口-1">核心接口</a></h2>
+<pre><code class="language-solidity">interface IERC4626 is IERC20, IERC165 {
+    // 返回底层代币的地址
+    function asset() external view returns (address assetTokenAddress);
+
+    // 返回金库管理的总资产数量
+    function totalAssets() external view returns (uint256 totalManagedAssets);
+
+    // 将资产转换为份额
+    function convertToShares(uint256 assets) external view returns (uint256 shares);
+
+    // 将份额转换为资产
+    function convertToAssets(uint256 shares) external view returns (uint256 assets);
+
+    // 返回用户可以存入的最大资产数量
+    function maxDeposit(address receiver) external view returns (uint256 maxAssets);
+
+    // 返回用户可以铸造的最大份额数量
+    function maxMint(address receiver) external view returns (uint256 maxShares);
+
+    // 返回用户可以提取的最大资产数量
+    function maxWithdraw(address owner) external view returns (uint256 maxAssets);
+
+    // 返回用户可以赎回的最大份额数量
+    function maxRedeem(address owner) external view returns (uint256 maxShares);
+
+    // 预览存款操作将铸造的份额数量
+    function previewDeposit(uint256 assets) external view returns (uint256 shares);
+
+    // 预览铸造操作所需的资产数量
+    function previewMint(uint256 shares) external view returns (uint256 assets);
+
+    // 预览提取操作将赎回的份额数量
+    function previewWithdraw(uint256 assets) external view returns (uint256 shares);
+
+    // 预览赎回操作将提取的资产数量
+    function previewRedeem(uint256 shares) external view returns (uint256 assets);
+
+    // 存款资产并铸造份额
+    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+
+    // 铸造份额
+    function mint(uint256 shares, address receiver) external returns (uint256 assets);
+
+    // 提取资产
+    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
+
+    // 赎回份额
+    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
+}
+</code></pre>
+<h2 id="主要功能-1"><a class="header" href="#主要功能-1">主要功能</a></h2>
+<ol>
+<li>
+<p><strong>资产转换</strong>：</p>
 <ul>
-<li>用户A调用<code>approve(合约地址, 100)</code>，授权某个合约从A的账户中转移100个代币。</li>
+<li><code>convertToShares</code> 和 <code>convertToAssets</code> 用于在资产和份额之间进行转换</li>
+<li>这些函数考虑了金库的费用和滑点</li>
+</ul>
+</li>
+<li>
+<p><strong>存款和铸造</strong>：</p>
+<ul>
+<li><code>deposit</code> 允许用户存入资产并获得相应份额</li>
+<li><code>mint</code> 允许用户直接铸造特定数量的份额</li>
+</ul>
+</li>
+<li>
+<p><strong>提取和赎回</strong>：</p>
+<ul>
+<li><code>withdraw</code> 允许用户提取特定数量的资产</li>
+<li><code>redeem</code> 允许用户赎回特定数量的份额</li>
+</ul>
+</li>
+<li>
+<p><strong>预览功能</strong>：</p>
+<ul>
+<li>提供预览函数来估算操作结果</li>
+<li>帮助用户了解操作的具体影响</li>
+</ul>
+</li>
+</ol>
+<h2 id="安全考虑-1"><a class="header" href="#安全考虑-1">安全考虑</a></h2>
+<ol>
+<li>
+<p><strong>重入攻击防护</strong>：</p>
+<ul>
+<li>实现时需要注意防止重入攻击</li>
+<li>建议使用重入锁或检查-效果-交互模式</li>
+</ul>
+</li>
+<li>
+<p><strong>精度损失</strong>：</p>
+<ul>
+<li>在资产和份额转换时需要注意精度损失</li>
+<li>建议使用足够大的精度（如 18 位小数）</li>
+</ul>
+</li>
+<li>
+<p><strong>权限控制</strong>：</p>
+<ul>
+<li>需要正确实现权限控制</li>
+<li>特别是 <code>withdraw</code> 和 <code>redeem</code> 函数的所有者检查</li>
+</ul>
+</li>
+</ol>
+<h2 id="应用场景-1"><a class="header" href="#应用场景-1">应用场景</a></h2>
+<ol>
+<li>
+<p><strong>收益聚合器</strong>：</p>
+<ul>
+<li>自动将资产分配到最佳收益机会</li>
+<li>用户通过持有金库代币获得收益</li>
+</ul>
+</li>
+<li>
+<p><strong>借贷协议</strong>：</p>
+<ul>
+<li>作为抵押品的代币化表示</li>
+<li>简化借贷流程</li>
+</ul>
+</li>
+<li>
+<p><strong>流动性池</strong>：</p>
+<ul>
+<li>代币化流动性提供者的份额</li>
+<li>便于追踪和交易</li>
+</ul>
+</li>
+<li>
+<p><strong>保险库</strong>：</p>
+<ul>
+<li>代币化保险策略</li>
+<li>便于保险产品的交易和转移</li>
+</ul>
+</li>
+</ol>
+<h2 id="最佳实践-1"><a class="header" href="#最佳实践-1">最佳实践</a></h2>
+<ol>
+<li>
+<p><strong>实现检查</strong>：</p>
+<ul>
+<li>实现所有必需的功能</li>
+<li>确保符合 ERC-165 标准</li>
+</ul>
+</li>
+<li>
+<p><strong>事件记录</strong>：</p>
+<ul>
+<li>记录所有重要操作</li>
+<li>包括存款、提取、铸造和赎回</li>
+</ul>
+</li>
+<li>
+<p><strong>错误处理</strong>：</p>
+<ul>
+<li>提供清晰的错误信息</li>
+<li>使用 revert 而不是 require</li>
+</ul>
+</li>
+<li>
+<p><strong>测试覆盖</strong>：</p>
+<ul>
+<li>编写完整的测试用例</li>
+<li>包括边界条件和错误情况</li>
+</ul>
+</li>
+</ol>
+<h2 id="总结-1"><a class="header" href="#总结-1">总结</a></h2>
+<p>ERC-4626 为代币化金库提供了一个标准化的接口，使得不同协议之间的互操作性成为可能。它简化了金库的集成和使用，同时保持了足够的灵活性以适应各种用例。在实现时，需要注意安全性、精度和用户体验等方面。</p>
+<h2 id="abi-定义-1"><a class="header" href="#abi-定义-1">ABI 定义</a></h2>
+<pre><code class="language-json">[
+  {
+    "inputs": [],
+    "name": "asset",
+    "outputs": [{ "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "totalAssets",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "assets", "type": "uint256" }],
+    "name": "convertToShares",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "shares", "type": "uint256" }],
+    "name": "convertToAssets",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "receiver", "type": "address" }],
+    "name": "maxDeposit",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "receiver", "type": "address" }],
+    "name": "maxMint",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "maxWithdraw",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "owner", "type": "address" }],
+    "name": "maxRedeem",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "assets", "type": "uint256" }],
+    "name": "previewDeposit",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "shares", "type": "uint256" }],
+    "name": "previewMint",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "assets", "type": "uint256" }],
+    "name": "previewWithdraw",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "name": "shares", "type": "uint256" }],
+    "name": "previewRedeem",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "name": "assets", "type": "uint256" },
+      { "name": "receiver", "type": "address" }
+    ],
+    "name": "deposit",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "name": "shares", "type": "uint256" },
+      { "name": "receiver", "type": "address" }
+    ],
+    "name": "mint",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "name": "assets", "type": "uint256" },
+      { "name": "receiver", "type": "address" },
+      { "name": "owner", "type": "address" }
+    ],
+    "name": "withdraw",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "name": "shares", "type": "uint256" },
+      { "name": "receiver", "type": "address" },
+      { "name": "owner", "type": "address" }
+    ],
+    "name": "redeem",
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "caller", "type": "address" },
+      { "indexed": true, "name": "owner", "type": "address" },
+      { "indexed": false, "name": "assets", "type": "uint256" },
+      { "indexed": false, "name": "shares", "type": "uint256" }
+    ],
+    "name": "Deposit",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "caller", "type": "address" },
+      { "indexed": true, "name": "receiver", "type": "address" },
+      { "indexed": true, "name": "owner", "type": "address" },
+      { "indexed": false, "name": "assets", "type": "uint256" },
+      { "indexed": false, "name": "shares", "type": "uint256" }
+    ],
+    "name": "Withdraw",
+    "type": "event"
+  }
+]
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
+<p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20 提案中 approve 函数声明</a>提过的一种数据攻击。</p>
+<h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
+<p>在区块链中，<strong>授权竞争攻击（Approval Race Condition）</strong> 是一种与代币授权机制（如 ERC-20 标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
+<hr />
+<h3 id="1-背景erc-20-的授权机制"><a class="header" href="#1-背景erc-20-的授权机制">1. <strong>背景：ERC-20 的授权机制</strong></a></h3>
+<p>在 ERC-20 代币标准中，<code>approve</code>函数允许用户授权某个地址（通常是智能合约）代表自己花费一定数量的代币。例如：</p>
+<ul>
+<li>用户 A 调用<code>approve(合约地址, 100)</code>，授权某个合约从 A 的账户中转移 100 个代币。</li>
 <li>随后，合约可以通过<code>transferFrom</code>函数执行实际的代币转移。</li>
 </ul>
-<p>这种机制广泛用于DeFi协议、NFT市场等场景。然而，如果用户需要调整授权额度，就会引发潜在的竞争条件问题。</p>
+<p>这种机制广泛用于 DeFi 协议、NFT 市场等场景。然而，如果用户需要调整授权额度，就会引发潜在的竞争条件问题。</p>
 <hr />
 <h3 id="2-授权竞争攻击的原理"><a class="header" href="#2-授权竞争攻击的原理">2. <strong>授权竞争攻击的原理</strong></a></h3>
 <p>授权竞争攻击的核心在于以下步骤：</p>
 <ol>
-<li><strong>初始授权</strong>：用户A已经授权了一个攻击者控制的合约（或恶意DApp）一定的代币额度，比如100个代币。</li>
-<li><strong>用户调整授权</strong>：用户A发现需要更改授权额度（例如从100减少到50，或增加到200），于是调用<code>approve</code>函数发起新交易。</li>
-<li><strong>攻击者抢跑</strong>：攻击者监控区块链的内存池（mempool），发现用户A的新<code>approve</code>交易尚未确认。攻击者在用户交易确认前，迅速提交一笔<code>transferFrom</code>交易，使用旧的授权额度（100个代币）提取代币。</li>
-<li><strong>结果</strong>：用户A的新授权交易最终确认，但攻击者已经利用旧授权偷走了代币。</li>
+<li><strong>初始授权</strong>：用户 A 已经授权了一个攻击者控制的合约（或恶意 DApp）一定的代币额度，比如 100 个代币。</li>
+<li><strong>用户调整授权</strong>：用户 A 发现需要更改授权额度（例如从 100 减少到 50，或增加到 200），于是调用<code>approve</code>函数发起新交易。</li>
+<li><strong>攻击者抢跑</strong>：攻击者监控区块链的内存池（mempool），发现用户 A 的新<code>approve</code>交易尚未确认。攻击者在用户交易确认前，迅速提交一笔<code>transferFrom</code>交易，使用旧的授权额度（100 个代币）提取代币。</li>
+<li><strong>结果</strong>：用户 A 的新授权交易最终确认，但攻击者已经利用旧授权偷走了代币。</li>
 </ol>
 <p>这种攻击利用了区块链交易的<strong>非原子性</strong>（即交易不是瞬间完成，而是需要时间确认）和<strong>公开性</strong>（内存池中的交易对所有人可见）。</p>
 <hr />
 <h3 id="3-攻击流程示例"><a class="header" href="#3-攻击流程示例">3. <strong>攻击流程示例</strong></a></h3>
-<p>假设用户A的代币余额为200，攻击者控制的合约为<code>MaliciousContract</code>：</p>
+<p>假设用户 A 的代币余额为 200，攻击者控制的合约为<code>MaliciousContract</code>：</p>
 <ol>
-<li>用户A调用<code>approve(MaliciousContract, 100)</code>，授权100个代币。</li>
-<li>后来，用户A决定减少授权，调用<code>approve(MaliciousContract, 50)</code>，并等待交易确认。</li>
-<li>攻击者看到内存池中的<code>approve(MaliciousContract, 50)</code>交易，立即调用<code>transferFrom(A, 攻击者地址, 100)</code>，使用旧的授权提取100个代币。</li>
-<li>用户A的<code>approve(MaliciousContract, 50)</code>交易确认，但此时100个代币已被转移，攻击得逞。</li>
+<li>用户 A 调用<code>approve(MaliciousContract, 100)</code>，授权 100 个代币。</li>
+<li>后来，用户 A 决定减少授权，调用<code>approve(MaliciousContract, 50)</code>，并等待交易确认。</li>
+<li>攻击者看到内存池中的<code>approve(MaliciousContract, 50)</code>交易，立即调用<code>transferFrom(A, 攻击者地址, 100)</code>，使用旧的授权提取 100 个代币。</li>
+<li>用户 A 的<code>approve(MaliciousContract, 50)</code>交易确认，但此时 100 个代币已被转移，攻击得逞。</li>
 </ol>
 <hr />
 <h3 id="4-为什么会发生"><a class="header" href="#4-为什么会发生">4. <strong>为什么会发生？</strong></a></h3>
 <ul>
 <li><strong>授权不是原子操作</strong>：<code>approve</code>函数只更新授权额度，而不撤销之前的转移能力。在新授权生效前，旧授权仍然有效。</li>
-<li><strong>内存池透明</strong>：攻击者可以实时监控未确认交易，并抢先提交自己的交易（通过提高Gas费用实现“抢跑”）。</li>
-<li><strong>用户行为</strong>：许多用户直接调整授权额度，而不是先将授权设为0再设为新值。</li>
+<li><strong>内存池透明</strong>：攻击者可以实时监控未确认交易，并抢先提交自己的交易（通过提高 Gas 费用实现“抢跑”）。</li>
+<li><strong>用户行为</strong>：许多用户直接调整授权额度，而不是先将授权设为 0 再设为新值。</li>
 </ul>
 <hr />
 <h3 id="5-防范措施"><a class="header" href="#5-防范措施">5. <strong>防范措施</strong></a></h3>
@@ -2680,15 +3552,15 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 </ol>
 </li>
 <li>这种方法确保旧授权被撤销，消除竞争窗口。</li>
-<li><mark>注意</mark><code>approve(合约地址, 0)</code>同样<b>无法完全避免攻击者抢跑的问题</b>。交易未确认前，旧授权仍然有效，攻击者可以抢先调用transferFrom。
+<li><mark>注意</mark><code>approve(合约地址, 0)</code>同样<b>无法完全避免攻击者抢跑的问题</b>。交易未确认前，旧授权仍然有效，攻击者可以抢先调用 transferFrom。
 它仅能保证新授权顺利执行：一旦清零交易确认，旧授权被撤销，新授权可以在安全状态下生效。
 新授权后再次被转走的风险：取决于后续操作和合约的可信度。如果用户授权给了恶意合约，新授权的代币仍可能被转走，但这属于另一类问题（非竞争攻击）。</li>
 </ul>
 <h4 id="2使用increaseallowance和decreaseallowance"><a class="header" href="#2使用increaseallowance和decreaseallowance">（2）<strong>使用<code>increaseAllowance</code>和<code>decreaseAllowance</code></strong></a></h4>
 <ul>
-<li>ERC-20扩展函数<code>increaseAllowance</code>和<code>decreaseAllowance</code>允许用户增量调整授权，而无需直接覆盖旧值。</li>
-<li>例如：<code>increaseAllowance(合约地址, 50)</code>增加50个代币的授权，而不是直接调用<code>approve</code>。</li>
-<li>实现示例如USDC，可以查看本博客源码解析篇<mark>FiatTokenV2_2</mark></li>
+<li>ERC-20 扩展函数<code>increaseAllowance</code>和<code>decreaseAllowance</code>允许用户增量调整授权，而无需直接覆盖旧值。</li>
+<li>例如：<code>increaseAllowance(合约地址, 50)</code>增加 50 个代币的授权，而不是直接调用<code>approve</code>。</li>
+<li>实现示例如 USDC，可以查看本博客源码解析篇<mark>FiatTokenV2_2</mark></li>
 </ul>
 <h4 id="3合约端的保护"><a class="header" href="#3合约端的保护">（3）<strong>合约端的保护</strong></a></h4>
 <ul>
@@ -2698,27 +3570,286 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
 <h4 id="4用户教育"><a class="header" href="#4用户教育">（4）<strong>用户教育</strong></a></h4>
 <ul>
 <li>提醒用户谨慎授权，尤其是对未知合约，避免直接调整授权额度。</li>
-<li>使用支持“撤销授权”的钱包（如MetaMask），定期检查并清理不必要的授权。</li>
+<li>使用支持“撤销授权”的钱包（如 MetaMask），定期检查并清理不必要的授权。</li>
 </ul>
-<h4 id="5gas竞争应对"><a class="header" href="#5gas竞争应对">（5）<strong>Gas竞争应对</strong></a></h4>
+<h4 id="5gas-竞争应对"><a class="header" href="#5gas-竞争应对">（5）<strong>Gas 竞争应对</strong></a></h4>
 <ul>
-<li>用户可以提高Gas费用，确保自己的<code>approve</code>交易尽快确认，减少攻击者的抢跑机会。</li>
+<li>用户可以提高 Gas 费用，确保自己的<code>approve</code>交易尽快确认，减少攻击者的抢跑机会。</li>
 </ul>
 <hr />
 <h3 id="6-实际案例"><a class="header" href="#6-实际案例">6. <strong>实际案例</strong></a></h3>
 <ul>
-<li><strong>Uniswap早期问题</strong>：早期版本的Uniswap用户在调整流动性池授权时，偶尔会遇到类似问题，导致代币被恶意合约窃取。</li>
-<li><strong>DeFi协议漏洞</strong>：一些小型DeFi项目因未提醒用户安全授权流程，遭受过授权竞争攻击。</li>
+<li><strong>Uniswap 早期问题</strong>：早期版本的 Uniswap 用户在调整流动性池授权时，偶尔会遇到类似问题，导致代币被恶意合约窃取。</li>
+<li><strong>DeFi 协议漏洞</strong>：一些小型 DeFi 项目因未提醒用户安全授权流程，遭受过授权竞争攻击。</li>
 </ul>
 <hr />
 <h3 id="7-改进建议与新标准"><a class="header" href="#7-改进建议与新标准">7. <strong>改进建议与新标准</strong></a></h3>
-<p>为了彻底解决这个问题，一些新代币标准（如ERC-777、ERC-1155）尝试改进授权机制：</p>
+<p>为了彻底解决这个问题，一些新代币标准（如 ERC-777、ERC-1155）尝试改进授权机制：</p>
 <ul>
 <li><strong>ERC-777</strong>：引入<code>operator</code>机制和回调函数，允许更灵活的授权管理。</li>
-<li><strong>Permit函数</strong>（EIP-2612）：允许用户通过签名离线授权，避免直接调用<code>approve</code>，从而减少链上竞争风险。</li>
+<li><strong>Permit 函数</strong>（EIP-2612）：允许用户通过签名离线授权，避免直接调用<code>approve</code>，从而减少链上竞争风险。</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="重入攻击-reentrancy-attack"><a class="header" href="#重入攻击-reentrancy-attack">重入攻击 (Reentrancy Attack)</a></h1>
+<p><a href="https://zhuanlan.zhihu.com/p/52098416">The Dao 攻击事件</a></p>
+<p>在区块链和去中心化应用 (DApps) 的世界中，智能合约扮演着至关重要的角色。它们以代码的形式定义了资产的管理和逻辑的执行，但在其强大功能背后，也潜藏着安全风险。<strong>重入攻击 (Reentrancy Attack)</strong> 是以太坊等区块链平台上最著名且最具破坏性的智能合约漏洞之一。理解其原理、影响和防御方法对于开发者和用户都至关重要。</p>
+<p><strong>什么是重入攻击？</strong></p>
+<p>重入攻击是一种利用智能合约在与外部合约交互后，但在完成内部状态更新之前，允许外部（通常是恶意的）合约重新调用自身函数的漏洞。简单来说，它允许攻击者在合约完成一次操作的完整流程之前，再次触发该操作，从而可能导致非预期的状态改变，例如重复提取资金。</p>
+<p><strong>重入攻击的经典场景：The DAO 事件</strong></p>
+<p>重入攻击最为人所知的案例莫过于 2016 年发生的 The DAO (Decentralized Autonomous Organization) 事件。The DAO 是一个基于以太坊的去中心化风险投资基金，其智能合约存在重入漏洞。攻击者利用该漏洞，在 The DAO 合约向其发送 ETH 的过程中，通过精心构造的恶意合约多次重新调用 The DAO 的提款函数，最终窃取了当时价值数百万美元的 ETH。</p>
+<p><strong>重入攻击的技术原理</strong></p>
+<p>理解重入攻击的关键在于把握智能合约执行的顺序以及外部调用可能带来的影响。当合约 A 调用另一个合约 B 的函数时，控制权会暂时转移到合约 B。如果合约 B 在执行过程中又回调（call back）合约 A 的某个函数，这就为重入创造了机会。</p>
+<p>如果合约 A 在发起对合约 B 的调用后，<strong>先执行了外部调用，然后再更新内部状态</strong>（例如记录已发送的金额），那么恶意合约 B 在回调合约 A 时，合约 A 的状态可能仍然处于“未完成”的状态。攻击者可以利用这个时间差，再次调用合约 A 的关键函数（例如提款），因为此时合约 A 仍然认为之前的操作尚未完成，从而允许重复执行。</p>
+<p><strong>一个简化的代码示例 (存在重入漏洞)：</strong></p>
+<p>可以直接放入 <a href="https://remix.ethereum.org/">remix</a> 测试</p>
+<pre><code class="language-solidity">pragma solidity ^0.6.2;
+
+contract VulnerableContract {
+    mapping(address =&gt; uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 _amount) public {
+        require(balances[msg.sender] &gt;= _amount, "Insufficient balance");
+        // 存在漏洞：先进行外部调用，后更新状态
+
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed");
+
+        balances[msg.sender] -= _amount;
+    }
+}
+
+contract AttackerContract {
+    VulnerableContract public target;
+
+    constructor(VulnerableContract _target) public {
+        target = _target;
+    }
+
+    function attack() public payable {
+        target.deposit{value: 1 ether}(); // 存入一些 ETH 以触发漏洞
+        target.withdraw(1 ether); // 触发提款，控制权转移到 AttackerContract 的 fallback 函数
+    }
+
+    fallback() external payable {
+        if (address(target).balance &gt;= 1 ether) {
+            target.withdraw(1 ether); // 再次调用提款函数，发生重入
+        }
+    }
+}
+</code></pre>
+<p>在上面的例子中，<code>VulnerableContract</code> 的 <code>withdraw</code> 函数在向调用者发送 ETH 之后才更新 <code>balances</code>。恶意合约 <code>AttackerContract</code> 在收到第一次 ETH 时，其 <code>fallback</code> 函数被触发，它可以再次调用 <code>VulnerableContract</code> 的 <code>withdraw</code> 函数。由于 <code>VulnerableContract</code> 尚未更新其 <code>balances</code>，它会再次认为 <code>AttackerContract</code> 拥有足够的余额进行提款，从而导致攻击者可以提取超出其应得的资金。</p>
+<p><img src="BlockChain/Ethereum/Advanced/SafetyProblems/reentrancyAttack/./reentrancyAttack.jpg" alt="alert text" /></p>
+<p><strong>重入攻击的类型</strong></p>
+<p>重入攻击可以分为以下几种类型：</p>
+<ul>
+<li><strong>外部函数调用重入:</strong> 如上述示例，攻击者通过回调函数重新进入原始合约。</li>
+<li><strong>跨合约重入:</strong> 攻击者利用一个合约调用另一个合约，而第二个合约又回调第一个合约的情况。</li>
+<li><strong>多重重入:</strong> 攻击者可以进行多次嵌套的重入调用，进一步扩大损失。</li>
+</ul>
+<p><strong>如何防御重入攻击？</strong></p>
+<p>为了防止重入攻击，开发者应该遵循以下最佳实践：</p>
+<ol>
+<li>
+<p><strong>Checks-Effects-Interactions 模式:</strong> 这是最推荐的防御方法。在与外部合约交互之前，完成所有必要的检查（例如余额是否足够），然后更新合约的内部状态，最后再进行外部调用。</p>
+<pre><code class="language-solidity">function withdraw(uint256 _amount) public {
+    require(balances[msg.sender] &gt;= _amount, "Insufficient balance");
+
+    // 先更新状态
+    balances[msg.sender] -= _amount;
+
+    // 再进行外部调用
+    (bool success, ) = msg.sender.call{value: _amount}("");
+    require(success, "Transfer failed");
+}
+</code></pre>
+</li>
+<li>
+<p><strong>互斥锁 (Mutex) 或状态变量:</strong> 使用状态变量或修饰器来限制关键函数在同一时间只能被一个调用者执行，防止在外部调用返回之前再次进入。</p>
+<pre><code class="language-solidity">bool private withdrawing;
+
+modifier nonReentrant() {
+    require(!withdrawing, "ReentrancyGuard: reentrant call");
+    withdrawing = true;
+    _;
+    withdrawing = false;
+}
+
+function withdraw(uint256 _amount) public nonReentrant {
+    // ... (提款逻辑) ...
+}
+</code></pre>
+</li>
+<li>
+<p><strong>使用 <code>transfer()</code> 或 <code>send()</code> (谨慎使用):</strong> 这两种方法在发送 ETH 时会限制外部调用的 Gas 量，通常不足以进行深度的重入攻击。然而，它们也存在一些限制（例如 Gas 限制可能在未来发生变化，且不适用于所有类型的外部调用），因此不应作为主要的防御手段，而应与其他更可靠的方法结合使用。</p>
+</li>
+<li>
+<p><strong>OpenZeppelin 的 <code>ReentrancyGuard</code> 库:</strong> 这是一个经过广泛测试和社区认可的库，提供了 <code>@nonReentrant</code> 修饰器，可以轻松地为关键函数添加重入保护。</p>
+</li>
+</ol>
+<p><strong>结论</strong></p>
+<p>重入攻击是智能合约安全领域一个重要的威胁，其历史案例警示着开发者在设计和实现合约时必须高度重视安全性。通过理解重入攻击的原理并采用正确的防御措施，我们可以构建更安全、更可靠的去中心化应用，保护用户和平台的资产安全。始终遵循安全最佳实践，进行充分的代码审查和测试，是防范此类漏洞的关键。</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="整数溢出"><a class="header" href="#整数溢出">整数溢出</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rollup"><a class="header" href="#rollup">Rollup</a></h1>
+<p>以太坊作为领先的去中心化应用平台，面临着日益增长的用户需求和交易吞吐量瓶颈。为了解决这些问题，Layer-2 扩展方案应运而生，而 <strong>Rollup</strong> 正是其中最具前景的技术之一。它的出现极大的提升了以太坊主链的交易速度，减少了交易频次还降低了 gas 费。但实质以太坊主链的 tps 并没有改变，只是转移到其他的更高处理速度的链进行了交易处理。</p>
+<p><strong>以太坊的扩展性挑战</strong></p>
+<p>以太坊主网（Layer-1）通过所有节点对每笔交易进行验证和执行，保证了高度的安全性与去中心化。然而，这种架构也限制了其交易处理能力（TPS）。随着 DeFi、NFT 等应用的爆发，网络拥堵和高昂的 Gas 费用成为阻碍以太坊大规模采用的关键挑战。</p>
+<p>直接提高 Layer-1 TPS 的尝试 (目前已不再侧重)：</p>
+<p>虽然直接在 Layer-1 上实现大幅 TPS 提升的分片技术仍在规划中，但目前以太坊提高交易吞吐量的主要策略是通过 Layer-2 Rollup 方案来实现的。</p>
+<p>分片 (Sharding): 这是以太坊 2.0 (现为共识层) 愿景中的核心扩容技术。分片旨在将以太坊网络分割成多个称为“分片”的子网络，每个分片可以并行处理交易。理论上，这将极大地提高网络的总吞吐量。然而，由于技术复杂性和 Layer-2 解决方案的快速发展，以太坊社区目前已将重心更多地放在 Layer-2 扩容上，分片技术的实施计划有所调整，可能会以不同的形式逐步引入。</p>
+<p><strong>Layer-2 扩展方案的理念</strong></p>
+<p>Layer-2 扩展方案旨在将交易的执行和数据处理从以太坊主网转移到独立的链上（Layer-2），从而减轻主网的负担，提高整体吞吐量，并降低交易成本。Layer-2 仍然依赖于 Layer-1 的安全性，通过某种机制将交易结果或相关证明锚定回主网。</p>
+<p>Rollup 的出现极大的提升了以太坊的交易速度，减少了交易频次。</p>
+<p><strong>Rollup：核心思想与运作方式</strong></p>
+<p>Rollup 的核心思想是将大量的 Layer-2 交易“汇总 (roll up)”成一笔在 Layer-1 上发布的交易。这笔 Layer-1 交易包含证明 Layer-2 交易有效性的必要信息，从而在不牺牲安全性的前提下显著提高吞吐量并降低 Gas 费用。</p>
+<p>Rollup 的关键组成部分包括：</p>
+<ul>
+<li><strong>Layer-2 执行层:</strong> 用户在 Rollup 链上提交和执行交易，这里的 Gas 费用通常远低于主网。</li>
+<li><strong>定序器 (Sequencer):</strong> 负责接收 Layer-2 交易，将它们排序并打包成批次 (batches)。</li>
+<li><strong>证明生成器 (Prover):</strong> 根据 Layer-2 的交易执行生成有效性证明。</li>
+<li><strong>Layer-1 合约 (Rollup Contract):</strong> 部署在以太坊主网上的智能合约，用于存储 Rollup 的状态根、验证有效性证明以及处理提款等操作。</li>
+<li><strong>数据可用性 (Data Availability):</strong> 确保 Layer-2 交易数据的可访问性，以便在需要时进行验证和重构 Layer-2 的状态。</li>
+</ul>
+<p><strong>Rollup 的两种主要类型</strong></p>
+<p>目前主流的 Rollup 类型主要有两种：</p>
+<ol>
+<li>
+<p><strong>Optimistic Rollup:</strong></p>
+<ul>
+<li><strong>原理:</strong> Optimistic Rollup 假设 Layer-2 上的交易是有效的，并不主动提交有效性证明到 Layer-1。</li>
+<li><strong>欺诈证明 (Fraud Proofs):</strong> 如果有人怀疑 Layer-2 上存在无效交易，可以在 Layer-1 上提交欺诈证明。Layer-1 合约会验证该证明，如果欺诈行为被证实，相关的交易将被回滚，作恶者会受到惩罚。</li>
+<li><strong>优势:</strong> 实现相对简单，与 EVM (以太坊虚拟机) 的兼容性通常更好。</li>
+<li><strong>劣势:</strong> 由于需要等待潜在的欺诈证明期（通常为几天到一周），提款到 Layer-1 的时间较长。</li>
+<li><strong>代表项目:</strong> Arbitrum、Optimism。</li>
+</ul>
+</li>
+<li>
+<p><strong>zk-Rollup (Zero-Knowledge Rollup):</strong></p>
+<ul>
+<li><strong>原理:</strong> zk-Rollup 使用零知识证明（通常是 zk-SNARKs 或 zk-STARKs）来生成 Layer-2 交易批次的有效性证明。这个证明会与压缩后的交易数据一起提交到 Layer-1。</li>
+<li><strong>有效性证明 (Validity Proofs):</strong> Layer-1 合约只需要验证这个简洁的有效性证明，即可确信 Layer-2 上的交易是有效且正确执行的。</li>
+<li><strong>优势:</strong> 一旦 Layer-1 合约验证了有效性证明，提款可以更快地进行，通常只需要 Layer-1 的最终确认时间。安全性更高，因为有效性是通过密码学保证的，而不是依赖于可能不发生的欺诈挑战。</li>
+<li><strong>劣势:</strong> 技术实现更复杂，与 EVM 的完全兼容性更具挑战性（尽管这方面正在快速发展）。证明生成计算成本较高。</li>
+<li><strong>代表项目:</strong> zkSync、StarkNet、Polygon zkEVM (Hermez)。</li>
+</ul>
+</li>
+</ol>
+<p><strong>数据可用性 (Data Availability)</strong></p>
+<p>无论是 Optimistic Rollup 还是 zk-Rollup，保证 Layer-2 交易数据的可用性至关重要。如果数据不可用，即使有效性证明存在，也无法重构 Layer-2 的状态，可能导致安全风险。目前主要的数据可用性方案包括：</p>
+<ul>
+<li><strong>链上数据可用性:</strong> 将压缩后的交易数据直接发布到 Layer-1 的 calldata 中。这是最直接的方式，但会占用 Layer-1 的 Gas 资源。</li>
+<li><strong>链下数据可用性:</strong> 将交易数据存储在 Layer-2 网络或专门的数据可用性层 (DA Layer) 中，并在 Layer-1 上发布数据的承诺（例如 Merkle 根）。这可以降低 Layer-1 的成本，但也引入了对链下数据存储的信任假设。</li>
+</ul>
+<p><strong>Rollup 在以太坊生态系统中的重要性</strong></p>
+<p>Rollup 被广泛认为是当前扩展以太坊最具潜力的解决方案之一。它们在以下方面发挥着关键作用：</p>
+<ul>
+<li><strong>提高吞吐量:</strong> 通过将交易执行转移到 Layer-2 并批量处理，Rollup 可以显著提高以太坊网络的整体交易处理能力。</li>
+<li><strong>降低交易成本:</strong> Layer-2 的 Gas 费用通常远低于 Layer-1，使得更多用户可以参与到以太坊生态中。</li>
+<li><strong>保持安全性:</strong> Rollup 依赖于 Layer-1 的安全性进行最终的结算和数据锚定。</li>
+<li><strong>提升用户体验:</strong> 更快的交易速度和更低的费用可以显著改善用户与以太坊应用的交互体验。</li>
+</ul>
+<p>Layer-2 Rollup 代表了以太坊扩展道路上的重要一步。Optimistic Rollup 和 zk-Rollup 各有其优势和权衡，适用于不同的应用场景。随着技术的不断成熟和生态系统的发展，Rollup 有望解锁以太坊的巨大潜力，使其能够支持更大规模的用户和更复杂的应用，最终实现其成为全球性去中心化计算平台的愿景。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="zk"><a class="header" href="#zk">ZK</a></h1>
+<p>在信息时代，如何在不泄露敏感数据的前提下验证信息的真实性，成为了一个至关重要的问题。零知识证明 (Zero-Knowledge Proofs, zk) 正是解决这一难题的密码学工具。它允许一方（证明者）向另一方（验证者）证明某个陈述是真实的，而无需泄露除该陈述为真以外的任何信息。</p>
+<p><strong>核心概念：在不透露秘密的情况下证明你知道秘密</strong></p>
+<p>零知识证明的核心思想可以用一个经典的例子来理解：</p>
+<p>假设 Peggy (证明者) 声称她知道一个只有她才能打开的秘密门的密码。Victor (验证者) 希望确认 Peggy 是否真的知道密码，但他不希望 Peggy 向他透露密码本身。</p>
+<p>使用零知识证明，Peggy 可以通过一系列交互，让 Victor 确信她知道密码，而 Victor 在整个过程中不会获得任何关于密码的信息。例如，他们可以设计一个协议，让 Peggy 在不让 Victor 看到她走哪条路的情况下，能够随意地从门的左右两侧进出。多次重复这个过程后，如果 Peggy 每次都能成功做到，Victor 就会高度确信她知道密码，因为随机猜测成功的概率极低。</p>
+<p><strong>零知识证明的关键属性</strong></p>
+<p>一个严谨的零知识证明系统必须满足以下三个核心属性：</p>
+<ol>
+<li>
+<p><strong>完备性 (Completeness):</strong> 如果陈述是真实的，并且证明者和验证者都遵循协议，那么验证者总是会被说服。在上述例子中，如果 Peggy 真的知道密码，她总是能够成功地通过秘密门。</p>
+</li>
+<li>
+<p><strong>可靠性 (Soundness):</strong> 如果陈述是虚假的，那么即使一个恶意的证明者试图欺骗，验证者也只会以极小的概率被说服。在密码门的例子中，如果 Peggy 实际上不知道密码，她不可能每次都成功地通过秘密门而不被 Victor 发现。这个极小的欺骗概率通常可以通过增加交互轮数来降低。</p>
+</li>
+<li>
+<p><strong>零知识性 (Zero-Knowledge):</strong> 在验证过程中，验证者除了知道陈述是真实的之外，不会获得任何额外的信息。这意味着验证过程不泄露任何关于证明本身的信息，例如密码的具体内容或解开谜题的具体步骤。</p>
+</li>
+</ol>
+<p><strong>不同类型的零知识证明</strong></p>
+<p>随着密码学研究的深入，涌现出多种具体的零知识证明方案，它们在效率、交互性和底层数学原理上有所不同。一些重要的类型包括：</p>
+<ul>
+<li>
+<p><strong>交互式零知识证明 (Interactive Zero-Knowledge Proofs):</strong> 在这类证明中，证明者和验证者需要进行多轮交互，验证者会发送挑战，证明者需要做出相应的回应。上述的密码门例子就是一个交互式零知识证明的简化说明。</p>
+</li>
+<li>
+<p><strong>非交互式零知识证明 (Non-Interactive Zero-Knowledge Proofs, NIZK):</strong> 在这类证明中，证明者可以生成一个独立的证明，验证者只需要验证这个证明即可，无需与证明者进行交互。这在实际应用中更加便捷。</p>
+</li>
+<li>
+<p><strong>zk-SNARKs (Zero-Knowledge Succinct Non-Interactive ARguments of Knowledge):</strong> 这类非交互式证明具有“简洁性”（证明体积小）和“快速验证”的特点，并且通常依赖于复杂的密码学假设，例如配对曲线。zk-SNARKs 在区块链领域得到了广泛应用。</p>
+</li>
+<li>
+<p><strong>zk-STARKs (Zero-Knowledge Scalable Transparent ARguments of Knowledge):</strong> 这类非交互式证明也具有零知识性和可靠性，并且在某些方面具有更高的可扩展性。与 zk-SNARKs 不同的是，zk-STARKs 通常依赖于更透明的密码学假设（例如抗碰撞哈希函数），并且不需要可信设置。</p>
+</li>
+</ul>
+<h2 id="用一个更容易理解零知识证明的例子来举例"><a class="header" href="#用一个更容易理解零知识证明的例子来举例">用一个更容易理解零知识证明的例子来举例：</a></h2>
+<blockquote>
+<p>一位富豪父亲在临死前为了找寻他的亲生儿子发起了一场寻亲活动，许多的"儿子"踊跃报名来参加这个活动，并且儿子的数量高达上亿个。那么富豪怎么在分辨不出儿子面部特征且不逐一比对 dna 的方法下筛选出他的真儿子呢(当然，零知识证明的重点是在不暴露其他有价值信息的情况下提出的方法，富豪自然不想暴露自己的 dna 以及公布家人的照片来确认)？这里儿子数量合不合逻辑不多做探讨</p>
+</blockquote>
+<p><strong>注意</strong>：这里提出的每个交互信息必须确保真儿子能答对，而假儿子不一定答对，否则属于无效交互。</p>
+<ul>
+<li>
+<p>交互式零知识证明:</p>
+<p>父亲向各个儿子进行多轮交互，从儿子们的回答来区分真假：</p>
+<ul>
+<li>
+<p>小时候最喜欢的玩具是恐龙还是奥特曼？</p>
+</li>
+<li>
+<p>陪你睡觉的是妈妈还是王阿姨 ？</p>
+</li>
+<li>
+<p>吃饭的时候是左手拿筷子还是右手拿？</p>
+</li>
+<li>
+<p>家门口有没有超市？</p>
+</li>
+<li>
+<p>...共 n 个问题多轮问询后</p>
+<p>真儿子知道所有的答案，每道题答对的概率为 100%，结果正确性为 1 ** n</p>
+<p>假儿子答对所有题需要靠猜测，因为他并不是真儿子。假设他在猜题目，每道题猜对概率为 50% ，那么结果正确性为 0.5 **n</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>最简单的数学知识可以得知，当问的问题足够多时，真假儿子的区分就越加明显，零知识证明的效果也就越明显。这个过程中没有涉及双方隐私和明确的指向性，当然王阿姨姓王这个事情可以忽略一下，仅为举例。</p>
+<ul>
+<li>
+<p>非交互式零知识证明：</p>
+<p>父亲公布一个证明儿子是儿子的公开问题，而这个问题只要能答对就被认可为儿子</p>
+<ul>
+<li>
+<p>写出你小学六年级期末考试的语文作文</p>
+</li>
+<li>
+<p>写出爸爸小时候创作的钢琴曲曲谱</p>
+<p>当然，作为真人可能觉得这太离谱了，这是不可能完成的任务。（但是计算机程序中，这样的证明是合理的。因为处理的是密码学证明问题，如特定的私钥能解开特定公钥的加密文件。只要正确的身份结合问题就能证明出来）</p>
+</li>
+</ul>
+</li>
+<li>
+<p>如 zk-SNARKs 和 zk-STARKs 等均为密码学方面的进一步加强。其创新的本质是针对算法的更迭及证明逻辑的抽象化，目的是扩大证明者，也就是真假儿子接触题目顺利解出的概率区别（非密码学专业人士，仅为个人看法，请自行搜索对应信息了解），后续再更新。</p>
+</li>
+</ul>
+<h2 id="风险潜在的出错概率"><a class="header" href="#风险潜在的出错概率">风险(潜在的出错概率)</a></h2>
+<ul>
+<li>如同以太坊:以太坊的公钥(地址)和私钥是开放式的，遵循 bip39 标准的助记词按照规律生成的一串代码。任何人可以遵循这一规律，随机生成一个钱包。可以体验我的仓库中的区块链交互工具，多生成几个钱包体验一下。这个地址范围的数量过于庞大，以至于目前的所有计算机无法穷尽（这也是每个人钱包相对安全的基本保障）。那么别人有没有可能生成你钱包的私钥呢？答案是肯定的，只是这个概率非常的低，低到从概率上可以忽略不计。</li>
+<li>当然，有没有人这么干呢？确实有，挺奇怪的事情是，这也从另一种角度证明了，事实上以太坊以及其链上的任何财产，都是向所有人开放的。你能不能找到拉夫德鲁，能不能当上海贼王全凭你生成的地址多不多，如果你拥有了整个以太坊的私钥对，那么以太坊就是你的。</li>
+</ul>
+<p>零知识证明(zk)事实上也是一个以概率作出筛选的证明机制，那么它是否真正向富豪证明了全部答对的那个人是他的真儿子呢？当然，从概率上来说，这个问题全部答对的儿子，就是他的儿子了！这个概率假定为 99.999999999999999999% ，如果富豪认为这个概率可以作为他儿子的证明，那么证明就完全了。 至于还有这么一个问题，一个假儿子闭着眼睛回答对了这近乎无穷个问题，那么同样也按照规则以近乎不可能的概率最终继承了富豪的遗产，这也就是零知识证明目前难以避开的问题，始终有那么一个概率存在！</p>
+<p><strong>零知识证明的应用场景</strong></p>
+<p>零知识证明作为一种强大的密码学工具，在多个领域展现出巨大的潜力：</p>
+<ul>
+<li><strong>区块链和加密货币:</strong> 用于提高交易隐私（例如，在不暴露交易金额和参与者的情况下验证交易的有效性）、扩展性（通过验证链下计算结果）和互操作性。</li>
+<li><strong>身份验证和隐私保护:</strong> 用户可以在不泄露个人敏感信息的情况下证明自己的身份或满足某些条件（例如，证明自己年满 18 岁）。</li>
+<li><strong>安全计算:</strong> 允许多方在不暴露各自输入数据的情况下进行联合计算，并验证计算结果的正确性。</li>
+<li><strong>合规性:</strong> 企业可以在不泄露商业机密的情况下向监管机构证明其符合特定的法规要求。</li>
+<li><strong>投票系统:</strong> 可以构建既能保证投票隐私又能验证投票有效性的电子投票系统。</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
 <h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
 <p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
@@ -5498,7 +6629,7 @@ abstract contract EIP2612 is AbstractFiatTokenV2, EIP712Domain {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009-1"><a class="header" href="#eip3009-1">EIP3009</a></h1>
 <p>这段代码实现了EIP-3009标准，提供了一种气体抽象转账（gas-abstracted transfers）的内部实现。</p>
-<h3 id="主要功能-1"><a class="header" href="#主要功能-1">主要功能</a></h3>
+<h3 id="主要功能-2"><a class="header" href="#主要功能-2">主要功能</a></h3>
 <p>EIP-3009允许用户通过离线签名消息授权他人代表自己执行代币转账，而无需亲自支付气体费用。这种模式类似于EIP-2612的授权机制，但专注于直接转账操作。</p>
 <h3 id="核心组件"><a class="header" href="#核心组件">核心组件</a></h3>
 <ol>
@@ -6687,6 +7818,8 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 <h2 id="入门指南书"><a class="header" href="#入门指南书">入门指南书</a></h2>
 <p><a href="https://book.getfoundry.sh/">官网导航</a></p>
 <p><a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">中文版-登链社区</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solana"><a class="header" href="#solana">Solana</a></h1>
+<p>本篇基础学习章节大部分为个人翻译，由于带有主观理解因素，可能会对读者的学习过程带来一定的影响。建议对照官网阅读学习</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="账户模型"><a class="header" href="#账户模型">账户模型</a></h1>
 <p><a href="https://solana.com/nl/docs/core/accounts">官方链接</a></p>
 <p><img src="BlockChain/Solana/Basic/accountmodel/image.png" alt="alt text" /></p>
@@ -6812,6 +7945,30 @@ BPF 加载器是网络上所有自定义程序的所有者，不包括其他原�
 <p>2.调用现在拥有账户的自定义程序，然后初始化程序指令定义的账户数据</p>
 <p>这个账户创建过程通常被抽象为单一步骤。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="交易和指令-transactions-and-instructions"><a class="header" href="#交易和指令-transactions-and-instructions">交易和指令 (Transactions and Instructions)</a></h1>
+<p>在 Solana 上，我们发送事务以与网络交互。事务包括一个或多个指令，这些指令指定要处理的操作。指令的执行逻辑存储在部署到 Solana 网络的程序中，每个程序定义了自己的指令集。
+以下是关于事务处理的关键细节：</p>
+<ul>
+<li>如果一笔交易包含多个指令，则指令将按照它们被添加到交易中的顺序执行</li>
+<li>交易是“原子性”的——要么所有指令都成功处理，要么整个交易失败且不进行任何更改
+为了简化，可以将交易视为处理一个或多个指令的请求
+<img src="BlockChain/Solana/Basic/Transactions&amp;Instructions/./transaction-simple.svg" alt="alt text" /></li>
+</ul>
+<p>将交易想象成一个包含表格的信封。每个表格都是一个指令，告诉网络我们要执行的操作。当你发送交易时，就像邮寄信封以处理表格一样。(如以太坊发起交易:执行一段指定顺序的指令集合，任何一条出错立刻回滚)</p>
+<h2 id="关键点"><a class="header" href="#关键点">关键点</a></h2>
+<ul>
+<li>Solana 交易包括在网络上调用程序的指令请求。</li>
+<li>交易是原子的 - 如果任何指令失败，整个交易将失败且不会发生任何更改。</li>
+<li>一笔交易的最大大小为 <strong>1232</strong> 字节。</li>
+<li>每条指令需要 3 个信息：
+<ul>
+<li>被调用程序所在的地址</li>
+<li>指令将发起读或写操作的目标账户列表</li>
+<li>任何被指令所需要的附加数据(如函数参数)</li>
+</ul>
+</li>
+</ul>
+<h2 id="基本示例"><a class="header" href="#基本示例">基本示例</a></h2>
+<p>以下是一个表示单条指令将 SOL 从发送者转移到接收者的交易的图示。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rust"><a class="header" href="#rust">Rust</a></h1>
 <blockquote>
 <p>引用（摘自Rust权威指南）译者序</p>
@@ -7077,7 +8234,7 @@ let z = x + y as i32; // ✅ 正确
     let arr = [1, 2, 3, 4, 5];
     let first_element = arr[0];
 }</code></pre></pre>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="通过泛型和特征实现不同结构体实现相同效果"><a class="header" href="#通过泛型和特征实现不同结构体实现相同效果">通过泛型和特征实现不同结构体实现相同效果</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="通过特征变量和特征实现不同结构体实现相同效果"><a class="header" href="#通过特征变量和特征实现不同结构体实现相同效果">通过特征变量和特征实现不同结构体实现相同效果</a></h1>
 <pre><pre class="playground"><code class="language-rust">use std::fmt::format;
 
 #[derive(Debug)]
@@ -7154,6 +8311,92 @@ fn main() {
 </ol>
 </li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="泛型"><a class="header" href="#泛型">泛型</a></h1>
+<p><a href="https://www.runoob.com/java/java-generics.html">Java 中的泛型</a>
+代码复用的工具，</p>
+<h2 id="泛型给不同类型的对象提供相同的实现"><a class="header" href="#泛型给不同类型的对象提供相同的实现">泛型：给不同类型的对象提供相同的实现</a></h2>
+<ul>
+<li>不同类型的史莱姆实现</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">struct Slime&lt;T&gt; {
+    size: T,
+    weight: T,
+}
+
+impl&lt;T: std::fmt::Display + Copy&gt; Slime&lt;T&gt; {
+    fn new(size: T, weight: T) -&gt; Slime&lt;T&gt; {
+        Slime { size, weight }
+    }
+
+    fn yell(&amp;self) {
+        println!(
+            "as a slim ,my size is {},and my weight is {}",
+            self.size, self.weight
+        );
+    }
+}
+
+fn main() {
+    let a = Slime::new(10, 20); //整形史莱姆
+    a.yell();
+    let b = Slime::new("infinite", "2kg"); //字符串史莱姆
+    b.yell();
+}
+</code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="闭包"><a class="header" href="#闭包">闭包</a></h1>
+<ul>
+<li>
+<p>闭包是一种特殊的匿名函数，rust 中声明形式为|x|{x},或者|x|-&gt;{x};前段部分|x|为参数部分，代表传入参数 x。后段部分{}代表函数体，示例中为返回 x 的值。</p>
+</li>
+<li>
+<p>可以手动声明闭包的变量类型(推荐)，如 |x:i32|{y:f64},当然，编译器的功能也是很强大的,很多情况下会自行推断</p>
+</li>
+</ul>
+<p>以下展示闭包的基本用法</p>
+<p>正确用法</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
+    println!("{}",x(1,2));
+}</code></pre></pre>
+<ul>
+<li>当 rust 函数中第一次调用闭包时，此闭包的的参数类型会被确定下来。(当然，配合特征变量可以实现对符合特征的变量做统一操作)
+错误用法</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
+    println!("{}",x(1,2));
+    println!("{}",x(1.0,2.0));
+}</code></pre></pre>
+<blockquote>
+<p>这里的闭包被编译器检查后认定是|a:i32,b:i32|-&gt;i32，所以无法再接受 f64 类型的参数。而且编译器在此情况下不会将两个参数类型一起考虑，将变量类型归类为特征变量。后续添加特殊实现方法，让闭包可以支持多种类型。</p>
+</blockquote>
+<ul>
+<li>与普通函数仅能接收传入的指定参数不同，闭包可以捕获其所在环境中的变量，这些变量可以在闭包内部使用，也可以在闭包外部修改。</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    let outside = 1;
+    let x =|a|{println!("{}",outside+a)};
+    x(1);
+}</code></pre></pre>
+<ul>
+<li>闭包能捕获的范围是什么:当前闭包声明函数出现之前的变量。</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    //这里改变声明顺序，然后报错
+    let x =|a|{println!("{}",outside+a)};
+    let outside = 1;
+    x(1);
+}</code></pre></pre>
+<p>闭包声明本身这条语句呢，如果使用 let 语句让 x 重新绑定变量值会发生什么:x 被覆盖，输出的 x 为临时声明的变量 5</p>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let x = || {
+        let x = 5; //x被覆盖
+        let y: i32 = 6; //正常是声明
+        println!("{}", x);
+        println!("{}", y);
+    };
+    x();
+}</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="网络osi模型"><a class="header" href="#网络osi模型">网络OSI模型</a></h1>
 <p>OSI（Open Systems Interconnection，开放系统互连）模型是国际标准化组织（ISO）于1984年提出的网络通信框架，旨在标准化网络体系结构，促进不同系统间的互联互通。它将网络通信划分为七个层次，每层负责特定功能，共同实现数据从发送端到接收端的可靠传输。本文将详细介绍OSI模型的七层结构及其核心职责。</p>
 <hr />

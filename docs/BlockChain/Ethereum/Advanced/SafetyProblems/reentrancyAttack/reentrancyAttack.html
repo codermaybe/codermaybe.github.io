@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>授权竞争攻击</title>
+        <title>重入攻击</title>
 
 
         <!-- Custom HTML head -->
@@ -155,102 +155,118 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
-<p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20 提案中 approve 函数声明</a>提过的一种数据攻击。</p>
-<h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
-<p>在区块链中，<strong>授权竞争攻击（Approval Race Condition）</strong> 是一种与代币授权机制（如 ERC-20 标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
-<hr />
-<h3 id="1-背景erc-20-的授权机制"><a class="header" href="#1-背景erc-20-的授权机制">1. <strong>背景：ERC-20 的授权机制</strong></a></h3>
-<p>在 ERC-20 代币标准中，<code>approve</code>函数允许用户授权某个地址（通常是智能合约）代表自己花费一定数量的代币。例如：</p>
+                        <h1 id="重入攻击-reentrancy-attack"><a class="header" href="#重入攻击-reentrancy-attack">重入攻击 (Reentrancy Attack)</a></h1>
+<p><a href="https://zhuanlan.zhihu.com/p/52098416">The Dao 攻击事件</a></p>
+<p>在区块链和去中心化应用 (DApps) 的世界中，智能合约扮演着至关重要的角色。它们以代码的形式定义了资产的管理和逻辑的执行，但在其强大功能背后，也潜藏着安全风险。<strong>重入攻击 (Reentrancy Attack)</strong> 是以太坊等区块链平台上最著名且最具破坏性的智能合约漏洞之一。理解其原理、影响和防御方法对于开发者和用户都至关重要。</p>
+<p><strong>什么是重入攻击？</strong></p>
+<p>重入攻击是一种利用智能合约在与外部合约交互后，但在完成内部状态更新之前，允许外部（通常是恶意的）合约重新调用自身函数的漏洞。简单来说，它允许攻击者在合约完成一次操作的完整流程之前，再次触发该操作，从而可能导致非预期的状态改变，例如重复提取资金。</p>
+<p><strong>重入攻击的经典场景：The DAO 事件</strong></p>
+<p>重入攻击最为人所知的案例莫过于 2016 年发生的 The DAO (Decentralized Autonomous Organization) 事件。The DAO 是一个基于以太坊的去中心化风险投资基金，其智能合约存在重入漏洞。攻击者利用该漏洞，在 The DAO 合约向其发送 ETH 的过程中，通过精心构造的恶意合约多次重新调用 The DAO 的提款函数，最终窃取了当时价值数百万美元的 ETH。</p>
+<p><strong>重入攻击的技术原理</strong></p>
+<p>理解重入攻击的关键在于把握智能合约执行的顺序以及外部调用可能带来的影响。当合约 A 调用另一个合约 B 的函数时，控制权会暂时转移到合约 B。如果合约 B 在执行过程中又回调（call back）合约 A 的某个函数，这就为重入创造了机会。</p>
+<p>如果合约 A 在发起对合约 B 的调用后，<strong>先执行了外部调用，然后再更新内部状态</strong>（例如记录已发送的金额），那么恶意合约 B 在回调合约 A 时，合约 A 的状态可能仍然处于“未完成”的状态。攻击者可以利用这个时间差，再次调用合约 A 的关键函数（例如提款），因为此时合约 A 仍然认为之前的操作尚未完成，从而允许重复执行。</p>
+<p><strong>一个简化的代码示例 (存在重入漏洞)：</strong></p>
+<p>可以直接放入 <a href="https://remix.ethereum.org/">remix</a> 测试</p>
+<pre><code class="language-solidity">pragma solidity ^0.6.2;
+
+contract VulnerableContract {
+    mapping(address =&gt; uint256) public balances;
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 _amount) public {
+        require(balances[msg.sender] &gt;= _amount, "Insufficient balance");
+        // 存在漏洞：先进行外部调用，后更新状态
+
+        (bool success, ) = msg.sender.call{value: _amount}("");
+        require(success, "Transfer failed");
+
+        balances[msg.sender] -= _amount;
+    }
+}
+
+contract AttackerContract {
+    VulnerableContract public target;
+
+    constructor(VulnerableContract _target) public {
+        target = _target;
+    }
+
+    function attack() public payable {
+        target.deposit{value: 1 ether}(); // 存入一些 ETH 以触发漏洞
+        target.withdraw(1 ether); // 触发提款，控制权转移到 AttackerContract 的 fallback 函数
+    }
+
+    fallback() external payable {
+        if (address(target).balance &gt;= 1 ether) {
+            target.withdraw(1 ether); // 再次调用提款函数，发生重入
+        }
+    }
+}
+</code></pre>
+<p>在上面的例子中，<code>VulnerableContract</code> 的 <code>withdraw</code> 函数在向调用者发送 ETH 之后才更新 <code>balances</code>。恶意合约 <code>AttackerContract</code> 在收到第一次 ETH 时，其 <code>fallback</code> 函数被触发，它可以再次调用 <code>VulnerableContract</code> 的 <code>withdraw</code> 函数。由于 <code>VulnerableContract</code> 尚未更新其 <code>balances</code>，它会再次认为 <code>AttackerContract</code> 拥有足够的余额进行提款，从而导致攻击者可以提取超出其应得的资金。</p>
+<p><img src="./reentrancyAttack.jpg" alt="alert text" /></p>
+<p><strong>重入攻击的类型</strong></p>
+<p>重入攻击可以分为以下几种类型：</p>
 <ul>
-<li>用户 A 调用<code>approve(合约地址, 100)</code>，授权某个合约从 A 的账户中转移 100 个代币。</li>
-<li>随后，合约可以通过<code>transferFrom</code>函数执行实际的代币转移。</li>
+<li><strong>外部函数调用重入:</strong> 如上述示例，攻击者通过回调函数重新进入原始合约。</li>
+<li><strong>跨合约重入:</strong> 攻击者利用一个合约调用另一个合约，而第二个合约又回调第一个合约的情况。</li>
+<li><strong>多重重入:</strong> 攻击者可以进行多次嵌套的重入调用，进一步扩大损失。</li>
 </ul>
-<p>这种机制广泛用于 DeFi 协议、NFT 市场等场景。然而，如果用户需要调整授权额度，就会引发潜在的竞争条件问题。</p>
-<hr />
-<h3 id="2-授权竞争攻击的原理"><a class="header" href="#2-授权竞争攻击的原理">2. <strong>授权竞争攻击的原理</strong></a></h3>
-<p>授权竞争攻击的核心在于以下步骤：</p>
+<p><strong>如何防御重入攻击？</strong></p>
+<p>为了防止重入攻击，开发者应该遵循以下最佳实践：</p>
 <ol>
-<li><strong>初始授权</strong>：用户 A 已经授权了一个攻击者控制的合约（或恶意 DApp）一定的代币额度，比如 100 个代币。</li>
-<li><strong>用户调整授权</strong>：用户 A 发现需要更改授权额度（例如从 100 减少到 50，或增加到 200），于是调用<code>approve</code>函数发起新交易。</li>
-<li><strong>攻击者抢跑</strong>：攻击者监控区块链的内存池（mempool），发现用户 A 的新<code>approve</code>交易尚未确认。攻击者在用户交易确认前，迅速提交一笔<code>transferFrom</code>交易，使用旧的授权额度（100 个代币）提取代币。</li>
-<li><strong>结果</strong>：用户 A 的新授权交易最终确认，但攻击者已经利用旧授权偷走了代币。</li>
-</ol>
-<p>这种攻击利用了区块链交易的<strong>非原子性</strong>（即交易不是瞬间完成，而是需要时间确认）和<strong>公开性</strong>（内存池中的交易对所有人可见）。</p>
-<hr />
-<h3 id="3-攻击流程示例"><a class="header" href="#3-攻击流程示例">3. <strong>攻击流程示例</strong></a></h3>
-<p>假设用户 A 的代币余额为 200，攻击者控制的合约为<code>MaliciousContract</code>：</p>
-<ol>
-<li>用户 A 调用<code>approve(MaliciousContract, 100)</code>，授权 100 个代币。</li>
-<li>后来，用户 A 决定减少授权，调用<code>approve(MaliciousContract, 50)</code>，并等待交易确认。</li>
-<li>攻击者看到内存池中的<code>approve(MaliciousContract, 50)</code>交易，立即调用<code>transferFrom(A, 攻击者地址, 100)</code>，使用旧的授权提取 100 个代币。</li>
-<li>用户 A 的<code>approve(MaliciousContract, 50)</code>交易确认，但此时 100 个代币已被转移，攻击得逞。</li>
-</ol>
-<hr />
-<h3 id="4-为什么会发生"><a class="header" href="#4-为什么会发生">4. <strong>为什么会发生？</strong></a></h3>
-<ul>
-<li><strong>授权不是原子操作</strong>：<code>approve</code>函数只更新授权额度，而不撤销之前的转移能力。在新授权生效前，旧授权仍然有效。</li>
-<li><strong>内存池透明</strong>：攻击者可以实时监控未确认交易，并抢先提交自己的交易（通过提高 Gas 费用实现“抢跑”）。</li>
-<li><strong>用户行为</strong>：许多用户直接调整授权额度，而不是先将授权设为 0 再设为新值。</li>
-</ul>
-<hr />
-<h3 id="5-防范措施"><a class="header" href="#5-防范措施">5. <strong>防范措施</strong></a></h3>
-<h4 id="1安全的授权流程"><a class="header" href="#1安全的授权流程">（1）<strong>安全的授权流程</strong></a></h4>
-<ul>
-<li>用户在调整授权时，应采用“先清零，再设置新值”的两步操作：
-<ol>
-<li>调用<code>approve(合约地址, 0)</code>，等待确认。</li>
-<li>确认后，再调用<code>approve(合约地址, 新额度)</code>。</li>
-</ol>
+<li>
+<p><strong>Checks-Effects-Interactions 模式:</strong> 这是最推荐的防御方法。在与外部合约交互之前，完成所有必要的检查（例如余额是否足够），然后更新合约的内部状态，最后再进行外部调用。</p>
+<pre><code class="language-solidity">function withdraw(uint256 _amount) public {
+    require(balances[msg.sender] &gt;= _amount, "Insufficient balance");
+
+    // 先更新状态
+    balances[msg.sender] -= _amount;
+
+    // 再进行外部调用
+    (bool success, ) = msg.sender.call{value: _amount}("");
+    require(success, "Transfer failed");
+}
+</code></pre>
 </li>
-<li>这种方法确保旧授权被撤销，消除竞争窗口。</li>
-<li><mark>注意</mark><code>approve(合约地址, 0)</code>同样<b>无法完全避免攻击者抢跑的问题</b>。交易未确认前，旧授权仍然有效，攻击者可以抢先调用 transferFrom。
-它仅能保证新授权顺利执行：一旦清零交易确认，旧授权被撤销，新授权可以在安全状态下生效。
-新授权后再次被转走的风险：取决于后续操作和合约的可信度。如果用户授权给了恶意合约，新授权的代币仍可能被转走，但这属于另一类问题（非竞争攻击）。</li>
-</ul>
-<h4 id="2使用increaseallowance和decreaseallowance"><a class="header" href="#2使用increaseallowance和decreaseallowance">（2）<strong>使用<code>increaseAllowance</code>和<code>decreaseAllowance</code></strong></a></h4>
-<ul>
-<li>ERC-20 扩展函数<code>increaseAllowance</code>和<code>decreaseAllowance</code>允许用户增量调整授权，而无需直接覆盖旧值。</li>
-<li>例如：<code>increaseAllowance(合约地址, 50)</code>增加 50 个代币的授权，而不是直接调用<code>approve</code>。</li>
-<li>实现示例如 USDC，可以查看本博客源码解析篇<mark>FiatTokenV2_2</mark></li>
-</ul>
-<h4 id="3合约端的保护"><a class="header" href="#3合约端的保护">（3）<strong>合约端的保护</strong></a></h4>
-<ul>
-<li>智能合约开发者可以在<code>transferFrom</code>中添加检查，确保调用时的授权额度与预期一致，避免滥用旧授权。</li>
-<li>使用一次性授权（Nonce）或时间锁，限制授权的有效期。</li>
-</ul>
-<h4 id="4用户教育"><a class="header" href="#4用户教育">（4）<strong>用户教育</strong></a></h4>
-<ul>
-<li>提醒用户谨慎授权，尤其是对未知合约，避免直接调整授权额度。</li>
-<li>使用支持“撤销授权”的钱包（如 MetaMask），定期检查并清理不必要的授权。</li>
-</ul>
-<h4 id="5gas-竞争应对"><a class="header" href="#5gas-竞争应对">（5）<strong>Gas 竞争应对</strong></a></h4>
-<ul>
-<li>用户可以提高 Gas 费用，确保自己的<code>approve</code>交易尽快确认，减少攻击者的抢跑机会。</li>
-</ul>
-<hr />
-<h3 id="6-实际案例"><a class="header" href="#6-实际案例">6. <strong>实际案例</strong></a></h3>
-<ul>
-<li><strong>Uniswap 早期问题</strong>：早期版本的 Uniswap 用户在调整流动性池授权时，偶尔会遇到类似问题，导致代币被恶意合约窃取。</li>
-<li><strong>DeFi 协议漏洞</strong>：一些小型 DeFi 项目因未提醒用户安全授权流程，遭受过授权竞争攻击。</li>
-</ul>
-<hr />
-<h3 id="7-改进建议与新标准"><a class="header" href="#7-改进建议与新标准">7. <strong>改进建议与新标准</strong></a></h3>
-<p>为了彻底解决这个问题，一些新代币标准（如 ERC-777、ERC-1155）尝试改进授权机制：</p>
-<ul>
-<li><strong>ERC-777</strong>：引入<code>operator</code>机制和回调函数，允许更灵活的授权管理。</li>
-<li><strong>Permit 函数</strong>（EIP-2612）：允许用户通过签名离线授权，避免直接调用<code>approve</code>，从而减少链上竞争风险。</li>
-</ul>
+<li>
+<p><strong>互斥锁 (Mutex) 或状态变量:</strong> 使用状态变量或修饰器来限制关键函数在同一时间只能被一个调用者执行，防止在外部调用返回之前再次进入。</p>
+<pre><code class="language-solidity">bool private withdrawing;
+
+modifier nonReentrant() {
+    require(!withdrawing, "ReentrancyGuard: reentrant call");
+    withdrawing = true;
+    _;
+    withdrawing = false;
+}
+
+function withdraw(uint256 _amount) public nonReentrant {
+    // ... (提款逻辑) ...
+}
+</code></pre>
+</li>
+<li>
+<p><strong>使用 <code>transfer()</code> 或 <code>send()</code> (谨慎使用):</strong> 这两种方法在发送 ETH 时会限制外部调用的 Gas 量，通常不足以进行深度的重入攻击。然而，它们也存在一些限制（例如 Gas 限制可能在未来发生变化，且不适用于所有类型的外部调用），因此不应作为主要的防御手段，而应与其他更可靠的方法结合使用。</p>
+</li>
+<li>
+<p><strong>OpenZeppelin 的 <code>ReentrancyGuard</code> 库:</strong> 这是一个经过广泛测试和社区认可的库，提供了 <code>@nonReentrant</code> 修饰器，可以轻松地为关键函数添加重入保护。</p>
+</li>
+</ol>
+<p><strong>结论</strong></p>
+<p>重入攻击是智能合约安全领域一个重要的威胁，其历史案例警示着开发者在设计和实现合约时必须高度重视安全性。通过理解重入攻击的原理并采用正确的防御措施，我们可以构建更安全、更可靠的去中心化应用，保护用户和平台的资产安全。始终遵循安全最佳实践，进行充分的代码审查和测试，是防范此类漏洞的关键。</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../../BlockChain/Ethereum/ERC/ERC4626.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/authorizeAttack/authorizeRaceAttack.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/reentrancyAttack/reentrancyAttack.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/integerOutO/reentrancyAttack.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -260,11 +276,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../../BlockChain/Ethereum/ERC/ERC4626.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/authorizeAttack/authorizeRaceAttack.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/reentrancyAttack/reentrancyAttack.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/integerOutO/reentrancyAttack.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

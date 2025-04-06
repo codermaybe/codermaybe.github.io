@@ -156,6 +156,30 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="交易和指令-transactions-and-instructions"><a class="header" href="#交易和指令-transactions-and-instructions">交易和指令 (Transactions and Instructions)</a></h1>
+<p>在 Solana 上，我们发送事务以与网络交互。事务包括一个或多个指令，这些指令指定要处理的操作。指令的执行逻辑存储在部署到 Solana 网络的程序中，每个程序定义了自己的指令集。
+以下是关于事务处理的关键细节：</p>
+<ul>
+<li>如果一笔交易包含多个指令，则指令将按照它们被添加到交易中的顺序执行</li>
+<li>交易是“原子性”的——要么所有指令都成功处理，要么整个交易失败且不进行任何更改
+为了简化，可以将交易视为处理一个或多个指令的请求
+<img src="./transaction-simple.svg" alt="alt text" /></li>
+</ul>
+<p>将交易想象成一个包含表格的信封。每个表格都是一个指令，告诉网络我们要执行的操作。当你发送交易时，就像邮寄信封以处理表格一样。(如以太坊发起交易:执行一段指定顺序的指令集合，任何一条出错立刻回滚)</p>
+<h2 id="关键点"><a class="header" href="#关键点">关键点</a></h2>
+<ul>
+<li>Solana 交易包括在网络上调用程序的指令请求。</li>
+<li>交易是原子的 - 如果任何指令失败，整个交易将失败且不会发生任何更改。</li>
+<li>一笔交易的最大大小为 <strong>1232</strong> 字节。</li>
+<li>每条指令需要 3 个信息：
+<ul>
+<li>被调用程序所在的地址</li>
+<li>指令将发起读或写操作的目标账户列表</li>
+<li>任何被指令所需要的附加数据(如函数参数)</li>
+</ul>
+</li>
+</ul>
+<h2 id="基本示例"><a class="header" href="#基本示例">基本示例</a></h2>
+<p>以下是一个表示单条指令将 SOL 从发送者转移到接收者的交易的图示。</p>
 
                     </main>
 

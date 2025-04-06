@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>EIP4626</title>
+        <title>ERC777</title>
 
 
         <!-- Custom HTML head -->
@@ -155,94 +155,185 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="erc-4626-tokenized-vault-standard"><a class="header" href="#erc-4626-tokenized-vault-standard">ERC-4626: Tokenized Vault Standard</a></h1>
-<p>ERC-4626 是一个以太坊代币化金库（Tokenized Vault）标准，它定义了一个用于代币化金库的接口，这些金库代表对底层代币（如 ERC-20）的份额。该标准由 Joey Santoro 等人于 2022 年 3 月提出。</p>
-<h2 id="标准概述"><a class="header" href="#标准概述">标准概述</a></h2>
-<p>ERC-4626 的主要目标是标准化代币化金库的接口，使得：</p>
+                        <h1 id="erc-777-token-standard"><a class="header" href="#erc-777-token-standard">ERC-777: Token Standard</a></h1>
+<h2 id="与-erc-20-的异同点"><a class="header" href="#与-erc-20-的异同点">与 ERC-20 的异同点</a></h2>
+<h3 id="相同点"><a class="header" href="#相同点">相同点</a></h3>
 <ol>
-<li>金库可以统一地表示和管理资产</li>
-<li>集成者可以构建通用的工具来与任何 ERC-4626 金库交互</li>
-<li>用户可以轻松比较不同金库的特性</li>
+<li>
+<p><strong>基本功能</strong>：</p>
+<ul>
+<li>都支持代币的转账和余额查询</li>
+<li>都实现了代币的基本属性（名称、符号、精度等）</li>
+<li>都支持代币的授权机制</li>
+</ul>
+</li>
+<li>
+<p><strong>兼容性</strong>：</p>
+<ul>
+<li>ERC-777 完全兼容 ERC-20</li>
+<li>可以通过 ERC-20 接口访问 ERC-777 代币</li>
+<li>支持相同的代币查询方法</li>
+</ul>
+</li>
+</ol>
+<h3 id="不同点"><a class="header" href="#不同点">不同点</a></h3>
+<ol>
+<li>
+<p><strong>授权机制</strong>：</p>
+<ul>
+<li>ERC-20：使用 approve/transferFrom 模式，需要两步操作</li>
+<li>ERC-777：使用操作者（Operator）机制，更灵活且支持批量操作</li>
+</ul>
+</li>
+<li>
+<p><strong>转账通知</strong>：</p>
+<ul>
+<li>ERC-20：无内置通知机制，需要额外的事件监听</li>
+<li>ERC-777：提供内置的钩子函数（tokensReceived/tokensToSend）</li>
+</ul>
+</li>
+<li>
+<p><strong>数据支持</strong>：</p>
+<ul>
+<li>ERC-20：不支持在转账时附加额外数据</li>
+<li>ERC-777：支持在转账时附加任意数据（data 和 operatorData）</li>
+</ul>
+</li>
+<li>
+<p><strong>燃烧机制</strong>：</p>
+<ul>
+<li>ERC-20：无标准燃烧接口，需要自行实现</li>
+<li>ERC-777：提供标准燃烧接口，支持操作者燃烧</li>
+</ul>
+</li>
+<li>
+<p><strong>安全性</strong>：</p>
+<ul>
+<li>ERC-20：存在 approve/transferFrom 的安全隐患</li>
+<li>ERC-777：提供更安全的操作者机制和钩子函数</li>
+</ul>
+</li>
+<li>
+<p><strong>功能扩展</strong>：</p>
+<ul>
+<li>ERC-20：功能相对简单，扩展性有限</li>
+<li>ERC-777：支持更复杂的业务逻辑，扩展性更强</li>
+</ul>
+</li>
+</ol>
+<p>ERC-777 是一个以太坊代币标准，它在 ERC-20 的基础上进行了改进，提供了更高级的功能和更好的安全性。该标准由 Jacques Dafflon、Jordi Baylina 和 Thomas Shababi 于 2017 年 11 月提出。</p>
+<h2 id="标准概述"><a class="header" href="#标准概述">标准概述</a></h2>
+<p>ERC-777 的主要目标是：</p>
+<ol>
+<li>提供更直观的代币操作方式</li>
+<li>改进 ERC-20 的批准机制</li>
+<li>增加代币发送和接收的钩子函数</li>
+<li>保持与 ERC-20 的向后兼容性</li>
 </ol>
 <h2 id="核心接口"><a class="header" href="#核心接口">核心接口</a></h2>
-<pre><code class="language-solidity">interface IERC4626 is IERC20, IERC165 {
-    // 返回底层代币的地址
-    function asset() external view returns (address assetTokenAddress);
+<pre><code class="language-solidity">interface IERC777 {
+    // 返回代币名称
+    function name() external view returns (string memory);
 
-    // 返回金库管理的总资产数量
-    function totalAssets() external view returns (uint256 totalManagedAssets);
+    // 返回代币符号
+    function symbol() external view returns (string memory);
 
-    // 将资产转换为份额
-    function convertToShares(uint256 assets) external view returns (uint256 shares);
+    // 返回代币精度
+    function granularity() external view returns (uint256);
 
-    // 将份额转换为资产
-    function convertToAssets(uint256 shares) external view returns (uint256 assets);
+    // 返回总供应量
+    function totalSupply() external view returns (uint256);
 
-    // 返回用户可以存入的最大资产数量
-    function maxDeposit(address receiver) external view returns (uint256 maxAssets);
+    // 返回账户余额
+    function balanceOf(address holder) external view returns (uint256);
 
-    // 返回用户可以铸造的最大份额数量
-    function maxMint(address receiver) external view returns (uint256 maxShares);
+    // 发送代币
+    function send(address recipient, uint256 amount, bytes calldata data) external;
 
-    // 返回用户可以提取的最大资产数量
-    function maxWithdraw(address owner) external view returns (uint256 maxAssets);
+    // 燃烧代币
+    function burn(uint256 amount, bytes calldata data) external;
 
-    // 返回用户可以赎回的最大份额数量
-    function maxRedeem(address owner) external view returns (uint256 maxShares);
+    // 检查是否是操作者
+    function isOperatorFor(address operator, address tokenHolder) external view returns (bool);
 
-    // 预览存款操作将铸造的份额数量
-    function previewDeposit(uint256 assets) external view returns (uint256 shares);
+    // 授权操作者
+    function authorizeOperator(address operator) external;
 
-    // 预览铸造操作所需的资产数量
-    function previewMint(uint256 shares) external view returns (uint256 assets);
+    // 撤销操作者
+    function revokeOperator(address operator) external;
 
-    // 预览提取操作将赎回的份额数量
-    function previewWithdraw(uint256 assets) external view returns (uint256 shares);
+    // 默认操作者发送代币
+    function operatorSend(
+        address sender,
+        address recipient,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
 
-    // 预览赎回操作将提取的资产数量
-    function previewRedeem(uint256 shares) external view returns (uint256 assets);
+    // 默认操作者燃烧代币
+    function operatorBurn(
+        address account,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+}
 
-    // 存款资产并铸造份额
-    function deposit(uint256 assets, address receiver) external returns (uint256 shares);
+interface IERC777Recipient {
+    // 代币接收钩子
+    function tokensReceived(
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
+}
 
-    // 铸造份额
-    function mint(uint256 shares, address receiver) external returns (uint256 assets);
-
-    // 提取资产
-    function withdraw(uint256 assets, address receiver, address owner) external returns (uint256 shares);
-
-    // 赎回份额
-    function redeem(uint256 shares, address receiver, address owner) external returns (uint256 assets);
+interface IERC777Sender {
+    // 代币发送钩子
+    function tokensToSend(
+        address operator,
+        address from,
+        address to,
+        uint256 amount,
+        bytes calldata data,
+        bytes calldata operatorData
+    ) external;
 }
 </code></pre>
-<h2 id="主要功能"><a class="header" href="#主要功能">主要功能</a></h2>
+<h2 id="主要特性"><a class="header" href="#主要特性">主要特性</a></h2>
 <ol>
 <li>
-<p><strong>资产转换</strong>：</p>
+<p><strong>钩子函数</strong>：</p>
 <ul>
-<li><code>convertToShares</code> 和 <code>convertToAssets</code> 用于在资产和份额之间进行转换</li>
-<li>这些函数考虑了金库的费用和滑点</li>
+<li><code>tokensReceived</code>：接收代币时的回调</li>
+<li><code>tokensToSend</code>：发送代币时的回调</li>
+<li>允许合约在代币转移时执行自定义逻辑</li>
 </ul>
 </li>
 <li>
-<p><strong>存款和铸造</strong>：</p>
+<p><strong>操作者机制</strong>：</p>
 <ul>
-<li><code>deposit</code> 允许用户存入资产并获得相应份额</li>
-<li><code>mint</code> 允许用户直接铸造特定数量的份额</li>
+<li>替代 ERC-20 的 approve/transferFrom 模式</li>
+<li>更灵活和安全的授权系统</li>
+<li>支持批量操作</li>
 </ul>
 </li>
 <li>
-<p><strong>提取和赎回</strong>：</p>
+<p><strong>数据字段</strong>：</p>
 <ul>
-<li><code>withdraw</code> 允许用户提取特定数量的资产</li>
-<li><code>redeem</code> 允许用户赎回特定数量的份额</li>
+<li>支持在转账时附加额外数据</li>
+<li>便于实现更复杂的业务逻辑</li>
 </ul>
 </li>
 <li>
-<p><strong>预览功能</strong>：</p>
+<p><strong>向后兼容性</strong>：</p>
 <ul>
-<li>提供预览函数来估算操作结果</li>
-<li>帮助用户了解操作的具体影响</li>
+<li>完全兼容 ERC-20</li>
+<li>可以通过 ERC-20 接口访问</li>
 </ul>
 </li>
 </ol>
@@ -251,53 +342,53 @@
 <li>
 <p><strong>重入攻击防护</strong>：</p>
 <ul>
-<li>实现时需要注意防止重入攻击</li>
-<li>建议使用重入锁或检查-效果-交互模式</li>
+<li>钩子函数可能被用于重入攻击</li>
+<li>实现时需要使用重入锁或检查-效果-交互模式</li>
 </ul>
 </li>
 <li>
-<p><strong>精度损失</strong>：</p>
+<p><strong>操作者权限</strong>：</p>
 <ul>
-<li>在资产和份额转换时需要注意精度损失</li>
-<li>建议使用足够大的精度（如 18 位小数）</li>
+<li>需要仔细管理操作者权限</li>
+<li>建议实现操作者白名单机制</li>
 </ul>
 </li>
 <li>
-<p><strong>权限控制</strong>：</p>
+<p><strong>数据验证</strong>：</p>
 <ul>
-<li>需要正确实现权限控制</li>
-<li>特别是 <code>withdraw</code> 和 <code>redeem</code> 函数的所有者检查</li>
+<li>需要验证传入的数据</li>
+<li>防止恶意数据导致合约异常</li>
 </ul>
 </li>
 </ol>
 <h2 id="应用场景"><a class="header" href="#应用场景">应用场景</a></h2>
 <ol>
 <li>
-<p><strong>收益聚合器</strong>：</p>
+<p><strong>代币化资产</strong>：</p>
 <ul>
-<li>自动将资产分配到最佳收益机会</li>
-<li>用户通过持有金库代币获得收益</li>
+<li>股票、债券等金融工具</li>
+<li>房地产等实物资产</li>
 </ul>
 </li>
 <li>
-<p><strong>借贷协议</strong>：</p>
+<p><strong>支付系统</strong>：</p>
 <ul>
-<li>作为抵押品的代币化表示</li>
-<li>简化借贷流程</li>
+<li>自动支付处理</li>
+<li>订阅服务</li>
 </ul>
 </li>
 <li>
-<p><strong>流动性池</strong>：</p>
+<p><strong>投票系统</strong>：</p>
 <ul>
-<li>代币化流动性提供者的份额</li>
-<li>便于追踪和交易</li>
+<li>代币持有者投票</li>
+<li>治理机制</li>
 </ul>
 </li>
 <li>
-<p><strong>保险库</strong>：</p>
+<p><strong>奖励系统</strong>：</p>
 <ul>
-<li>代币化保险策略</li>
-<li>便于保险产品的交易和转移</li>
+<li>忠诚度计划</li>
+<li>空投分发</li>
 </ul>
 </li>
 </ol>
@@ -307,14 +398,14 @@
 <p><strong>实现检查</strong>：</p>
 <ul>
 <li>实现所有必需的功能</li>
-<li>确保符合 ERC-165 标准</li>
+<li>确保符合 ERC-777 标准</li>
 </ul>
 </li>
 <li>
 <p><strong>事件记录</strong>：</p>
 <ul>
 <li>记录所有重要操作</li>
-<li>包括存款、提取、铸造和赎回</li>
+<li>包括发送、接收、授权等</li>
 </ul>
 </li>
 <li>
@@ -328,161 +419,214 @@
 <p><strong>测试覆盖</strong>：</p>
 <ul>
 <li>编写完整的测试用例</li>
-<li>包括边界条件和错误情况</li>
+<li>包括钩子函数和操作者功能</li>
 </ul>
 </li>
 </ol>
-<h2 id="总结"><a class="header" href="#总结">总结</a></h2>
-<p>ERC-4626 为代币化金库提供了一个标准化的接口，使得不同协议之间的互操作性成为可能。它简化了金库的集成和使用，同时保持了足够的灵活性以适应各种用例。在实现时，需要注意安全性、精度和用户体验等方面。</p>
+<h2 id="与-erc-20-的区别"><a class="header" href="#与-erc-20-的区别">与 ERC-20 的区别</a></h2>
+<ol>
+<li>
+<p><strong>授权机制</strong>：</p>
+<ul>
+<li>ERC-20：使用 approve/transferFrom</li>
+<li>ERC-777：使用操作者机制</li>
+</ul>
+</li>
+<li>
+<p><strong>转账通知</strong>：</p>
+<ul>
+<li>ERC-20：无通知机制</li>
+<li>ERC-777：提供钩子函数</li>
+</ul>
+</li>
+<li>
+<p><strong>数据支持</strong>：</p>
+<ul>
+<li>ERC-20：不支持额外数据</li>
+<li>ERC-777：支持附加数据</li>
+</ul>
+</li>
+<li>
+<p><strong>燃烧机制</strong>：</p>
+<ul>
+<li>ERC-20：无标准燃烧接口</li>
+<li>ERC-777：提供标准燃烧接口</li>
+</ul>
+</li>
+</ol>
+<p>ERC-777 是一个功能更强大的代币标准，它在保持与 ERC-20 兼容的同时，提供了更灵活和安全的代币操作方式。通过钩子函数和操作者机制，它能够支持更复杂的业务场景，同时提供了更好的安全性保障。在实现时，需要注意安全性、兼容性和用户体验等方面。</p>
 <h2 id="abi-定义"><a class="header" href="#abi-定义">ABI 定义</a></h2>
 <pre><code class="language-json">[
   {
+    "constant": true,
     "inputs": [],
-    "name": "asset",
-    "outputs": [{ "name": "", "type": "address" }],
+    "name": "name",
+    "outputs": [{ "name": "", "type": "string" }],
+    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
+    "constant": true,
     "inputs": [],
-    "name": "totalAssets",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "name": "symbol",
+    "outputs": [{ "name": "", "type": "string" }],
+    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "name": "assets", "type": "uint256" }],
-    "name": "convertToShares",
+    "constant": true,
+    "inputs": [],
+    "name": "granularity",
     "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "name": "shares", "type": "uint256" }],
-    "name": "convertToAssets",
+    "constant": true,
+    "inputs": [],
+    "name": "totalSupply",
     "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "name": "receiver", "type": "address" }],
-    "name": "maxDeposit",
+    "constant": true,
+    "inputs": [{ "name": "holder", "type": "address" }],
+    "name": "balanceOf",
     "outputs": [{ "name": "", "type": "uint256" }],
+    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "name": "receiver", "type": "address" }],
-    "name": "maxMint",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "owner", "type": "address" }],
-    "name": "maxWithdraw",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "owner", "type": "address" }],
-    "name": "maxRedeem",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "assets", "type": "uint256" }],
-    "name": "previewDeposit",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "shares", "type": "uint256" }],
-    "name": "previewMint",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "assets", "type": "uint256" }],
-    "name": "previewWithdraw",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "name": "shares", "type": "uint256" }],
-    "name": "previewRedeem",
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
+    "constant": false,
     "inputs": [
-      { "name": "assets", "type": "uint256" },
-      { "name": "receiver", "type": "address" }
+      { "name": "recipient", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" }
     ],
-    "name": "deposit",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "name": "send",
+    "outputs": [],
+    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "constant": false,
     "inputs": [
-      { "name": "shares", "type": "uint256" },
-      { "name": "receiver", "type": "address" }
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" }
     ],
-    "name": "mint",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "name": "burn",
+    "outputs": [],
+    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "constant": true,
     "inputs": [
-      { "name": "assets", "type": "uint256" },
-      { "name": "receiver", "type": "address" },
-      { "name": "owner", "type": "address" }
+      { "name": "operator", "type": "address" },
+      { "name": "tokenHolder", "type": "address" }
     ],
-    "name": "withdraw",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "name": "isOperatorFor",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [{ "name": "operator", "type": "address" }],
+    "name": "authorizeOperator",
+    "outputs": [],
+    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
+    "constant": false,
+    "inputs": [{ "name": "operator", "type": "address" }],
+    "name": "revokeOperator",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
     "inputs": [
-      { "name": "shares", "type": "uint256" },
-      { "name": "receiver", "type": "address" },
-      { "name": "owner", "type": "address" }
+      { "name": "sender", "type": "address" },
+      { "name": "recipient", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" },
+      { "name": "operatorData", "type": "bytes" }
     ],
-    "name": "redeem",
-    "outputs": [{ "name": "", "type": "uint256" }],
+    "name": "operatorSend",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "account", "type": "address" },
+      { "name": "amount", "type": "uint256" },
+      { "name": "data", "type": "bytes" },
+      { "name": "operatorData", "type": "bytes" }
+    ],
+    "name": "operatorBurn",
+    "outputs": [],
+    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "name": "caller", "type": "address" },
-      { "indexed": true, "name": "owner", "type": "address" },
-      { "indexed": false, "name": "assets", "type": "uint256" },
-      { "indexed": false, "name": "shares", "type": "uint256" }
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "to", "type": "address" },
+      { "indexed": true, "name": "from", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" },
+      { "indexed": false, "name": "data", "type": "bytes" },
+      { "indexed": false, "name": "operatorData", "type": "bytes" }
     ],
-    "name": "Deposit",
+    "name": "Sent",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": true, "name": "caller", "type": "address" },
-      { "indexed": true, "name": "receiver", "type": "address" },
-      { "indexed": true, "name": "owner", "type": "address" },
-      { "indexed": false, "name": "assets", "type": "uint256" },
-      { "indexed": false, "name": "shares", "type": "uint256" }
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "from", "type": "address" },
+      { "indexed": false, "name": "amount", "type": "uint256" },
+      { "indexed": false, "name": "data", "type": "bytes" },
+      { "indexed": false, "name": "operatorData", "type": "bytes" }
     ],
-    "name": "Withdraw",
+    "name": "Burned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "tokenHolder", "type": "address" }
+    ],
+    "name": "AuthorizedOperator",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "operator", "type": "address" },
+      { "indexed": true, "name": "tokenHolder", "type": "address" }
+    ],
+    "name": "RevokedOperator",
     "type": "event"
   }
 ]
@@ -492,11 +636,11 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC3009.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/SafetyProblems/authorizeAttack/authorizeRaceAttack.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC1155.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -506,11 +650,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC3009.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/Advanced/SafetyProblems/authorizeAttack/authorizeRaceAttack.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC1155.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
