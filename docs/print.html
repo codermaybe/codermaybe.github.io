@@ -8353,49 +8353,39 @@ fn main() {
 </li>
 </ul>
 <p>以下展示闭包的基本用法</p>
-<p>正确用法</p>
+<h3 id="正确用法"><a class="header" href="#正确用法">正确用法</a></h3>
 <pre><pre class="playground"><code class="language-rust">fn main() {
-    let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
-    println!("{}",x(1,2));
+    let x = |a,b|-&gt;i32{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
+    println!("{:?}",x(1,2));
 }</code></pre></pre>
 <ul>
-<li>当 rust 函数中第一次调用闭包时，此闭包的的参数类型会被确定下来。(当然，配合特征变量可以实现对符合特征的变量做统一操作)
-错误用法</li>
+<li>当 rust 函数中第一次调用闭包时，此闭包的的参数类型会被确定下来。(当然，配合特征变量可以实现对符合特征的变量做统一操作)</li>
 </ul>
+<h3 id="错误用法"><a class="header" href="#错误用法">错误用法</a></h3>
 <pre><pre class="playground"><code class="language-rust">fn main() {
     let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
     println!("{}",x(1,2));
-    println!("{}",x(1.0,2.0));
+    println!("{}",x(1.0,2.0));//此处报错
 }</code></pre></pre>
 <blockquote>
 <p>这里的闭包被编译器检查后认定是|a:i32,b:i32|-&gt;i32，所以无法再接受 f64 类型的参数。而且编译器在此情况下不会将两个参数类型一起考虑，将变量类型归类为特征变量。后续添加特殊实现方法，让闭包可以支持多种类型。</p>
 </blockquote>
 <ul>
-<li>与普通函数仅能接收传入的指定参数不同，闭包可以捕获其所在环境中的变量，这些变量可以在闭包内部使用，也可以在闭包外部修改。</li>
+<li>与普通函数仅能接收传入的指定参数不同，闭包可以捕获其所在环境中的变量，这些变量可以在闭包内部使用，也可以在闭包外部修改。
+闭包能捕获的范围是当前闭包声明函数出现之前的变量</li>
 </ul>
+<h3 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h3>
 <pre><pre class="playground"><code class="language-rust">fn main(){
     let outside = 1;
     let x =|a|{println!("{}",outside+a)};
     x(1);
 }</code></pre></pre>
-<ul>
-<li>闭包能捕获的范围是什么:当前闭包声明函数出现之前的变量。</li>
-</ul>
+<h3 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h3>
 <pre><pre class="playground"><code class="language-rust">fn main(){
     //这里改变声明顺序，然后报错
     let x =|a|{println!("{}",outside+a)};
     let outside = 1;
     x(1);
-}</code></pre></pre>
-<p>闭包声明本身这条语句呢，如果使用 let 语句让 x 重新绑定变量值会发生什么:x 被覆盖，输出的 x 为临时声明的变量 5</p>
-<pre><pre class="playground"><code class="language-rust">fn main() {
-    let x = || {
-        let x = 5; //x被覆盖
-        let y: i32 = 6; //正常是声明
-        println!("{}", x);
-        println!("{}", y);
-    };
-    x();
 }</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="网络osi模型"><a class="header" href="#网络osi模型">网络OSI模型</a></h1>
 <p>OSI（Open Systems Interconnection，开放系统互连）模型是国际标准化组织（ISO）于1984年提出的网络通信框架，旨在标准化网络体系结构，促进不同系统间的互联互通。它将网络通信划分为七个层次，每层负责特定功能，共同实现数据从发送端到接收端的可靠传输。本文将详细介绍OSI模型的七层结构及其核心职责。</p>
