@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>整数溢出</title>
+        <title>循环优化</title>
 
 
         <!-- Custom HTML head -->
@@ -155,17 +155,179 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="整数溢出"><a class="header" href="#整数溢出">整数溢出</a></h1>
+                        <h1 id="循环优化"><a class="header" href="#循环优化">循环优化</a></h1>
+<h2 id="尝试避免不必要的循环"><a class="header" href="#尝试避免不必要的循环">尝试避免不必要的循环、</a></h2>
+<p>在 Solidity 中，<strong>循环和迭代的优化对 Gas 消耗有极大影响</strong>，因为 EVM 是按操作步骤计费的。以下是针对循环优化的专业级实践方案：</p>
+<hr />
+<h3 id="1-循环基础优化策略"><a class="header" href="#1-循环基础优化策略">1. <strong>循环基础优化策略</strong></a></h3>
+<h4 id="1数学替代法最高效"><a class="header" href="#1数学替代法最高效">（1）数学替代法（最高效）</a></h4>
+<pre><code class="language-solidity">// ❌ 低效循环求和
+function sum(uint[] memory arr) public pure returns (uint) {
+    uint total;
+    for (uint i = 0; i &lt; arr.length; i++) {
+        total += arr[i]; // 每次迭代都SLOAD/SSTORE
+    }
+    return total;
+}
+
+// ✅ 使用assembly批量处理
+function sumOptimized(uint[] memory arr) public pure returns (uint) {
+    uint total;
+    assembly {
+        let len := mload(arr)
+        let ptr := add(arr, 0x20)
+        for { let end := add(ptr, mul(len, 0x20)) } lt(ptr, end) { ptr := add(ptr, 0x20) } {
+            total := add(total, mload(ptr))
+        }
+    }
+    return total;
+}
+</code></pre>
+<p><strong>优化点</strong>：</p>
+<ul>
+<li>避免数组边界检查</li>
+<li>直接内存操作减少 Gas</li>
+</ul>
+<h4 id="2循环展开loop-unrolling"><a class="header" href="#2循环展开loop-unrolling">（2）循环展开（Loop Unrolling）</a></h4>
+<pre><code class="language-solidity">// 手动展开4次迭代
+function processBatch(uint[4] memory data) public pure {
+    process(data[0]);
+    process(data[1]);
+    process(data[2]);
+    process(data[3]);
+}
+</code></pre>
+<p><strong>适用场景</strong>：</p>
+<ul>
+<li>固定次数小循环（3-5 次）</li>
+</ul>
+<hr />
+<h3 id="2-高级循环优化技巧"><a class="header" href="#2-高级循环优化技巧">2. <strong>高级循环优化技巧</strong></a></h3>
+<h4 id="1缓存存储变量"><a class="header" href="#1缓存存储变量">（1）缓存存储变量</a></h4>
+<pre><code class="language-solidity">function updateUsers(User[] storage users) internal {
+    uint length = users.length;
+    for (uint i = 0; i &lt; length; ) {
+        User storage user = users[i]; // 缓存storage引用
+        user.balance += 10;
+        unchecked { i++; } // 关闭溢出检查
+    }
+}
+</code></pre>
+<p><strong>优化效果</strong>：</p>
+<ul>
+<li>减少每次循环的<code>SLOAD</code>（~2100 Gas）</li>
+<li><code>unchecked</code>节省溢出检查 Gas</li>
+</ul>
+<h4 id="2位图批量处理"><a class="header" href="#2位图批量处理">（2）位图批量处理</a></h4>
+<pre><code class="language-solidity">uint256 public userBitmask; // 每位代表一个用户状态
+
+function batchToggleUsers(uint256 idsBitmap) external {
+    userBitmask ^= idsBitmap; // 单次操作完成批量修改
+}
+</code></pre>
+<p><strong>优势</strong>：</p>
+<ul>
+<li>1 次 SSTORE 完成 N 个用户状态更新</li>
+<li>适合布尔型状态管理</li>
+</ul>
+<hr />
+<h3 id="3-循环终止策略"><a class="header" href="#3-循环终止策略">3. <strong>循环终止策略</strong></a></h3>
+<h4 id="1短路模式short-circuit"><a class="header" href="#1短路模式short-circuit">（1）短路模式（Short-circuit）</a></h4>
+<pre><code class="language-solidity">function find(uint[] memory arr, uint target) public pure returns (bool) {
+    for (uint i = 0; i &lt; arr.length; ) {
+        if (arr[i] == target) return true; // 提前退出
+        unchecked { i++; }
+    }
+    return false;
+}
+</code></pre>
+<p><strong>Gas 对比</strong>：</p>
+<ul>
+<li>找到目标时立即省去后续迭代</li>
+</ul>
+<h4 id="2边界预计算"><a class="header" href="#2边界预计算">（2）边界预计算</a></h4>
+<pre><code class="language-solidity">function processArray(uint[] memory arr) public {
+    uint end = arr.length;
+    for (uint i = 0; i &lt; end; ) {
+        _process(arr[i]);
+        unchecked { i++; }
+    }
+}
+</code></pre>
+<p><strong>优化原理</strong>：</p>
+<ul>
+<li>避免每次循环计算<code>arr.length</code></li>
+</ul>
+<hr />
+<h3 id="4-嵌套循环优化"><a class="header" href="#4-嵌套循环优化">4. <strong>嵌套循环优化</strong></a></h3>
+<h4 id="1笛卡尔积优化"><a class="header" href="#1笛卡尔积优化">（1）笛卡尔积优化</a></h4>
+<pre><code class="language-solidity">// ❌ 低效嵌套循环
+for (uint i = 0; i &lt; 10; i++) {
+    for (uint j = 0; j &lt; 10; j++) {
+        // 100次迭代
+    }
+}
+
+// ✅ 扁平化处理
+for (uint k = 0; k &lt; 100; ) {
+    uint i = k / 10;
+    uint j = k % 10;
+    // 业务逻辑
+    unchecked { k++; }
+}
+</code></pre>
+<p><strong>Gas 节省</strong>：</p>
+<ul>
+<li>减少外层循环开销</li>
+</ul>
+<hr />
+<h3 id="5-循环-gas-消耗参考表"><a class="header" href="#5-循环-gas-消耗参考表">5. <strong>循环 Gas 消耗参考表</strong></a></h3>
+<div class="table-wrapper"><table><thead><tr><th>操作</th><th>单次迭代 Gas 消耗</th><th>优化后 Gas</th></tr></thead><tbody>
+<tr><td>普通循环+存储读写</td><td>~5000</td><td>~2200</td></tr>
+<tr><td>无存储读写的循环</td><td>~200</td><td>~80</td></tr>
+<tr><td>嵌套循环(10x10)</td><td>~50000</td><td>~22000</td></tr>
+</tbody></table>
+</div>
+<hr />
+<h3 id="6-实战建议"><a class="header" href="#6-实战建议">6. <strong>实战建议</strong></a></h3>
+<ol>
+<li>
+<p><strong>优先使用映射替代数组遍历</strong></p>
+<pre><code class="language-solidity">mapping(uint =&gt; Item) public items; // O(1)访问
+</code></pre>
+</li>
+<li>
+<p><strong>链下计算+链上验证模式</strong></p>
+<pre><code class="language-solidity">function verifyBatch(bytes32 merkleRoot, bytes32[] calldata proofs) external {
+    // 使用Merkle Proof验证批量数据
+}
+</code></pre>
+</li>
+<li>
+<p><strong>使用事件替代存储更新</strong></p>
+<pre><code class="language-solidity">event BulkUpdate(uint256 indexed fromId, uint256 indexed toId);
+
+function bulkNotify(uint256 start, uint256 end) external {
+    emit BulkUpdate(start, end); // 0 Gas成本
+}
+</code></pre>
+</li>
+</ol>
+<p><strong>终极原则</strong>：</p>
+<ul>
+<li>能不用循环就不用</li>
+<li>必须用循环时：减少存储访问 + 限制最大迭代次数 + 使用 unchecked</li>
+</ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/reentrancyAttack/reentrancyAttack.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../../../../BlockChain/Ethereum/Solidity/GasOptimization/variables/variables.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/Rollup.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/BNB/WBNB/WBNB.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -175,11 +337,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../../../../BlockChain/Ethereum/Advanced/SafetyProblems/reentrancyAttack/reentrancyAttack.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../../../../BlockChain/Ethereum/Solidity/GasOptimization/variables/variables.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Advanced/Rollup.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../../../../../BlockChain/Ethereum/Solidity/SourceCodeAnalysis/BNB/WBNB/WBNB.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
