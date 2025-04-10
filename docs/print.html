@@ -4084,13 +4084,13 @@ March 2020
 <p>Uniswap v1 is an on-chain system of smart contracts on the Ethereum blockchain, implementing an automated liquidity protocol based on a "constant product formula" <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-1">1</a>. Each Uniswap v1 pair stores pooled reserves of two assets, and provides liquidity for those two assets, maintaining the invariant that the product of the reserves cannot decrease. Traders pay a 30-basis-point fee on trades, which goes to liquidity providers. The contracts are non-upgradeable.</p>
 <p>Uniswap v1 是以太坊区块链上的一套链上智能合约系统，它基于"恒定乘积公式"<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-1">1</a> 实现了一种自动化的流动性协议。每个 Uniswap v1 交易对都存储着两种资产的汇集储备，并为这两种资产提供流动性，维持储备金乘积不能减少的不变性。交易者在交易时支付 30 个基点的费用，这笔费用会分配给流动性提供者。这些合约是不可升级的。</p>
 <p>Uniswap v2 is a new implementation based on the same formula, with several new highlydesirable features. Most significantly, it enables the creation of arbitrary ERC20/ERC20 pairs, rather than supporting only pairs between ERC20 and ETH. It also provides a hardened price oracle that accumulates the relative price of the two assets at the beginning of each block. This allows other contracts on Ethereum to estimate the time-weighted average price for the two assets over arbitrary intervals. Finally, it enables "flash swaps" where users can receive assets freely and use them elsewhere on the chain, only paying for (or returning) those assets at the end of the transaction.</p>
-<p>Uniswap v2 是基于相同公式的新实现，具有几个非常理想的新特性。最重要的是，它能够创建任意 ERC20/ERC20 交易对，而不仅仅是支持 ERC20 和 ETH 之间的交易对。它还提供了一个强化的价格预言机，该预言机在每个区块的开始累积两种资产的相对价格。这使得以太坊上的其他合约能够估算任意时间间隔内这两种资产的时间加权平均价格。最后，它启用了"闪电兑换"，用户可以免费接收资产并在链上的其他地方使用它们，只需在交易结束时支付（或归还）这些资产。</p>
+<p>Uniswap v2 是基于相同公式的新实现，具有几个非常理想的新特性。最重要的是，它能够创建任意 ERC20/ERC20 交易对，而不仅仅是支持 ERC20 和 ETH 之间的交易对。它还提供了一个强化的价格预言机，该预言机在每个区块的开始累积两种资产的相对价格。这使得以太坊上的其他合约能够估算任意时间间隔内这两种资产的时间加权平均价格。最后，它启用了“闪电兑换”，用户可以免费接收资产并在链上的其他地方使用它们，只需在交易结束时支付（或归还）这些资产。</p>
 <p>While the contract is not generally upgradeable, there is a private key that has the ability to update a variable on the factory contract to turn on an on-chain 5-basis-point fee on trades. This fee will initially be turned off, but could be turned on in the future, after which liquidity providers would earn 25 basis points on every trade, rather than 30 basis points.</p>
 <p>虽然该合约通常是不可升级的，但存在一个私钥，该私钥能够更新工厂合约上的一个变量以开启收取链上 5 个基点的交易费用。此费用最初将处于关闭状态，但未来可能会开启，之后流动性提供者将在每笔交易中赚取 25 个基点，而不是 30 个基点。</p>
 <p>As discussed in section 3, Uniswap v2 also fixes some minor issues with Uniswap v1, as well as rearchitecting the implementation, reducing Uniswap's attack surface and making the system more easily upgradeable by minimizing the logic in the "core" contract that holds liquidity providers' funds.</p>
-<p>正如第 3 节所讨论的，Uniswap v2 还修复了 Uniswap v1 的一些小问题，并重新设计了架构实现，从而减少了 Uniswap 的受攻击面，并通过最小化存储流动性提供者资金的"核心"合约中的逻辑，使系统更容易升级。</p>
+<p>正如第 3 节所讨论的，Uniswap v2 还修复了 Uniswap v1 的一些小问题，并重新设计了架构实现，从而减少了 Uniswap 的受攻击面，并通过最小化存储流动性提供者资金的“核心”合约中的逻辑，使系统更容易升级。</p>
 <p>This paper describes the mechanics of that core contract, as well as the factory contract used to instantiate those contracts. Actually using Uniswap v2 will require calling the pair contract through a "router" contract that computes the trade or deposit amount and transfers funds to the pair contract.</p>
-<p>本文描述了该核心合约以及用于实例化这些合约的工厂合约的机制。实际上使用 Uniswap v2 需要通过一个"路由器"合约来调用交易对合约，该路由器合约计算交易或存款金额并将资金转移到交易对合约。</p>
+<p>本文描述了该核心合约以及用于实例化这些合约的工厂合约的机制。实际上使用 Uniswap v2 需要通过一个“路由器”合约来调用交易对合约，该路由器合约计算交易或存款金额并将资金转移到交易对合约。</p>
 <h2 id="2-new-features-新特性"><a class="header" href="#2-new-features-新特性">2 New features （新特性）</a></h2>
 <h3 id="21-erc-20-pairs-erc-20-币对"><a class="header" href="#21-erc-20-pairs-erc-20-币对">2.1 ERC-20 pairs （ERC-20 币对）</a></h3>
 <p>Uniswap v1 used ETH as a bridge currency. Every pair included ETH as one of its assets. This makes routing simpler—every trade between ABC and XYZ goes through the ETH/ABC pair and the ETH/XYZ pair—and reduces fragmentation of liquidity.</p>
@@ -4151,63 +4151,90 @@ $$</p>
 <p>用户也可以使用相同的代币偿还 Uniswap 池，而不是完成兑换。这实际上等同于允许任何人闪电借用存储在 Uniswap 池中的任何资产（费用与 Uniswap 收取的交易费用相同，为 0.30%）<sup class="footnote-reference" id="fr-5-2"><a href="#footnote-5">5</a></sup>。</p>
 <h2 id="24-protocol-fee"><a class="header" href="#24-protocol-fee">2.4 Protocol fee</a></h2>
 <p>Uniswap v2 includes a \(0.05\%\) protocol fee that can be turned on and off. If turned on, this fee would be sent to a feeTo address specified in the factory contract.</p>
+<p>Uniswap v2 包含一个可以开启和关闭的 \(0.05\%\) 协议费用。如果开启，此费用将发送到工厂合约中指定的 feeTo 地址。</p>
 <p>Initially, feeTo is not set, and no fee is collected. A pre-specified address—feeToSetter—can call the setFeeTo function on the Uniswap v2 factory contract, setting feeTo to a different value. feeToSetter can also call the setFeeToSetter to change the feeToSetter address itself.</p>
+<p>初始化时，feeTo 未设置，不收取任何费用。一个预先指定的地址——feeToSetter——可以调用 Uniswap v2 工厂合约上的 setFeeTo 函数，将 feeTo 设置为不同的值。feeToSetter 还可以调用 setFeeToSetter 来更改 feeToSetter 地址本身。</p>
 <p>If the feeTo address is set, the protocol will begin charging a 5-basis-point fee, which is taken as a \(\frac{1}{6}\) cut of the 30-basis-point fees earned by liquidity providers. That is, traders will continue to pay a \(0.30\%\) fee on all trades; \(83.\overline{3}\%\) of that fee ( \(0.25\%\) of the amount traded) will go to liquidity providers, and \(16.\overline{6}\%\) of that fee ( \(0.05\%\) of the amount traded) will go to the feeTo address.</p>
+<p>如果 feeTo 地址已设置，协议将开始收取 5 个基点的费用，这相当于流动性提供者赚取的 30 个基点费用的 \(\frac{1}{6}\)。也就是说，交易者将继续为所有交易支付 \(0.30\%\)的费用；该费用的 \(83.\overline{3}\%\)（交易金额的 0.25%）将归流动性提供者所有，而该费用的 \(16.\overline{6}\%\)（交易金额的 0.05%）将归 feeTo 地址所有。</p>
 <p>Collecting this \(0.05\%\) fee at the time of the trade would impose an additional gas cost on every trade. To avoid this, accumulated fees are collected only when liquidity is deposited or withdrawn. The contract computes the accumulated fees, and mints new liquidity tokens to the fee beneficiary, immediately before any tokens are minted or burned.</p>
+<p>在交易时收取这 \(0.05\%\) 的费用会在每笔交易中增加额外的 Gas 成本。为了避免这种情况，累积的费用仅在存入或提取流动性时收取。合约在铸造或销毁任何代币之前，计算累积的费用，并向费用受益人铸造新的流动性代币。</p>
 <p>The total collected fees can be computed by measuring the growth in \(\sqrt{k}\) (that is, \(\sqrt{x \cdot y}\)) since the last time fees were collected.<sup class="footnote-reference" id="fr-6-1"><a href="#footnote-6">6</a></sup> This formula gives you the accumulated fees between \(t_1\) and \(t_2\) as a percentage of the liquidity in the pool at \(t_2\):</p>
+<p>可以通过测量自上次收取费用以来\(\sqrt{k}\) (即 \(\sqrt{x \cdot y}\))的增长来计算收取的总费用<sup class="footnote-reference" id="fr-6-2"><a href="#footnote-6">6</a></sup>。此公式给出了在 \(t_1\)和 \(t_2\)之间累积的费用占 \(t_2\)时刻池中流动性的百分比：</p>
 <p>$$
 f_{1,2} = 1 - \frac{\sqrt{k_1}}{\sqrt{k_2}}
 $$</p>
-<p>If the fee was activated before \(t<em>1\), the feeTo address should capture \(\frac{1}{6}\) of fees that were accumulated between \(t_1\) and \(t_2\). Therefore, we want to mint new liquidity tokens to the feeTo address that represent \( \phi \cdot f</em>{1,2} \) of the pool, where \(\phi\) is \(\frac{1}{6}\).</p>
+<p>If the fee was activated before \(t_1\), the feeTo address should capture \(\frac{1}{6}\) of fees that were accumulated between \(t_1\) and \(t_2\). Therefore, we want to mint new liquidity tokens to the feeTo address that represent \( \phi \cdot f_{1,2} \) of the pool, where \(\phi\) is \(\frac{1}{6}\).</p>
+<p>如果费用在 \(t_1\)之前被激活，则 feeTo 地址应获得\(\frac{1}{6}\)的，在\(t_1\)和\(t_2\)之间产生的费率。
+因此，我们希望向 feeTo 地址铸造代表池中 \( \phi \cdot f_{1,2} \) 份额的新流动性代币，其中\(\phi\) 是 \(\frac{1}{6}\)。</p>
 <p>That is, we want to choose \(s_m\) to satisfy the following relationship, where \(s_1\) is the total quantity of outstanding shares at time \(t_1\):</p>
+<p>也就是说，我们希望选择 \(s_m\)来满足以下关系，其中\(s_1\)是在 \(t_1\)时刻流通的份额总数：</p>
 <p>$$
 \frac{s_m}{s_m + s_1} = \phi \cdot f_{1,2}
 $$</p>
-<p>After some manipulation, including substituting \(1 - \frac{\sqrt{k<em>1}}{\sqrt{k_2}}\) for \(f</em>{1,2}\) and solving for \(s_m\), we can rewrite this as:</p>
+<p>After some manipulation, including substituting \(1 - \frac{\sqrt{k_1}}{\sqrt{k_2}}\) for \(f_{1,2}\) and solving for \(s_m\), we can rewrite this as:</p>
+<p>在进行一些操作后，包括代入\(1 - \frac{\sqrt{k_1}}{\sqrt{k_2}}\) 作为\(f_{1,2}\) ,并且求解\(s_m\),我们可以重写此公式为:</p>
 <p>$$
 s_m = \frac{\sqrt{k_2} - \sqrt{k_1}}{(\frac{1}{\phi} - 1) \cdot \sqrt{k_2} + \sqrt{k_1}} \cdot s_1
 $$</p>
 <p>Setting \(\phi\) to \(\frac{1}{6}\) gives us the following formula:</p>
+<p>将\(\phi\) 设定为\(\frac{1}{6}\) 给我们带来如下的公式:</p>
 <p>$$
 s_m = \frac{\sqrt{k_2} - \sqrt{k_1}}{5 \cdot \sqrt{k_2} + \sqrt{k_1}} \cdot s_1
 $$</p>
 <p>Suppose the initial depositor puts 100 DAI and 1 ETH into a pair, receiving 10 shares. Some time later (without any other depositor having participated in that pair), they attempt to withdraw it, at a time when the pair has 96 DAI and 1.5 ETH. Plugging those values into the above formula gives us the following:</p>
+<p>假设初始存款人向一个交易对投入 100 DAI 和 1 ETH，并获得 10 份份额。一段时间后（没有其他存款人参与该交易对），他们在交易对拥有 96 DAI 和 1.5 ETH 时尝试提取。将这些值代入上述公式，我们得到以下结果：</p>
 <p>$$
 s_m = \frac{\sqrt{1.5 \cdot 96} - \sqrt{1 \cdot 100}}{5 \cdot \sqrt{1.5 \cdot 96} + \sqrt{1 \cdot 100}} \cdot 10 \approx 0.0286
 $$</p>
-<h2 id="25-meta-transactions-for-pool-shares"><a class="header" href="#25-meta-transactions-for-pool-shares">2.5 Meta transactions for pool shares</a></h2>
+<h2 id="25-meta-transactions-for-pool-shares-流动池份额中的元交易"><a class="header" href="#25-meta-transactions-for-pool-shares-流动池份额中的元交易">2.5 Meta transactions for pool shares (流动池份额中的元交易)</a></h2>
 <p>Pool shares minted by Uniswap v2 pairs natively support meta transactions. This means users can authorize a transfer of their pool shares with a signature<sup class="footnote-reference" id="fr-7-1"><a href="#footnote-7">7</a></sup>, rather than an on-chain transaction from their address. Anyone can submit this signature on the user's behalf by calling the permit function, paying gas fees and possibly performing other actions in the same transaction.</p>
-<h1 id="3-other-changes"><a class="header" href="#3-other-changes">3 Other changes</a></h1>
+<p>Uniswap v2 交易对铸造的池份额原生支持元交易。这意味着用户可以通过签名<sup class="footnote-reference" id="fr-7-2"><a href="#footnote-7">7</a></sup>授权转移他们的池份额，而无需从他们的地址发起链上交易。任何人都可以通过调用 permit 函数代表用户提交此签名，支付 Gas 费用，并可能在同一笔交易中执行其他操作。</p>
+<h1 id="3-other-changes-其他变化"><a class="header" href="#3-other-changes-其他变化">3 Other changes (其他变化)</a></h1>
 <h2 id="31-solidity"><a class="header" href="#31-solidity">3.1 Solidity</a></h2>
 <p>Uniswap v1 is implemented in Vyper, a Python-like smart contract language. Uniswap v2 is implemented in the more widely-used Solidity, since it requires some capabilities that were not yet available in Vyper (such as the ability to interpret the return values of non-standard ERC-20 tokens, as well as access to new opcodes such as chainid via inline assembly) at the time it was being developed.</p>
-<h2 id="32-contract-re-architecture"><a class="header" href="#32-contract-re-architecture">3.2 Contract re-architecture</a></h2>
+<p>Uniswap v1 使用 Vyper（一种类似 Python 的智能合约语言）实现。Uniswap v2 则使用更广泛使用的 Solidity 实现，因为它在开发时需要一些 Vyper 尚未提供的功能（例如解释非标准 ERC-20 代币返回值的能力，以及通过内联汇编访问诸如 chainid 等新操作码的能力）。</p>
+<h2 id="32-contract-re-architecture-合约重构"><a class="header" href="#32-contract-re-architecture-合约重构">3.2 Contract re-architecture （合约重构）</a></h2>
 <p>One design priority for Uniswap v2 is to minimize the surface area and complexity of the core pair contract—the contract that stores liquidity providers' assets. Any bugs in this contract could be disastrous, since millions of dollars of liquidity might be stolen or frozen.</p>
+<p>Uniswap v2 的一个设计重点是最小化核心交易对合约（存储流动性提供者资产的合约）的表面积(合约暴露给调用者的部分)和复杂性。此合约中的任何错误都可能是灾难性的，因为数百万美元的流动性可能会被盗或冻结。</p>
 <p>When evaluating the security of this core contract, the most important question is whether it protects liquidity providers from having their assets stolen or locked. Any feature that is meant to support or protect traders—other than the basic functionality of allowing one asset in the pool to be swapped for another—can be handled in a "router" contract.</p>
+<p>在评估此核心合约的安全性时，最重要的问题是它是否保护流动性提供者免于资产被盗或锁定。任何旨在支持或保护交易者的功能——除了允许池中的一种资产兑换为另一种资产的基本功能之外——都可以在“路由器”合约中处理。</p>
 <p>In fact, even part of the swap functionality can be pulled out into the router contract. As mentioned above, Uniswap v2 stores the last recorded balance of each asset (in order to prevent a particular manipulative exploit of the oracle mechanism). The new architecture takes advantage of this to further simplify the Uniswap v1 contract.</p>
+<p>事实上，甚至是部分兑换功能也可以提取到路由器合约中。如上所述，Uniswap v2 存储了每种资产的最后记录余额（以防止特定的预言机机制的操纵性利用）。新的架构利用这一点进一步简化了 Uniswap v1 合约。</p>
 <p>In Uniswap v2, the seller sends the asset to the core contract before calling the swap function. Then, the contract measures how much of the asset it has received, by comparing the last recorded balance to its current balance. This means the core contract is agnostic to the way in which the trader transfers the asset. Instead of transferFrom, it could be a meta transaction, or any other future mechanism for authorizing the transfer of ERC-20s.</p>
-<h3 id="321-adjustment-for-fee"><a class="header" href="#321-adjustment-for-fee">3.2.1 Adjustment for fee</a></h3>
+<p>在 Uniswap v2 中，卖方在调用 swap 函数之前将资产发送到核心合约。然后，合约通过比较最后记录的余额和当前余额来衡量它收到了多少资产。这意味着核心合约与交易者转移资产的方式无关。它可以是元交易，也可以是任何其他未来授权 ERC-20 转移的机制，而不是 transferFrom。</p>
+<h3 id="321-adjustment-for-fee-费率调整"><a class="header" href="#321-adjustment-for-fee-费率调整">3.2.1 Adjustment for fee （费率调整）</a></h3>
 <p>Uniswap v1's trading fee is applied by reducing the amount paid into the contract by \(0.3\%\) before enforcing the constant-product invariant. The contract implicitly enforces the following formula:</p>
+<p>Uniswap v1 的交易费用是通过在执行 <strong>恒定乘积不变量计算</strong>之前划扣掉用户支付到合约的总资产量的\(0.3\%\) 实现的。合约隐式地强制执行以下公式：</p>
 <p>$$
-(x_1 - 0.003 \cdot x_{in}) \cdot y_1 \geq x_0 \cdot y_0
+(x_1 - 0.003 \cdot x_{in}) \cdot y_1 \gt = x_0 \cdot y_0
 $$</p>
-<p>With flash swaps, Uniswap v2 introduces the possibility that \(x*{in}\) and \(y*{in}\) might both be non-zero (when a user wants to pay the pair back using the same asset, rather than swapping). To handle such cases while properly applying fees, the contract is written to enforce the following invariant<sup class="footnote-reference" id="fr-8-1"><a href="#footnote-8">8</a></sup>:</p>
+<p>With flash swaps, Uniswap v2 introduces the possibility that \(x_{in}\) and \(y_{in}\) might both be non-zero (when a user wants to pay the pair back using the same asset, rather than swapping). To handle such cases while properly applying fees, the contract is written to enforce the following invariant<sup class="footnote-reference" id="fr-8-1"><a href="#footnote-8">8</a></sup>:</p>
+<p>借助闪电互换，Uniswap v2 引入了 \( x_{in}\)和 \(y_{in}\)可能都非零的情况（当用户想要使用相同的资产偿还交易对，而不是进行兑换时）。为了在正确应用费用的同时处理这种情况，合约被编写为强制执行以下不变量<sup class="footnote-reference" id="fr-8-2"><a href="#footnote-8">8</a></sup>：</p>
 <p>$$
-(x_1 - 0.003 \cdot x_{in}) \cdot (y_1 - 0.003 \cdot y_{in}) \geq x_0 \cdot y_0
+(x_1 - 0.003 \cdot x_{in}) \cdot (y_1 - 0.003 \cdot y_{in}) \gt = x_0 \cdot y_0
 $$</p>
 <p>To simplify this calculation on-chain, we can multiply each side of the inequality by 1,000,000:</p>
+<p>为简化这个在链上的计算，我们可以在不等式两侧同乘 1,000,000：</p>
 <p>$$
-(1000 \cdot x_1 - 3 \cdot x_{in}) \cdot (1000 \cdot y_1 - 3 \cdot y_{in}) \geq 1000000 \cdot x_0 \cdot y_0
+(1000 \cdot x_1 - 3 \cdot x_{in}) \cdot (1000 \cdot y_1 - 3 \cdot y_{in}) \gt = 1000000 \cdot x_0 \cdot y_0
 $$</p>
 <h3 id="322-sync-and-skim"><a class="header" href="#322-sync-and-skim">3.2.2 sync() and skim()</a></h3>
 <p>To protect against bespoke token implementations that can update the pair contract's balance, and to more gracefully handle tokens whose total supply can be greater than \(2^{112}\), Uniswap v2 has two bail-out functions: sync() and skim().</p>
+<p>为了防范可能更新交易对合约余额的定制代币实现，并更优雅地处理总供应量可能大于 \(2^{112}\)的代币，Uniswap v2 提供了两个应急函数：sync() 和 skim()。</p>
 <p>sync() functions as a recovery mechanism in the case that a token asynchronously deflates the balance of a pair. In this case, trades will receive sub-optimal rates, and if no liquidity provider is willing to rectify the situation, the pair is stuck. sync() exists to set the reserves of the contract to the current balances, providing a somewhat graceful recovery from this situation.</p>
+<p>sync() 函数作为一种恢复机制，用于处理代币异步通缩交易对余额的情况。在这种情况下，交易将获得次优的价格，如果没有任何流动性提供者愿意纠正这种情况，交易对就会陷入困境。sync() 的存在是为了将合约的储备设置为当前的余额，从而为此情况提供某种程度的优雅恢复。</p>
 <p>skim() functions as a recovery mechanism in case enough tokens are sent to an pair to overflow the two uint112 storage slots for reserves, which could otherwise cause trades to fail. skim() allows a user to withdraw the difference between the current balance of the pair and \(2^{112}-1\) to the caller, if that difference is greater than 0.</p>
-<h2 id="33-handling-non-standard-and-unusual-tokens"><a class="header" href="#33-handling-non-standard-and-unusual-tokens">3.3 Handling non-standard and unusual tokens</a></h2>
-<p>The ERC-20 standard requires that transfer() and transferFrom() return a boolean indicating the success or failure of the call [4]. The implementations of one or both of these functions on some tokens—including popular ones like Tether (USDT) and Binance Coin (BNB)—instead have no return value. Uniswap v1 interprets the missing return value of these improperly defined functions as false—that is, as an indication that the transfer was not successful—and reverts the transaction, causing the attempted transfer to fail.</p>
+<p>skim() 函数作为一种恢复机制，用于处理发送到交易对的代币数量过多，导致超出用于存储储备的两个 uint112 存储槽的情况，否则可能导致交易失败。如果当前交易对余额与 \(2^{112}-1\) 之间的差值大于 0，skim() 允许用户将该差值提取给调用者。</p>
+<h2 id="33-handling-non-standard-and-unusual-tokens-处理非标准及不常见代币"><a class="header" href="#33-handling-non-standard-and-unusual-tokens-处理非标准及不常见代币">3.3 Handling non-standard and unusual tokens (处理非标准及不常见代币)</a></h2>
+<p>The ERC-20 standard requires that transfer() and transferFrom() return a boolean indicating the success or failure of the call <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-4">4</a>. The implementations of one or both of these functions on some tokens—including popular ones like Tether (USDT) and Binance Coin (BNB)—instead have no return value. Uniswap v1 interprets the missing return value of these improperly defined functions as false—that is, as an indication that the transfer was not successful—and reverts the transaction, causing the attempted transfer to fail.</p>
+<p>ERC-20 标准要求 transfer() 和 transferFrom() 返回一个布尔值，指示调用成功或失败 <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-4">4</a>。然而，一些代币（包括流行的 Tether (USDT) 和 Binance Coin (BNB)）上这两个函数中的一个或两个的实现都没有返回值。Uniswap v1 将这些不正确定义的函数缺失的返回值解释为 false——即表示转账不成功——并回滚交易，导致尝试的转账失败。</p>
 <p>Uniswap v2 handles non-standard implementations differently. Specifically, if a transfer() call<sup class="footnote-reference" id="fr-9-1"><a href="#footnote-9">9</a></sup> has no return value, Uniswap v2 interprets it as a success rather than as a failure. This change should not affect any ERC-20 tokens that conform to the standard (because in those tokens, transfer() always has a return value).</p>
-<p>Uniswap v1 also makes the assumption that calls to transfer() and transferFrom() cannot trigger a reentrant call to the Uniswap pair contract. This assumption is violated by certain ERC-20 tokens, including ones that support ERC-777's "hooks" <sup class="footnote-reference" id="fr-5-3"><a href="#footnote-5">5</a></sup>. To fully support such tokens, Uniswap v2 includes a "lock" that directly prevents reentrancy to all public state-changing functions. This also protects against reentrancy from the user-specified callback in a flash swap, as described in section 2.3.</p>
-<h2 id="34-initialization-of-liquidity-token-supply"><a class="header" href="#34-initialization-of-liquidity-token-supply">3.4 Initialization of liquidity token supply</a></h2>
+<p>Uniswap v2 以不同的方式处理非标准实现。具体来说，如果 transfer() 调用<sup class="footnote-reference" id="fr-9-2"><a href="#footnote-9">9</a></sup> 没有返回值，Uniswap v2 会将其解释为成功而不是失败。此更改不应影响任何符合标准的 ERC-20 代币（因为在这些代币中，transfer() 始终具有返回值）。</p>
+<p>Uniswap v1 also makes the assumption that calls to transfer() and transferFrom() cannot trigger a reentrant call to the Uniswap pair contract. This assumption is violated by certain ERC-20 tokens, including ones that support ERC-777's "hooks" <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-5">5</a>. To fully support such tokens, Uniswap v2 includes a "lock" that directly prevents reentrancy to all public state-changing functions. This also protects against reentrancy from the user-specified callback in a flash swap, as described in section 2.3.</p>
+<p>Uniswap v1 还假设对 transfer() 和 transferFrom() 的调用不会触发对 Uniswap 交易对合约的重入调用。某些 ERC-20 代币违反了此假设，包括支持 ERC-777“钩子”的代币<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-5">5</a>。为了完全支持此类代币，Uniswap v2 包含一个“锁”，该锁直接阻止对所有公共状态更改函数的重入。正如 2.3 节所述，这还可以防止闪电互换中用户指定的回调函数的重入。</p>
+<h2 id="34-initialization-of-liquidity-token-supply-流动性代币的初始化补充"><a class="header" href="#34-initialization-of-liquidity-token-supply-流动性代币的初始化补充">3.4 Initialization of liquidity token supply (流动性代币的初始化补充)</a></h2>
 <p>When a new liquidity provider deposits tokens into an existing Uniswap pair, the number of liquidity tokens minted is computed based on the existing quantity of tokens:</p>
+<p>当一个新的流动性提供者向现有的 Uniswap 交易对存入代币时，所铸造的流动性代币数量是基于现有的代币数量计算的：</p>
 <p>$$
 s_{minted} = \frac{x_{deposited}}{x_{starting}} \cdot s_{starting}
 $$</p>
@@ -4223,11 +4250,11 @@ $$</p>
 <p>The above formula ensures that a liquidity pool share will never be worth less than the geometric mean of the reserves in that pool. However, it is possible for the value of a liquidity pool share to grow over time, either by accumulating trading fees or through "donations" to the liquidity pool. In theory, this could result in a situation where the value of the minimum quantity of liquidity pool shares (1e-18 pool shares) is worth so much that it becomes infeasible for small liquidity providers to provide any liquidity.</p>
 <p>To mitigate this, Uniswap v2 burns the first 1e-15 (0.000000000000001) pool shares that are minted (1000 times the minimum quantity of pool shares), sending them to the zero address instead of to the minter. This should be a negligible cost for almost any token pair.<sup class="footnote-reference" id="fr-11-1"><a href="#footnote-11">11</a></sup> But it dramatically increases the cost of the above attack. In order to raise the value of a liquidity pool share to \($100\), the attacker would need to donate $100,000 to the pool, which would be permanently locked up as liquidity.</p>
 <h2 id="35-wrapping-eth"><a class="header" href="#35-wrapping-eth">3.5 Wrapping ETH</a></h2>
-<p>The interface for transacting with Ethereum's native asset, ETH, is different from the standard interface for interacting with ERC-20 tokens. As a result, many other protocols on Ethereum do not support ETH, instead using a canonical "wrapped ETH" token, WETH <sup class="footnote-reference" id="fr-6-2"><a href="#footnote-6">6</a></sup>.</p>
+<p>The interface for transacting with Ethereum's native asset, ETH, is different from the standard interface for interacting with ERC-20 tokens. As a result, many other protocols on Ethereum do not support ETH, instead using a canonical "wrapped ETH" token, WETH <sup class="footnote-reference" id="fr-6-3"><a href="#footnote-6">6</a></sup>.</p>
 <p>Uniswap v1 is an exception. Since every Uniswap v1 pair included ETH as one asset, it made sense to handle ETH directly, which was slightly more gas-efficient.</p>
 <p>Since Uniswap v2 supports arbitrary ERC-20 pairs, it now no longer makes sense to support unwrapped ETH. Adding such support would double the size of the core codebase, and risks fragmentation of liquidity between ETH and WETH pairs<sup class="footnote-reference" id="fr-12-1"><a href="#footnote-12">12</a></sup>. Native ETH needs to be wrapped into WETH before it can be traded on Uniswap v2.</p>
 <h2 id="36-deterministic-pair-addresses"><a class="header" href="#36-deterministic-pair-addresses">3.6 Deterministic pair addresses</a></h2>
-<p>As in Uniswap v1, all Uniswap v2 pair contracts are instantiated by a single factory contract. In Uniswap v1, these pair contracts were created using the CREATE opcode, which meant that the address of such a contract depended on the order in which that pair was created. Uniswap v2 uses Ethereum's new CREATE2 opcode <sup class="footnote-reference" id="fr-8-2"><a href="#footnote-8">8</a></sup> to generate a pair contract with a deterministic address. This means that it is possible to calculate a pair's address (if it exists) off-chain, without having to look at the chain state.</p>
+<p>As in Uniswap v1, all Uniswap v2 pair contracts are instantiated by a single factory contract. In Uniswap v1, these pair contracts were created using the CREATE opcode, which meant that the address of such a contract depended on the order in which that pair was created. Uniswap v2 uses Ethereum's new CREATE2 opcode <sup class="footnote-reference" id="fr-8-3"><a href="#footnote-8">8</a></sup> to generate a pair contract with a deterministic address. This means that it is possible to calculate a pair's address (if it exists) off-chain, without having to look at the chain state.</p>
 <h2 id="37-maximum-token-balance"><a class="header" href="#37-maximum-token-balance">3.7 Maximum token balance</a></h2>
 <p>In order to efficiently implement the oracle mechanism, Uniswap v2 only support reserve balances of up to \(2^{112}-1\). This number is high enough to support 18-decimal-place tokens with a totalSupply over 1 quadrillion.</p>
 <p>If either reserve balance does go above \(2^{112}-1\), any call to the swap function will begin to fail (due to a check in the _update() function). To recover from this situation, any user can call the skim() function to remove excess assets from the liquidity pool.</p>
@@ -4242,10 +4269,11 @@ $$</p>
 <div id="ref-8">[8] Vitalik Buterin. EIP 1014: Skinny CREATE2. Apr. 2018. url: https://eips.ethereum.org/EIPS/eip-1014.</div>
 <h1 id="4-disclaimer"><a class="header" href="#4-disclaimer">4 Disclaimer</a></h1>
 <p>This paper is for general information purposes only. It does not constitute investment advice or a recommendation or solicitation to buy or sell any investment and should not be used in the evaluation of the merits of making any investment decision. It should not be relied upon for accounting, legal or tax advice or investment recommendations. This paper reflects current opinions of the authors and is not made on behalf of Paradigm or its affiliates and does not necessarily reflect the opinions of Paradigm, its affiliates or individuals associated with Paradigm. The opinions reflected herein are subject to change without being updated.</p>
+<h1 id="footnode-脚注"><a class="header" href="#footnode-脚注">footnode (脚注)</a></h1>
 <hr>
 <ol class="footnote-definition"><li id="footnote-1">
 <p>For a real-world example of how using Uniswap v1 as an oracle can make a contract vulnerable to such
-an attack, see <sup class="footnote-reference" id="fr-3-3"><a href="#footnote-3">3</a></sup>.对于现实世界中使用 uniswap v1 作为预言机能让合约本身易受到攻击的例子，可见<sup class="footnote-reference" id="fr-3-4"><a href="#footnote-3">3</a></sup> <a href="#fr-1-1">↩</a> <a href="#fr-1-2">↩2</a></p>
+an attack, see <sup class="footnote-reference" id="fr-3-3"><a href="#footnote-3">3</a></sup>.对于现实世界中使用 uniswap v1 作为预言机能让合约本身易受到攻击的例子，可见<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-3">3</a> <a href="#fr-1-1">↩</a> <a href="#fr-1-2">↩2</a></p>
 </li>
 <li id="footnote-2">
 <p>Since miners have some freedom to set the block timestamp, users of the oracle should be aware that
@@ -4255,7 +4283,7 @@ these values may not correspond precisely to real-world times.由于矿工本身
 <p>The arithmetic mean price of asset A in terms of asset B over a given period is equal to the reciprocal
 of the harmonic mean price of asset B in terms of asset A over that period. If the contract measured the
 geometric mean price, then the prices would be the reciprocals of each other. However, the geometric mean
-TWAP is less commonly used, and is difficult to compute on Ethereum. <a href="#fr-3-1">↩</a> <a href="#fr-3-2">↩2</a> <a href="#fr-3-3">↩3</a> <a href="#fr-3-4">↩4</a></p>
+TWAP is less commonly used, and is difficult to compute on Ethereum. <a href="#fr-3-1">↩</a> <a href="#fr-3-2">↩2</a> <a href="#fr-3-3">↩3</a></p>
 </li>
 <li id="footnote-4">
 <p>The theoretical upper bound of \(2^{112} - (1/2^{112})\) does not apply in this setting, as UQ112.112 numbers in
@@ -4263,23 +4291,23 @@ Uniswap are always generated from the ratio of two uint112s. The largest such ra
 </li>
 <li id="footnote-5">
 <p>Because Uniswap charges fees on input amounts, the fee relative to the withdrawn amount is actually
-slightly higher: \(\frac{1}{1-0.003} - 1 = \frac{3}{997} \approx 0.3009203%\) <a href="#fr-5-1">↩</a> <a href="#fr-5-2">↩2</a> <a href="#fr-5-3">↩3</a></p>
+slightly higher: \(\frac{1}{1-0.003} - 1 = \frac{3}{997} \approx 0.3009203%\) <a href="#fr-5-1">↩</a> <a href="#fr-5-2">↩2</a></p>
 </li>
 <li id="footnote-6">
 <p>We can use this invariant, which does not account for liquidity tokens that were minted or burned,
-because we know that fees are collected every time liquidity is deposited or withdrawn. <a href="#fr-6-1">↩</a> <a href="#fr-6-2">↩2</a></p>
+because we know that fees are collected every time liquidity is deposited or withdrawn. <a href="#fr-6-1">↩</a> <a href="#fr-6-2">↩2</a> <a href="#fr-6-3">↩3</a></p>
 </li>
 <li id="footnote-7">
-<p>The signed message conforms to the EIP-712 standard, the same one used by meta transactions for tokens like CHAI and DAI. <a href="#fr-7-1">↩</a></p>
+<p>The signed message conforms to the EIP-712 standard, the same one used by meta transactions for tokens like CHAI and DAI. <a href="#fr-7-1">↩</a> <a href="#fr-7-2">↩2</a></p>
 </li>
 <li id="footnote-8">
 <p>Note that using the new architecture, \(x*{in}\) is not provided by the user; instead, it is calculated by
 measuring the contract's balance after the callback, \(x_1\), and subtracting \((x_0 - x*{out})\) from it. This logic does
 not distinguish between assets sent into the contract before it is called and assets sent into the contract
-during the callback. \(y*{in}\) is computed in the same way, based on \(y_0\), \(y_1\), and \(y*{out}\). <a href="#fr-8-1">↩</a> <a href="#fr-8-2">↩2</a></p>
+during the callback. \(y*{in}\) is computed in the same way, based on \(y_0\), \(y_1\), and \(y*{out}\). <a href="#fr-8-1">↩</a> <a href="#fr-8-2">↩2</a> <a href="#fr-8-3">↩3</a></p>
 </li>
 <li id="footnote-9">
-<p>As described above in section 3.2, Uniswap v2 core does not use transferFrom(). <a href="#fr-9-1">↩</a></p>
+<p>As described above in section 3.2, Uniswap v2 core does not use transferFrom(). <a href="#fr-9-1">↩</a> <a href="#fr-9-2">↩2</a></p>
 </li>
 <li id="footnote-10">
 <p>This also reduces the likelihood of rounding errors, since the number of bits in the quantity of shares
