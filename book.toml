@@ -11,6 +11,7 @@ default-theme = "Rust"
 git-repository-url = "https://github.com/codermaybe"
 git-repository-icon = "fa-github"
 destination = "docs"
+mathjax-support = true
 
 [output.html.search]
 limit-results = 8
