@@ -345,16 +345,161 @@ $$</p>
 </blockquote>
 <p>One complication: should we measure the price of asset A in terms of asset B, or the price of asset B in terms of asset A? While the spot price of A in terms of B is always the reciprocal of the spot price of B in terms of A, the mean price of asset A in terms of asset B over a particular period of time is not equal to the reciprocal of the mean price of asset B in terms of asset A.<sup class="footnote-reference" id="fr-3-1"><a href="#footnote-3">3</a></sup> For example, if the USD/ETH price is 100 in block 1 and 300 in block 2, the average USD/ETH price will be 200 USD/ETH, but the average ETH/USD price will be 1/150 ETH/USD. Since the contract cannot know which of the two assets users would want to use as the unit of account, Uniswap v2 tracks both prices.</p>
 <p>一个复杂的问题是：我们应该衡量资产 A 相对于资产 B 的价格，还是资产 B 相对于资产 A 的价格？虽然 A 相对于 B 的即时价格始终是 B 相对于 A 的即时价格的倒数，但在特定时间段内，资产 A 相对于资产 B 的平均价格不等于资产 B 相对于资产 A 的平均价格的倒数<sup class="footnote-reference" id="fr-3-2"><a href="#footnote-3">3</a></sup>。例如，如果 USD/ETH 的价格在区块 1 中是 100，在区块 2 中是 300，那么平均 USD/ETH 价格将是 200 USD/ETH，但平均 ETH/USD 价格将是 1/150 ETH/USD。由于合约无法知道用户希望将两种资产中的哪一种用作记账单位，因此 Uniswap v2 会跟踪两种价格。</p>
+<blockquote>
+<pre><code class="language-explain">1.  即时价格的倒数关系
+
+这句话首先明确了，在任何一个瞬间，资产 A 相对于资产 B 的价格，和资产 B 相对于资产 A 的价格，是互为倒数的关系。
+例如，如果 1 ETH = 200 USD，那么 1 USD = 1/200 ETH。
+
+2.  平均价格的差异
+
+但是，当计算一段时间内的平均价格时，这个倒数关系就不成立了。
+原因在于，平均价格的计算是基于价格本身的平均，而不是基于价格的倒数。
+
+3.  示例分析：USD/ETH 和 ETH/USD
+
+USD/ETH 的平均价格：
+区块 1：1 ETH = 100 USD
+区块 2：1 ETH = 300 USD
+平均 USD/ETH：(100 + 300) / 2 = 200 USD/ETH
+ETH/USD 的平均价格：
+区块 1：1 USD = 1/100 ETH
+区块 2：1 USD = 1/300 ETH
+平均 ETH/USD：((1/100) + (1/300)) / 2
+为了计算这个平均值，我们需要先计算括号内的算式，然后再除以 2。
+（1/100 + 1/300） = （3/300 + 1/300） = 4/300 = 1/75
+(1/75)/2 = 1/150
+所以平均 ETH/USD 价格是 1/150 ETH/USD
+
+4.  为什么会出现 1/150？
+
+1/150 是通过计算 ETH/USD 价格在两个区块中的平均值得到的。
+由于我们是对分数进行平均，而不是直接对倒数进行平均，所以结果与 1/200 不同。
+
+5.  Uniswap v2 的解决方案
+
+因为用户可能需要不同方向的平均价格，Uniswap v2 同时跟踪两种价格，以确保提供全面的信息。
+</code></pre>
+</blockquote>
 <p>Another complication is that it is possible for someone to send assets to the pair contract—and thus change its balances and marginal price—without interacting with it, and thus without triggering an oracle update. If the contract simply checked its own balances and updated the oracle based on the current price, an attacker could manipulate the oracle by sending an asset to the contract immediately before calling it for the first time in a block. If the last trade was in a block whose timestamp was X seconds ago, the contract would incorrectly multiply the new price by X before accumulating it, even though nobody has had an opportunity to trade at that price. To prevent this, the core contract caches its reserves after each interaction, and updates the oracle using the price derived from the cached reserves rather than the current reserves. In addition to protecting the oracle from manipulation, this change enables the contract re-architecture described below in section 3.2.</p>
 <p>另一个复杂的问题是，有人可能在不与交易对合约交互的情况下向此交易对合约发送资产，从而改变其余额和边际价格（因此也不会触发预言机更新）。如果合约只是检查自身的余额并根据当前价格更新预言机，攻击者可以通过在一个区块中首次调用合约之前立即向合约发送资产来操纵预言机。如果上次交易发生在 X 秒前的区块中，即使没有人有机会以该价格进行交易，合约也会错误地将新价格乘以 X 然后累积它。为了防止这种情况，核心合约在每次交互后缓存其资产储备值，并使用从缓存的储备而不是当前储备中得出的价格更新预言机。除了保护预言机免受操纵外，此更改还实现了下文 3.2 节中描述的合约重新架构。</p>
+<blockquote>
+<p>此处简单的翻译即为：uniswap 不基于当前合约中的资产量计算价格，而是每次通过所有触发交易的事件记录并更新储备量。屏蔽了私下转入的资产对预言机的影响</p>
+</blockquote>
 <h3 id="221-precision-精度"><a class="header" href="#221-precision-精度">2.2.1 Precision （精度）</a></h3>
 <p>Because Solidity does not have first-class support for non-integer numeric data types, the Uniswap v2 uses a simple binary fixed point format to encode and manipulate prices. Specifically, prices at a given moment are stored as UQ112.112 numbers, meaning that 112 fractional bits of precision are specified on either side of the decimal point, with no sign. These numbers have a range of \([0,2^{112}-1]\)<sup class="footnote-reference" id="fr-4-1"><a href="#footnote-4">4</a></sup> and a precision of \(\frac{1}{2^{112}}\).</p>
 <p>由于 Solidity 本身不支持非整数数值数据类型，Uniswap v2 使用一种简单的二进制定点格式来编码和操作价格。具体来说，某一时刻的价格存储为 UQ112.112 格式的数字，这意味着在小数点两侧都指定了 112 位的小数精度，并且没有符号。这些数字的范围是 \([0,2^{112}-1]\)<sup class="footnote-reference" id="fr-4-2"><a href="#footnote-4">4</a></sup>，精度为 \(\frac{1}{2^{112}}\).
-​</p>
-<p>The UQ112.112 format was chosen for a pragmatic reason — because these numbers can be stored in a uint224, this leaves 32 bits of a 256 bit storage slot free. It also happens that the reserves, each stored in a uint112, also leave 32 bits free in a (packed) 256 bit storage slot. These free spaces are used for the accumulation process described above. Specifically, the reserves are stored alongside the timestamp of the most recent block with at least one trade, modded with \(2^{32}\) so that it fits into 32 bits. Additionally, although the price at any given moment (stored as a UQ112.112 number) is guaranteed to fit in 224 bits, the accumulation of this price over an interval is not. The extra 32 bits on the end of the storage slots for the accumulated price of A/B and B/A are used to store overflow bits resulting from repeated summations of prices. This design means that the price oracle only adds an additional three SSTORE operations (a current cost of about 15,000 gas) to the first trade in each block.</p>
+​
+The UQ112.112 format was chosen for a pragmatic reason — because these numbers can be stored in a uint224, this leaves 32 bits of a 256 bit storage slot free. It also happens that the reserves, each stored in a uint112, also leave 32 bits free in a (packed) 256 bit storage slot. These free spaces are used for the accumulation process described above. Specifically, the reserves are stored alongside the timestamp of the most recent block with at least one trade, modded with \(2^{32}\) so that it fits into 32 bits. Additionally, although the price at any given moment (stored as a UQ112.112 number) is guaranteed to fit in 224 bits, the accumulation of this price over an interval is not. The extra 32 bits on the end of the storage slots for the accumulated price of A/B and B/A are used to store overflow bits resulting from repeated summations of prices. This design means that the price oracle only adds an additional three SSTORE operations (a current cost of about 15,000 gas) to the first trade in each block.</p>
 <p>选择 UQ112.112 格式是出于务实的考虑——因为这些数字可以存储在 uint224 中，这使得一个 256 位的存储槽空闲了 32 位。碰巧的是，储备金（每个都存储在 uint112 中）也在一个（紧凑的）256 位存储槽中留出了 32 位空闲空间。这些空闲空间用于上述的累积过程。具体来说，储备金与最近一次至少发生一笔交易的区块的时间戳一起存储，该时间戳会进行模 \(2^{32}\)运算，以截取此时间戳的末尾 32 位。此外，虽然任何给定时刻的价格（存储为 UQ112.112 数字）保证可以容纳在 224 位中，但该价格在一段时间内的累积却不能。存储槽末尾用于存储 A/B 和 B/A 累积价格的额外 32 位用于存储重复的价格求和产生的溢出位。这种设计意味着价格预言机在每个区块的第一笔交易中仅额外增加三个 SSTORE 操作（目前成本约为 15,000 gas）。</p>
+<blockquote>
+<h4 id="1-uq112112-格式的用途"><a class="header" href="#1-uq112112-格式的用途"><strong>1. <code>UQ112.112</code> 格式的用途</strong></a></h4>
+<ul>
+<li><strong>定义</strong>：<code>UQ112.112</code> 是一种 <strong>224 位无符号定点数</strong>格式，其中：
+<ul>
+<li>前 <strong>112 位</strong> 表示整数部分。</li>
+<li>后 <strong>112 位</strong> 表示小数部分。</li>
+</ul>
+</li>
+<li><strong>作用</strong>：用于精确存储价格（如 <code>reserve1/reserve0</code>），避免浮点数精度丢失。</li>
+</ul>
+<hr />
+<h4 id="2-存储布局优化"><a class="header" href="#2-存储布局优化"><strong>2. 存储布局优化</strong></a></h4>
+<p>Uniswap v2 的存储槽（256 位）被 <strong>紧凑排列</strong> 以节省 Gas 成本：</p>
+<h5 id="存储槽-1储备量--时间戳"><a class="header" href="#存储槽-1储备量--时间戳"><strong>存储槽 1：储备量 + 时间戳</strong></a></h5>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>位数</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>reserve0</code></td><td>112 位</td><td>代币 0 的储备量（如 USDC）。</td></tr>
+<tr><td><code>reserve1</code></td><td>112 位</td><td>代币 1 的储备量（如 ETH）。</td></tr>
+<tr><td><code>blockTimestampLast</code></td><td>32 位</td><td>最后一次交易的时间戳（取模 <code>2^32</code>，仅保留后 32 位）。</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li><strong>空闲位</strong>：<code>reserve0 + reserve1 + blockTimestampLast = 112 + 112 + 32 = 256位</code>，刚好填满一个存储槽。</li>
+</ul>
+<h5 id="存储槽-2累积价格"><a class="header" href="#存储槽-2累积价格"><strong>存储槽 2：累积价格</strong></a></h5>
+<div class="table-wrapper"><table><thead><tr><th>字段</th><th>位数</th><th>说明</th></tr></thead><tbody>
+<tr><td><code>price0Cumulative</code></td><td>224 位</td><td>代币 0 的累积价格（<code>UQ112.112</code> 格式）。</td></tr>
+<tr><td><code>price1Cumulative</code></td><td>224 位</td><td>代币 1 的累积价格（<code>UQ112.112</code> 格式）。</td></tr>
+<tr><td><strong>溢出位</strong></td><td>32 位</td><td>用于处理累积价格的溢出（见下文）。</td></tr>
+</tbody></table>
+</div>
+<ul>
+<li><strong>空闲位</strong>：<code>price0Cumulative + price1Cumulative = 224 + 224 = 448位</code>，但一个存储槽仅 256 位，因此实际分为两个存储槽，剩余 32 位用于溢出处理。</li>
+</ul>
+<hr />
+<h4 id="3-为什么选择-uq112112"><a class="header" href="#3-为什么选择-uq112112"><strong>3. 为什么选择 <code>UQ112.112</code>？</strong></a></h4>
+<ul>
+<li><strong>Gas 效率</strong>：
+<ul>
+<li>每次交易更新价格时，只需修改 <strong>一个存储槽</strong>（储备量+时间戳）和 <strong>部分累积价格槽</strong>。</li>
+<li>若使用更大的数据类型（如 <code>uint256</code>），会占用更多存储槽，增加 Gas 成本。</li>
+</ul>
+</li>
+<li><strong>精度足够</strong>：
+<ul>
+<li>112 位小数部分可满足大多数代币价格的精度需求（如 ETH/USDC 价格通常小于 <code>2^112</code>）。</li>
+</ul>
+</li>
+<li><strong>溢出处理</strong>：
+<ul>
+<li>累积价格可能随时间溢出 <code>UQ112.112</code> 的 224 位范围，因此额外 32 位用于记录溢出次数（类似“进位”）。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="4-时间戳的截断模-232"><a class="header" href="#4-时间戳的截断模-232"><strong>4. 时间戳的截断（模 <code>2^32</code>）</strong></a></h4>
+<ul>
+<li><strong>原因</strong>：
+<ul>
+<li>区块时间戳本身是 <code>uint256</code>，但仅需记录相对时间差（<code>ΔT</code>）。</li>
+<li>截断为 32 位后，可覆盖 <strong>约 136 年</strong> 的时间范围（<code>2^32秒 ≈ 136年</code>），完全够用。</li>
+</ul>
+</li>
+<li><strong>节省空间</strong>：
+<ul>
+<li>避免占用额外存储槽，与储备量共享同一槽位。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="5-gas-成本优化"><a class="header" href="#5-gas-成本优化"><strong>5. Gas 成本优化</strong></a></h4>
+<ul>
+<li><strong>每次更新的操作</strong>：
+<ol>
+<li>更新 <code>reserve0</code> 和 <code>reserve1</code>（同一存储槽）。</li>
+<li>更新 <code>price0Cumulative</code> 和 <code>price1Cumulative</code>（需两个存储槽）。</li>
+<li>更新 <code>blockTimestampLast</code>（与储备量共享存储槽）。</li>
+</ol>
+</li>
+<li><strong>总成本</strong>：约 <strong>15,000 Gas</strong>（主要来自 3 次 <code>SSTORE</code> 操作）。</li>
+</ul>
+<hr />
+<h4 id="6-示例说明"><a class="header" href="#6-示例说明"><strong>6. 示例说明</strong></a></h4>
+<p>假设在区块时间戳 <code>t=1000</code> 时：</p>
+<ul>
+<li><strong>储备量</strong>：<code>reserve0 = 1000 USDC</code>，<code>reserve1 = 1 ETH</code> → 价格 <code>price0 = 1/1000 = 0.001</code>。</li>
+<li><strong>累积价格更新</strong>：
+<ul>
+<li>若 <code>blockTimestampLast = 500</code>，则 <code>ΔT = 1000 - 500 = 500秒</code>。</li>
+<li><code>price0Cumulative += 0.001 * 500 = 0.5</code>（以 <code>UQ112.112</code> 格式存储）。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h4 id="7-设计优势总结"><a class="header" href="#7-设计优势总结"><strong>7. 设计优势总结</strong></a></h4>
+<ol>
+<li><strong>紧凑存储</strong>：充分利用每个存储槽的 256 位，减少 Gas 消耗。</li>
+<li><strong>抗溢出</strong>：通过额外 32 位处理累积价格的溢出。</li>
+<li><strong>低延迟更新</strong>：仅在区块首笔交易时更新累积价格，避免频繁计算。</li>
+<li><strong>兼容性</strong>：与 EVM 的存储模型完美匹配，无需复杂升级。</li>
+</ol>
+</blockquote>
 <p>The primary downside is that 32 bits isn't quite enough to store timestamp values that will reasonably never overflow. In fact, the date when the Unix timestamp overflows a uint32 is 02/07/2106. To ensure that this system continues to function properly after this date, and every multiple of \(2^{32}-1\) seconds thereafter, oracles are simply required to check prices at least once per interval (approximately 136 years). This is because the core method of accumulation (and modding of timestamp), is actually overflow-safe, meaning that trades across overflow intervals can be appropriately accounted for given that oracles are using the proper (simple) overflow arithmetic to compute deltas.</p>
 <p>主要的缺点是 32 位不足以存储合理范围内永远不会溢出的时间戳值。事实上，Unix 时间戳溢出 uint32 的日期是 2106 年 2 月 7 日。为了确保该系统在此日期之后以及此后每隔 \(2^{32}-1\)秒的倍数都能正常运行，预言机只需要至少每隔一段时间（大约 136 年）检查一次价格即可。这是因为累积（以及时间戳的模运算）的核心方法实际上是溢出安全的，这意味着只要预言机使用正确的（简单的）溢出算术来计算增量，就可以适当地计算跨越溢出间隔的交易。</p>
+<blockquote>
+<p><a href="https://github.com/Uniswap/v2-core/blob/master/contracts/UniswapV2Pair.sol">_update() function</a> .
+时间计算式 ： \( 2^{32}_{s} / ( {60}_{s/m} * {60}_{m/h} * {24}_{h/d} * {365}_{d/y} ) \)≈ 136.192519</p>
+</blockquote>
 <h2 id="23-flash-swaps-闪电互换"><a class="header" href="#23-flash-swaps-闪电互换">2.3 Flash Swaps （闪电互换）</a></h2>
 <p>In Uniswap v1, a user purchasing ABC with XYZ needs to send the XYZ to the contract before they could receive the ABC. This is inconvenient if that user needs the ABC they are buying in order to obtain the XYZ they are paying with. For example, the user might be using that ABC to purchase XYZ in some other contract in order to arbitrage a price difference from Uniswap, or they could be unwinding a position on Maker or Compound by selling the collateral to repay Uniswap.</p>
 <p>在 Uniswap v1 中，用户用 XYZ 购买 ABC 需要先将 XYZ 发送到合约，然后才能收到 ABC。如果用户需要他们购买的 ABC 来获得他们用于支付的 XYZ，这会很不方便。例如，用户可能正在使用该 ABC 在某个其他合约中购买 XYZ，以赚取此合约与 Uniswap 的差价，或者他们可以通过出售抵押品来偿还 Uniswap 来平仓 Maker 或 Compound 的头寸。</p>
@@ -365,6 +510,12 @@ $$</p>
 <p>Uniswap v2 增加了一项新功能，允许用户在付款之前接收和使用资产，只要他们在同一个原子交易中完成付款即可。swap 函数在转出用户请求的代币和强制执行不变量之间，调用一个可选的用户指定的回调合约。回调完成后，合约检查新的余额，并确认不变量得到满足（在根据支付金额调整费用后）。如果合约没有足够的资金，它将回滚整个交易。</p>
 <p>A user can also repay the Uniswap pool using the same token, rather than completing the swap. This is effectively the same as letting anyone flash-borrow any of assets stored in a Uniswap pool (for the same \(0.30\%\) fee as Uniswap charges for trading).<sup class="footnote-reference" id="fr-5-1"><a href="#footnote-5">5</a></sup></p>
 <p>用户也可以使用相同的代币偿还 Uniswap 池，而不是完成兑换。这实际上等同于允许任何人闪电借用存储在 Uniswap 池中的任何资产（费用与 Uniswap 收取的交易费用相同，为 0.30%）<sup class="footnote-reference" id="fr-5-2"><a href="#footnote-5">5</a></sup>。</p>
+<blockquote>
+<p>此借贷是一个临时资金周转的工具，起到的最大作用即加速资金的流转。</p>
+<p>有意思的点是，与传统金融中过桥协议类似</p>
+<p>1.两者中传统过桥协议需要抵押物，存在一定无法偿还的风险。而闪电互换无需抵押，依赖于区块链的回滚机制，除了协议漏洞外无偿还风险。</p>
+<p>2.两者中传统过桥协议资金量大，面向企业。而闪电互换面向所有用户，常为小资金用户。</p>
+</blockquote>
 <h2 id="24-protocol-fee"><a class="header" href="#24-protocol-fee">2.4 Protocol fee</a></h2>
 <p>Uniswap v2 includes a \(0.05\%\) protocol fee that can be turned on and off. If turned on, this fee would be sent to a feeTo address specified in the factory contract.</p>
 <p>Uniswap v2 包含一个可以开启和关闭的 \(0.05\%\) 协议费用。如果开启，此费用将发送到工厂合约中指定的 feeTo 地址。</p>
@@ -392,6 +543,9 @@ $$</p>
 <p>$$
 s_m = \frac{\sqrt{k_2} - \sqrt{k_1}}{(\frac{1}{\phi} - 1) \cdot \sqrt{k_2} + \sqrt{k_1}} \cdot s_1
 $$</p>
+<blockquote>
+<p><img src="./img/%E5%85%AC%E5%BC%8F%E8%AE%A1%E7%AE%97.jpg" alt="alert text" /></p>
+</blockquote>
 <p>Setting \(\phi\) to \(\frac{1}{6}\) gives us the following formula:</p>
 <p>将\(\phi\) 设定为\(\frac{1}{6}\) 给我们带来如下的公式:</p>
 <p>$$
@@ -411,7 +565,7 @@ $$</p>
 <p>Uniswap v1 使用 Vyper（一种类似 Python 的智能合约语言）实现。Uniswap v2 则使用更广泛使用的 Solidity 实现，因为它在开发时需要一些 Vyper 尚未提供的功能（例如解释非标准 ERC-20 代币返回值的能力，以及通过内联汇编访问诸如 chainid 等新操作码的能力）。</p>
 <h2 id="32-contract-re-architecture-合约重构"><a class="header" href="#32-contract-re-architecture-合约重构">3.2 Contract re-architecture （合约重构）</a></h2>
 <p>One design priority for Uniswap v2 is to minimize the surface area and complexity of the core pair contract—the contract that stores liquidity providers' assets. Any bugs in this contract could be disastrous, since millions of dollars of liquidity might be stolen or frozen.</p>
-<p>Uniswap v2 的一个设计重点是最小化核心交易对合约（存储流动性提供者资产的合约）的表面积(合约暴露给调用者的部分)和复杂性。此合约中的任何错误都可能是灾难性的，因为数百万美元的流动性可能会被盗或冻结。</p>
+<p>Uniswap v2 的一个设计重点是最小化核心交易对合约（存储流动性提供者的资产的合约）的表面积(即合约暴露给调用者的部分)和复杂性。此合约中的任何错误都可能是灾难性的，因为数百万美元的流动性可能会被盗或冻结。</p>
 <p>When evaluating the security of this core contract, the most important question is whether it protects liquidity providers from having their assets stolen or locked. Any feature that is meant to support or protect traders—other than the basic functionality of allowing one asset in the pool to be swapped for another—can be handled in a "router" contract.</p>
 <p>在评估此核心合约的安全性时，最重要的问题是它是否保护流动性提供者免于资产被盗或锁定。任何旨在支持或保护交易者的功能——除了允许池中的一种资产兑换为另一种资产的基本功能之外——都可以在“路由器”合约中处理。</p>
 <p>In fact, even part of the swap functionality can be pulled out into the router contract. As mentioned above, Uniswap v2 stores the last recorded balance of each asset (in order to prevent a particular manipulative exploit of the oracle mechanism). The new architecture takes advantage of this to further simplify the Uniswap v1 contract.</p>
@@ -439,8 +593,14 @@ $$</p>
 <p>为了防范可能更新交易对合约余额的定制代币实现，并更优雅地处理总供应量可能大于 \(2^{112}\)的代币，Uniswap v2 提供了两个应急函数：sync() 和 skim()。</p>
 <p>sync() functions as a recovery mechanism in the case that a token asynchronously deflates the balance of a pair. In this case, trades will receive sub-optimal rates, and if no liquidity provider is willing to rectify the situation, the pair is stuck. sync() exists to set the reserves of the contract to the current balances, providing a somewhat graceful recovery from this situation.</p>
 <p>sync() 函数作为一种恢复机制，用于处理代币异步通缩交易对余额的情况。在这种情况下，交易将获得次优的价格，如果没有任何流动性提供者愿意纠正这种情况，交易对就会陷入困境。sync() 的存在是为了将合约的储备设置为当前的余额，从而为此情况提供某种程度的优雅恢复。</p>
+<blockquote>
+<p>此机制触发将一定程度上打破币对供给平衡(前提是有用户直接向合约转入代币而不调用合约),通过尝试增加套利空间而使交易继续进行</p>
+</blockquote>
 <p>skim() functions as a recovery mechanism in case enough tokens are sent to an pair to overflow the two uint112 storage slots for reserves, which could otherwise cause trades to fail. skim() allows a user to withdraw the difference between the current balance of the pair and \(2^{112}-1\) to the caller, if that difference is greater than 0.</p>
 <p>skim() 函数作为一种恢复机制，用于处理发送到交易对的代币数量过多，导致超出用于存储储备的两个 uint112 存储槽的情况，否则可能导致交易失败。如果当前交易对余额与 \(2^{112}-1\) 之间的差值大于 0，skim() 允许用户将该差值提取给调用者。</p>
+<blockquote>
+<p>一般正常的合约不会提供超过一千万亿额度的代币，此处主要处理潜在的非正常情况</p>
+</blockquote>
 <h2 id="33-handling-non-standard-and-unusual-tokens-处理非标准及不常见代币"><a class="header" href="#33-handling-non-standard-and-unusual-tokens-处理非标准及不常见代币">3.3 Handling non-standard and unusual tokens (处理非标准及不常见代币)</a></h2>
 <p>The ERC-20 standard requires that transfer() and transferFrom() return a boolean indicating the success or failure of the call <a href="#ref-4">4</a>. The implementations of one or both of these functions on some tokens—including popular ones like Tether (USDT) and Binance Coin (BNB)—instead have no return value. Uniswap v1 interprets the missing return value of these improperly defined functions as false—that is, as an indication that the transfer was not successful—and reverts the transaction, causing the attempted transfer to fail.</p>
 <p>ERC-20 标准要求 transfer() 和 transferFrom() 返回一个布尔值，指示调用成功或失败 <a href="#ref-4">4</a>。然而，一些代币（包括流行的 Tether (USDT) 和 Binance Coin (BNB)）上这两个函数中的一个或两个的实现都没有返回值。Uniswap v1 将这些不正确定义的函数缺失的返回值解释为 false——即表示转账不成功——并回滚交易，导致尝试的转账失败。</p>
@@ -458,6 +618,12 @@ $$</p>
 <p>但如果他们是第一个存款人呢？在这种情况下，\(x_{starting}\) 为 \(0\)，因此该公式将不起作用。</p>
 <p>Uniswap v1 sets the initial share supply to be equal to the amount of ETH deposited (in wei). This was a somewhat reasonable value, because if the initial liquidity was deposited at the correct price, then 1 liquidity pool share (which, like ETH, is an 18-decimal token) would be worth approximately 2 ETH.</p>
 <p>Uniswap v1 将初始份额供应量设置为等于存入的 ETH 数量（以 wei 为单位）。这是一个相对合理的值，因为如果初始流动性以正确的价格存入，那么 1 份流动性池份额（与 ETH 一样，是 18 位小数的代币）的价值约为 2 ETH。</p>
+<blockquote>
+<p>例如：初始化创建者向 ETH-DAI 币对存入 1ETH+100DAI(至少以创建者的价值设定以及接受程度，100DAI 值 1ETH)。那么按照合约规则创建者获取到 1 LP-Token。这 1 个 Token 值 1ETH+100DAI，按照价值等比转换的算法，值 2ETH。至于按常规市场视角来说，这个比例不合理，那么就会有潜在的交易者从中套利，开始使得这个价值比例趋于市场价格。初始创建者将承担潜在的损失 ETH 或 DAI 的风险。</p>
+</blockquote>
+<blockquote>
+<p>一个潜在的有意思的设计在于：想在创建之初吸引到足够多的交易者进入或参与到此币对的互换中来时，创建者可以投入大量的资金创造这种代币兑换的不平衡。尽管这将在前期带来一定量的亏损，不过在后期，尤其是创建者是其中某个代币发行方时，将会获得大量用户并使得货币价格得到一定的保障（毕竟在不爆雷或者出现重大漏洞的情况下，每个人的交易时间，获取到的信息和对代币当下的心理价位不同）。</p>
+</blockquote>
 <p>However, this meant that the value of a liquidity pool share was dependent on the ratio at which liquidity was initially deposited, which was fairly arbitrary, especially since there was no guarantee that that ratio reflected the true price. Additionally, Uniswap v2 supports arbitrary pairs, so many pairs will not include ETH at all.</p>
 <p>然而，这意味着流动性池份额的价值取决于初始存入流动性的比例，而这个比例相当随意，特别是因为不能保证该比例反映真实价格。此外，Uniswap v2 支持任意交易对，因此许多交易对根本不会包含 ETH。</p>
 <p>Instead, Uniswap v2 initially mints shares equal to the geometric mean of the amounts deposited:</p>
