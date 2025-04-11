@@ -1,8 +1,12 @@
-个人针对 uniswapv2 白皮书精对翻译，附加个人理解部分。
+# 针对 uniswapv2 白皮书精校翻译
 
-whitepaper 原 pdf 经过 minerU 转换
+[uniswapv2-whitepaper 官方链接](https://docs.uniswap.org/whitepaper.pdf)
 
-[uniswapv2-whitepaper](https://docs.uniswap.org/whitepaper.pdf)
+制作不易，转载此篇请注明出处
+
+附加个人注释部分，全部由 markdown 引用插入文档，保持与原文的差异。
+
+whitepaper 原 pdf 经过 [minerU](https://github.com/opendatalab/mineru) 转换
 
 ---
 
@@ -38,6 +42,8 @@ Uniswap v1 is an on-chain system of smart contracts on the Ethereum blockchain, 
 
 Uniswap v1 是以太坊区块链上的一套链上智能合约系统，它基于"恒定乘积公式"[1](#ref-1) 实现了一种自动化的流动性协议。每个 Uniswap v1 交易对都存储着两种资产的汇集储备，并为这两种资产提供流动性，维持储备金乘积不能减少的不变性。交易者在交易时支付 30 个基点的费用，这笔费用会分配给流动性提供者。这些合约是不可升级的。
 
+> 基点:金融学术语，万分之一为 1 基点。30 基点即千分之三
+
 Uniswap v2 is a new implementation based on the same formula, with several new highlydesirable features. Most significantly, it enables the creation of arbitrary ERC20/ERC20 pairs, rather than supporting only pairs between ERC20 and ETH. It also provides a hardened price oracle that accumulates the relative price of the two assets at the beginning of each block. This allows other contracts on Ethereum to estimate the time-weighted average price for the two assets over arbitrary intervals. Finally, it enables "flash swaps" where users can receive assets freely and use them elsewhere on the chain, only paying for (or returning) those assets at the end of the transaction.
 
 Uniswap v2 是基于相同公式的新实现，具有几个非常理想的新特性。最重要的是，它能够创建任意 ERC20/ERC20 交易对，而不仅仅是支持 ERC20 和 ETH 之间的交易对。它还提供了一个强化的价格预言机，该预言机在每个区块的开始累积两种资产的相对价格。这使得以太坊上的其他合约能够估算任意时间间隔内这两种资产的时间加权平均价格。最后，它启用了“闪电兑换”，用户可以免费接收资产并在链上的其他地方使用它们，只需在交易结束时支付（或归还）这些资产。
@@ -62,6 +68,8 @@ Uniswap v1 used ETH as a bridge currency. Every pair included ETH as one of its 
 
 Uniswap v1 使用 ETH 作为桥接货币。每个交易对都包含 ETH 作为其资产之一。这使得路由更简单——ABC 和 XYZ 之间的每笔交易都通过 ETH/ABC 交易对和 ETH/XYZ 交易对进行——并减少了流动性的分散。
 
+> ![alert text](./img/uniswapv1_exchange.jpg)
+
 However, this rule imposes significant costs on liquidity providers. All liquidity providers have exposure to ETH, and suffer impermanent loss based on changes in the prices of other assets relative to ETH. When two assets ABC and XYZ are correlated—for example, if they are both USD stablecoins—liquidity providers on a Uniswap pair ABC/XYZ would generally be subject to less impermanent loss than the ABC/ETH or XYZ/ETH pairs.
 
 然而，这条规则给流动性提供者带来了显著的成本。所有流动性提供者都暴露于 ETH 的风险之下，并会因其他资产相对于 ETH 的价格变动而遭受无常损失。当两种资产 ABC 和 XYZ 相关联时——例如，如果它们都是美元稳定币——与 ABC/ETH 或 XYZ/ETH 交易对相比，Uniswap 上 ABC/XYZ 交易对的流动性提供者通常会遭受更少的无常损失。
@@ -69,6 +77,10 @@ However, this rule imposes significant costs on liquidity providers. All liquidi
 Using ETH as a mandatory bridge currency also imposes costs on traders. Traders have to pay twice as much in fees as they would on a direct ABC/XYZ pair, and they suffer slippage twice.
 
 使用 ETH 作为强制性的桥接货币也给交易者带来了成本。与直接的 ABC/XYZ 交易对相比，交易者需要支付双倍的费用，并且遭受双倍的滑点。
+
+> 滑点:指在进行交易时，客户下达的指定交易价格与实际成交价格存在偏差的一种现象。[相关链接](https://zhuanlan.zhihu.com/p/8252810877)
+
+> 双倍费用：进行一次 ABC->ETH，收取一次交易费用，发生一次滑点。进行一次 ETH->XYZ，收取一次交易费用，发生一次滑点。
 
 Uniswap v2 allows liquidity providers to create pair contracts for any two ERC-20s.
 
@@ -92,13 +104,80 @@ Since arbitrageurs will trade with Uniswap if this price is incorrect (by a suff
 
 由于套利者会在 Uniswap 提供的价格不正确（达到足以弥补费用的程度）时与 Uniswap 进行交易，因此 Uniswap 提供的价格往往会跟踪资产的相对市场价格，正如 Angeris et al [2](#ref-2) 所展示的那样。这意味着它可以被用作一个近似的价格预言机。
 
-However, Uniswap v1 is not safe to use as an on-chain price oracle, because it is very easy to manipulate. Suppose some other contract uses the current ETH-DAI price to settle a derivative. An attacker who wishes to manipulate the measured price can buy ETH from the ETH-DAI pair, trigger settlement on the derivative contract (causing it to settle based on the inflated price), and then sell ETH back to the pair to trade it back to the true price.[^1] This might even be done as an atomic transaction, or by a miner who controls the ordering of transactions within a block.
+> 当 uniswap 的价格与市场真实价格差距较大时，如 1 ETH swap 1 USDT，套利者利用价格差距买入 ETH，将 ETH 提出赚取市场差价。这同时改变了 uniswap 中的价格比值，如更新后变为 1 ETH swap 100 USDT。随着时间变化，此类交易次数增多，相对套利空间减少，此比率越来越接近市场价值。
 
-然而，Uniswap v1 作为链上价格预言机并不安全，因为它非常容易被操纵。假设某个其他合约使用当前的 ETH-DAI 价格来结算衍生品。一个希望操纵衡量价格的攻击者可以从 ETH-DAI 交易对中购买 ETH，触发衍生品合约的结算（导致其基于膨胀的价格结算），然后将 ETH 卖回该交易对以将其价格恢复到真实水平。[^1]这甚至可以作为原子交易完成，或者由控制区块内交易顺序的矿工完成。
+However, Uniswap v1 is not safe to use as an on-chain price oracle, because it is very easy to manipulate. Suppose some other contract uses the current ETH-DAI price to settle a derivative. An attacker who wishes to manipulate the measured price can buy ETH from the ETH-DAI pair, trigger settlement on the derivative contract (causing it to settle based on the inflated price), and then sell ETH back to the pair to trade it back to the true price. [^1] This might even be done as an atomic transaction, or by a miner who controls the ordering of transactions within a block.
+
+然而，Uniswap v1 作为链上价格预言机并不安全，因为它非常容易被操纵。假设某个其他合约使用当前的 ETH-DAI 价格来结算衍生品。一个希望操纵衡量价格的攻击者可以从 ETH-DAI 交易对中购买 ETH，触发衍生品合约的结算（导致其基于膨胀的价格结算），然后将 ETH 卖回该交易对以将其价格恢复到真实水平。 [^1]这甚至可以作为原子交易完成，或者由控制区块内交易顺序的矿工完成。
+
+> ```explain
+> 假设场景：
+>   有一个名为 "衍生品合约" 的 DeFi 合约，它使用 Uniswap v1 的 ETH-DAI 交易对的价格作为结算依据。
+>   当前 Uniswap v1 的 ETH-DAI 交易对中，1 ETH 的价格为 1000 DAI。
+>   攻击者拥有大量 DAI 和 ETH。
+> 攻击步骤：
+>   价格操纵：攻击者使用大量 DAI 在 Uniswap v1 的 ETH-DAI 交易对中购买 ETH。
+>   由于 Uniswap v1 的价格机制，这会导致交易对中的 ETH 数量减少，DAI 数量增加，从而推高 ETH 的价格。
+>   假设攻击者通过大量购买，将 ETH 的价格暂时推高到 1200 DAI。
+>   触发结算：此时，衍生品合约检测到 Uniswap v1 提供的 ETH 价格为 1200 DAI，并基于这个膨胀的价格进行结算。
+>   假设这个衍生品合约是多单合约，那么价格越高，多单合约的获利也就越高。
+>   恢复价格：结算完成后，攻击者立即将之前购买的 ETH 卖回 Uniswap v1 的 ETH-DAI 交易对。
+>   这会导致交易对中的 ETH 数量增加，DAI 数量减少，从而将 ETH 的价格恢复到接近 1000 DAI 的真实水平。
+>   获利：攻击者通过在价格被操纵的高点触发衍生品合约的结算，从而获得了超额利润。
+>   并且因为，攻击者最后恢复了价格，所以攻击者所持有的ETH或者DAI的数量并没有明显的减少。
+> 关键点：
+>   整个攻击过程可以在一次原子交易中完成，使得攻击难以被追踪和阻止。
+>   攻击者利用了 Uniswap v1 价格机制的弱点，即价格容易受到交易量影响。
+>   这种攻击对依赖 Uniswap v1 价格的 DeFi 应用造成了严重威胁。
+> ```
 
 Uniswap v2 improves this oracle functionality by measuring and recording the price before the first trade of each block (or equivalently, after the last trade of the previous block). This price is more difficult to manipulate than prices during a block. If the attacker submits a transaction that attempts to manipulate the price at the end of a block, some other arbitrageur may be able to submit another transaction to trade back immediately afterward in the same block. A miner (or an attacker who uses enough gas to fill an entire block) could manipulate the price at the end of a block, but unless they mine the next block as well, they may not have a particular advantage in arbitraging the trade back.
 
 Uniswap v2 通过在每个区块的第一笔交易之前（或等效地，在上一个区块的最后一笔交易之后）测量和记录价格来改进此预言机功能。与区块内的价格相比，此价格更难被操纵。如果攻击者提交一笔试图在区块末尾操纵价格的交易，一些其他的套利者可能会立即在同一区块内提交另一笔交易以恢复价格。矿工（或使用足够 Gas 来填满整个区块的攻击者）可以在区块末尾操纵价格，但除非他们也挖掘下一个区块，否则他们在套利交易以恢复价格方面可能没有特别的优势。
+
+> 1.  “区块最后一笔交易”指的是什么？
+>
+>     一个区块包含多笔交易（可能是转账、合约调用等），矿工/验证者会按一定顺序打包这些交易。最后一笔交易是指这个区块中最后被执行的那一笔（无论是否是 Uniswap 交易）。
+>
+>     例如：
+>
+>     交易 1: Alice 转账给 Bob
+>
+>     交易 2: Uniswap 交易（攻击者操纵价格）
+>
+>     交易 3: （无）→ 交易 2 就是最后一笔。
+>
+> 2.  为什么可以操纵最后一笔交易？
+>
+>     关键在于矿工/验证者对交易顺序的控制权：
+>
+>     矿工决定交易顺序：矿工可以自由选择将哪笔交易放在区块的末尾（比如通过 Gas 费竞价或恶意排序）。
+>
+>     如果攻击者是矿工：
+>     攻击者将自己的操纵交易（例如在 Uniswap 上虚假拉高价格）放在区块末尾。
+>     由于这是最后一笔交易，同一区块内没有后续交易可以立即对冲或套利（比如其他套利者无法在同一个区块内提交反向交易）。
+>     此时，被操纵的价格会被暂时记录（直到下一个区块）。
+>
+>     如果攻击者不是矿工：
+>     攻击者可以尝试用高 Gas 费贿赂矿工，让自己的交易成为最后一笔。
+>     但普通用户很难保证交易一定在末尾，因为矿工可能优先打包其他高 Gas 交易。
+>
+> 3.  为什么操纵“非末尾”交易更难？
+>     如果攻击者的交易在区块中间（非末尾），其他套利者可以在同一区块内紧跟一笔反向交易，迅速抵消操纵效果。
+>     例如：
+>
+>     交易 1: 攻击者拉高价格
+>
+>     交易 2: 套利者发现机会，卖出代币恢复价格
+>
+>     结果：价格未被成功操纵。
+>     但在区块末尾，套利者没有机会在同一区块内反应，必须等到下一个区块，此时攻击可能已生效（例如触发其他合约的清算或预言机喂价）。
+>
+> 4.  为什么矿工或攻击者在不挖掘下一区块的时候没有特别的优势？
+>
+>     当尝试操纵价格后且下一区块不属于上一区块矿工或攻击者挖掘时。所有用户均同时看见此验证过的区块，并且能够作出决策的起跑线一致（区块被验证有效的瞬间）
+>
+>     若无区块挖掘权利，此矿工或攻击者将与其他人竞争交易优先权（通过支付高 gas 费），且尝试提高价格的支出成本存在损失风险。
 
 Specifically, Uniswap v2 accumulates this price, by keeping track of the cumulative sum of prices at the beginning of each block in which someone interacts with the contract. Each price is weighted by the amount of time that has passed since the last block in which it was updated, according to the block timestamp.[^2] This means that the accumulator value at any given time (after being updated) should be the sum of the spot price at each second in the history of the contract.
 
@@ -119,6 +198,26 @@ $$
 Users of the oracle can choose when to start and end this period. Choosing a longer period makes it more expensive for an attacker to manipulate the TWAP, although it results in a less up-to-date price.
 
 预言机的用户可以选择时间范围的起始位置和结束位置。选择较长的时间区间会增加攻击者操纵 TWAP 的成本，尽管这会导致用户获取到不太实时的价格。
+
+> 时间加权平均价格 (TWAP) 的时间间隔过长可能会导致几个问题，尤其是在波动性较大的市场中。以下是一些潜在的结果：
+>
+> - **价格滞后：**
+>   - 时间间隔越长，TWAP 对当前市场价格的反应就越慢。
+>   - 如果市场价格快速变化，TWAP 可能无法及时反映这些变化，从而导致交易者做出基于过时信息的决策。
+> - **滑点增加：**
+>   - 在价格快速变化的市场中，使用滞后的 TWAP 进行交易可能会导致滑点增加。
+>   - 滑点是指预期交易价格与实际执行价格之间的差异。
+>   - 如果 TWAP 没有及时反映当前市场价格，交易者可能会以比预期更差的价格成交。
+> - **套利机会：**
+>   - 滞后的 TWAP 可能会产生套利机会。
+>   - 如果 TWAP 没有及时反映当前市场价格，套利者可能会利用价格差异在其他交易所或市场中进行获利。
+> - **预言机操纵：**
+>   - 在极端情况下，如果时间间隔过长，攻击者可能会更容易操纵 TWAP。
+>   - 攻击者可以通过在较长时间内进行少量交易来缓慢地影响 TWAP，而不会引起注意。
+> - **对瞬时价格波动的敏感度降低：**
+>   - TWAP 的设计初衷是为了降低单笔交易对价格的影响，但是时间间隔过长，会降低价格对于短时剧烈波动的敏感度。
+>   - 在一些希望对价格波动快速做出反应的协议中，这样的特性并不好。
+>     时间间隔过长会降低 TWAP 的响应能力，使其对当前市场价格的反应滞后。这可能会导致滑点增加、套利机会和预言机操纵等问题。因此，在选择 TWAP 的时间间隔时，需要权衡准确性和响应能力。
 
 One complication: should we measure the price of asset A in terms of asset B, or the price of asset B in terms of asset A? While the spot price of A in terms of B is always the reciprocal of the spot price of B in terms of A, the mean price of asset A in terms of asset B over a particular period of time is not equal to the reciprocal of the mean price of asset B in terms of asset A.[^3] For example, if the USD/ETH price is 100 in block 1 and 300 in block 2, the average USD/ETH price will be 200 USD/ETH, but the average ETH/USD price will be 1/150 ETH/USD. Since the contract cannot know which of the two assets users would want to use as the unit of account, Uniswap v2 tracks both prices.
 
@@ -466,3 +565,11 @@ This paper is for general information purposes only. It does not constitute inve
 [^12]:
     As of this writing, one of the highest-liquidity pairs on Uniswap v1 is the pair between ETH and WETH[7](#ref-7).
     截至撰写本文时，Uniswap v1 上流动性最高的交易对之一是 ETH 和 WETH 之间的交易对[7](#ref-7)。
+
+```
+
+```
+
+```
+
+```
