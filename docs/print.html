@@ -4239,25 +4239,39 @@ $$</p>
 s_{minted} = \frac{x_{deposited}}{x_{starting}} \cdot s_{starting}
 $$</p>
 <p>But what if they are the first depositor? In that case, \(x_{starting}\) is \(0\), so this formula will not work.</p>
+<p>但如果他们是第一个存款人呢？在这种情况下，\(x_{starting}\) 为 \(0\)，因此该公式将不起作用。</p>
 <p>Uniswap v1 sets the initial share supply to be equal to the amount of ETH deposited (in wei). This was a somewhat reasonable value, because if the initial liquidity was deposited at the correct price, then 1 liquidity pool share (which, like ETH, is an 18-decimal token) would be worth approximately 2 ETH.</p>
+<p>Uniswap v1 将初始份额供应量设置为等于存入的 ETH 数量（以 wei 为单位）。这是一个相对合理的值，因为如果初始流动性以正确的价格存入，那么 1 份流动性池份额（与 ETH 一样，是 18 位小数的代币）的价值约为 2 ETH。</p>
 <p>However, this meant that the value of a liquidity pool share was dependent on the ratio at which liquidity was initially deposited, which was fairly arbitrary, especially since there was no guarantee that that ratio reflected the true price. Additionally, Uniswap v2 supports arbitrary pairs, so many pairs will not include ETH at all.</p>
+<p>然而，这意味着流动性池份额的价值取决于初始存入流动性的比例，而这个比例相当随意，特别是因为不能保证该比例反映真实价格。此外，Uniswap v2 支持任意交易对，因此许多交易对根本不会包含 ETH。</p>
 <p>Instead, Uniswap v2 initially mints shares equal to the geometric mean of the amounts deposited:</p>
+<p>相反，Uniswap v2 最初铸造的份额等于存入金额的几何平均值：</p>
 <p>$$
 s_{minted} = \sqrt{x_{deposited} \cdot y_{deposited}}
 $$</p>
 <p>This formula ensures that the value of a liquidity pool share at any time is essentially independent of the ratio at which liquidity was initially deposited. For example, suppose that the price of 1 ABC is currently 100 XYZ. If the initial deposit had been 2 ABC and 200 XYZ (a ratio of 1:100), the depositor would have received \(\sqrt{2 \cdot 200} = 20\) shares. Those shares should now still be worth 2 ABC and 200 XYZ, plus accumulated fees.</p>
+<p>此公式确保任何时候流动性池份额的价值基本上独立于初始存入流动性的比例。例如，假设 1 ABC 的价格当前为 100 XYZ。如果初始存款为 2 ABC 和 200 XYZ（比例为 1:100），存款人将收到 \(\sqrt{2 \cdot 200} = 20\) 份份额。这些份额现在仍然值 2 ABC 和 200 XYZ，加上累积的费用。</p>
 <p>If the initial deposit had been 2 ABC and 800 XYZ (a ratio of 1:400), the depositor would have received \(\sqrt{2 \cdot 800} = 40\) pool shares.<sup class="footnote-reference" id="fr-10-1"><a href="#footnote-10">10</a></sup></p>
+<p>如果初始存款为 2 ABC 和 800 XYZ（比例为 1:400），存款人将收到 \(\sqrt{2 \cdot 800} = 40\) 份池份额<sup class="footnote-reference" id="fr-10-2"><a href="#footnote-10">10</a></sup>。</p>
 <p>The above formula ensures that a liquidity pool share will never be worth less than the geometric mean of the reserves in that pool. However, it is possible for the value of a liquidity pool share to grow over time, either by accumulating trading fees or through "donations" to the liquidity pool. In theory, this could result in a situation where the value of the minimum quantity of liquidity pool shares (1e-18 pool shares) is worth so much that it becomes infeasible for small liquidity providers to provide any liquidity.</p>
+<p>上述公式确保流动性池份额的价值永远不会低于该池中储备的几何平均值。然而，流动性池份额的价值可能会随着时间的推移而增长，无论是通过累积交易费用还是通过向流动性池“捐赠”。理论上，这可能会导致最小数量的流动性池份额（1e-18 份池份额）的价值变得非常高，以至于小额流动性提供者无法提供任何流动性。</p>
 <p>To mitigate this, Uniswap v2 burns the first 1e-15 (0.000000000000001) pool shares that are minted (1000 times the minimum quantity of pool shares), sending them to the zero address instead of to the minter. This should be a negligible cost for almost any token pair.<sup class="footnote-reference" id="fr-11-1"><a href="#footnote-11">11</a></sup> But it dramatically increases the cost of the above attack. In order to raise the value of a liquidity pool share to \($100\), the attacker would need to donate $100,000 to the pool, which would be permanently locked up as liquidity.</p>
-<h2 id="35-wrapping-eth"><a class="header" href="#35-wrapping-eth">3.5 Wrapping ETH</a></h2>
-<p>The interface for transacting with Ethereum's native asset, ETH, is different from the standard interface for interacting with ERC-20 tokens. As a result, many other protocols on Ethereum do not support ETH, instead using a canonical "wrapped ETH" token, WETH <sup class="footnote-reference" id="fr-6-3"><a href="#footnote-6">6</a></sup>.</p>
+<p>为了缓解这种情况，Uniswap v2 销毁了最初铸造的 1e-15 (0.000000000000001) 份池份额（是最小池份额数量的 1000 倍），将其发送到零地址而不是铸造者。对于几乎任何代币对来说，这都应该是一个可以忽略不计的成本<sup class="footnote-reference" id="fr-11-2"><a href="#footnote-11">11</a></sup>。但它大大增加了上述攻击的成本。为了将流动性池份额的价值提高到 \($100\)，攻击者需要向池中捐赠 $100,000，这将作为流动性永久锁定。</p>
+<h2 id="35-wrapping-eth-封装-eth"><a class="header" href="#35-wrapping-eth-封装-eth">3.5 Wrapping ETH (封装 ETH)</a></h2>
+<p>The interface for transacting with Ethereum's native asset, ETH, is different from the standard interface for interacting with ERC-20 tokens. As a result, many other protocols on Ethereum do not support ETH, instead using a canonical "wrapped ETH" token, WETH <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-6">6</a>.</p>
+<p>与以太坊原生资产 ETH 进行交易的接口不同于与 ERC-20 代币交互的标准接口。因此，以太坊上的许多其他协议不支持 ETH，而是使用规范的“封装 ETH”代币，WETH <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-6">6</a>。</p>
 <p>Uniswap v1 is an exception. Since every Uniswap v1 pair included ETH as one asset, it made sense to handle ETH directly, which was slightly more gas-efficient.</p>
+<p>Uniswap v1 是一个例外。由于每个 Uniswap v1 交易对都包含 ETH 作为一种资产，因此直接处理 ETH 是有意义的，这样 Gas 效率会略高。</p>
 <p>Since Uniswap v2 supports arbitrary ERC-20 pairs, it now no longer makes sense to support unwrapped ETH. Adding such support would double the size of the core codebase, and risks fragmentation of liquidity between ETH and WETH pairs<sup class="footnote-reference" id="fr-12-1"><a href="#footnote-12">12</a></sup>. Native ETH needs to be wrapped into WETH before it can be traded on Uniswap v2.</p>
-<h2 id="36-deterministic-pair-addresses"><a class="header" href="#36-deterministic-pair-addresses">3.6 Deterministic pair addresses</a></h2>
-<p>As in Uniswap v1, all Uniswap v2 pair contracts are instantiated by a single factory contract. In Uniswap v1, these pair contracts were created using the CREATE opcode, which meant that the address of such a contract depended on the order in which that pair was created. Uniswap v2 uses Ethereum's new CREATE2 opcode <sup class="footnote-reference" id="fr-8-3"><a href="#footnote-8">8</a></sup> to generate a pair contract with a deterministic address. This means that it is possible to calculate a pair's address (if it exists) off-chain, without having to look at the chain state.</p>
-<h2 id="37-maximum-token-balance"><a class="header" href="#37-maximum-token-balance">3.7 Maximum token balance</a></h2>
+<p>由于 Uniswap v2 支持任意 ERC-20 交易对，因此现在不再支持未封装的 ETH。添加此类支持将使核心代码库的大小翻倍，并存在 ETH 和 WETH 交易对之间流动性分散的风险<sup class="footnote-reference" id="fr-12-2"><a href="#footnote-12">12</a></sup>。原生 ETH 需要封装成 WETH 才能在 Uniswap v2 上进行交易。</p>
+<h2 id="36-deterministic-pair-addresses--确定性的交易对地址"><a class="header" href="#36-deterministic-pair-addresses--确定性的交易对地址">3.6 Deterministic pair addresses （ 确定性的交易对地址）</a></h2>
+<p>As in Uniswap v1, all Uniswap v2 pair contracts are instantiated by a single factory contract. In Uniswap v1, these pair contracts were created using the CREATE opcode, which meant that the address of such a contract depended on the order in which that pair was created. Uniswap v2 uses Ethereum's new CREATE2 opcode <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-8">8</a> to generate a pair contract with a deterministic address. This means that it is possible to calculate a pair's address (if it exists) off-chain, without having to look at the chain state.</p>
+<p>与 Uniswap v1 一样，所有 Uniswap v2 交易对合约都由单个工厂合约实例化。在 Uniswap v1 中，这些交易对合约是使用 CREATE 操作码创建的，这意味着此类合约的地址取决于创建该交易对的顺序。Uniswap v2 使用以太坊新的 CREATE2 操作码 <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-8">8</a> 生成具有确定性地址的交易对合约。这意味着可以在链下计算交易对的地址（如果存在），而无需查看链状态。</p>
+<h2 id="37-maximum-token-balance-最大代币余额"><a class="header" href="#37-maximum-token-balance-最大代币余额">3.7 Maximum token balance （最大代币余额）</a></h2>
 <p>In order to efficiently implement the oracle mechanism, Uniswap v2 only support reserve balances of up to \(2^{112}-1\). This number is high enough to support 18-decimal-place tokens with a totalSupply over 1 quadrillion.</p>
+<p>为了高效地实现预言机机制，Uniswap v2 仅支持最高为 \(2^{112}-1\) 的储备余额。这个数字足够大，可以支持总供应量超过 1 千万亿的 18 位小数代币。</p>
 <p>If either reserve balance does go above \(2^{112}-1\), any call to the swap function will begin to fail (due to a check in the _update() function). To recover from this situation, any user can call the skim() function to remove excess assets from the liquidity pool.</p>
+<p>如果任何一个储备余额超过 \(2^{112}-1\)，对 swap 函数的任何调用都将开始失败（由于 _update() 函数中的检查）。为了从这种情况中恢复，任何用户都可以调用 skim() 函数从流动性池中移除多余的资产。</p>
 <h1 id="references"><a class="header" href="#references">References</a></h1>
 <div id="ref-1">[1] Hayden Adams. 2018. url: https://hackmd.io/@477aQ9OrQTCbVR3fq1Qzxg/HJ9jLsfTz?type=view.</div>
 <div id="ref-2">[2] Guillermo Angeris et al. An analysis of Uniswap markets. 2019. arXiv: 1911.03380 [q-fin.TR].</div>
@@ -4269,11 +4283,12 @@ $$</p>
 <div id="ref-8">[8] Vitalik Buterin. EIP 1014: Skinny CREATE2. Apr. 2018. url: https://eips.ethereum.org/EIPS/eip-1014.</div>
 <h1 id="4-disclaimer"><a class="header" href="#4-disclaimer">4 Disclaimer</a></h1>
 <p>This paper is for general information purposes only. It does not constitute investment advice or a recommendation or solicitation to buy or sell any investment and should not be used in the evaluation of the merits of making any investment decision. It should not be relied upon for accounting, legal or tax advice or investment recommendations. This paper reflects current opinions of the authors and is not made on behalf of Paradigm or its affiliates and does not necessarily reflect the opinions of Paradigm, its affiliates or individuals associated with Paradigm. The opinions reflected herein are subject to change without being updated.</p>
+<p>这份文件仅供一般信息参考。它不构成投资建议，也不构成购买或出售任何投资的推荐或招揽，不应用于评估任何投资决策的优点。不应将其作为会计、法律或税务建议或投资推荐的依据。这份文件反映了作者当前的观点，并非代表 Paradigm 或其关联公司发表，也不一定反映 Paradigm、其关联公司或与 Paradigm 相关联的个人的观点。此处反映的观点可能会发生变化，恕不另行更新。</p>
 <h1 id="footnode-脚注"><a class="header" href="#footnode-脚注">footnode (脚注)</a></h1>
 <hr>
 <ol class="footnote-definition"><li id="footnote-1">
 <p>For a real-world example of how using Uniswap v1 as an oracle can make a contract vulnerable to such
-an attack, see <sup class="footnote-reference" id="fr-3-3"><a href="#footnote-3">3</a></sup>.对于现实世界中使用 uniswap v1 作为预言机能让合约本身易受到攻击的例子，可见<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-3">3</a> <a href="#fr-1-1">↩</a> <a href="#fr-1-2">↩2</a></p>
+an attack, see <a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-3">3</a>.对于现实世界中使用 uniswap v1 作为预言机能让合约本身易受到攻击的例子，可见<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-3">3</a>。 <a href="#fr-1-1">↩</a> <a href="#fr-1-2">↩2</a></p>
 </li>
 <li id="footnote-2">
 <p>Since miners have some freedom to set the block timestamp, users of the oracle should be aware that
@@ -4283,45 +4298,55 @@ these values may not correspond precisely to real-world times.由于矿工本身
 <p>The arithmetic mean price of asset A in terms of asset B over a given period is equal to the reciprocal
 of the harmonic mean price of asset B in terms of asset A over that period. If the contract measured the
 geometric mean price, then the prices would be the reciprocals of each other. However, the geometric mean
-TWAP is less commonly used, and is difficult to compute on Ethereum. <a href="#fr-3-1">↩</a> <a href="#fr-3-2">↩2</a> <a href="#fr-3-3">↩3</a></p>
+TWAP is less commonly used, and is difficult to compute on Ethereum.
+给定一段时间内，资产 A 相对于资产 B 的算术平均价格等于该段时间内资产 B 相对于资产 A 的调和平均价格的倒数。如果合约测量几何平均价格，则价格将互为倒数。然而，几何平均 TWAP 并不常用，并且在以太坊上难以计算。 <a href="#fr-3-1">↩</a> <a href="#fr-3-2">↩2</a></p>
 </li>
 <li id="footnote-4">
 <p>The theoretical upper bound of \(2^{112} - (1/2^{112})\) does not apply in this setting, as UQ112.112 numbers in
-Uniswap are always generated from the ratio of two uint112s. The largest such ratio is \(\frac{2^{112}-1}{1} = 2^{112}-1\) <a href="#fr-4-1">↩</a> <a href="#fr-4-2">↩2</a></p>
+Uniswap are always generated from the ratio of two uint112s. The largest such ratio is \(\frac{2^{112}-1}{1} = 2^{112}-1\)
+\(2^{112} - (1/2^{112})\) 的理论上限不适用于此设置，因为 Uniswap 中的 UQ112.112 数字始终由两个 uint112 的比率生成。这种最大比率是 \(\frac{2^{112}-1}{1} = 2^{112}-1\) <a href="#fr-4-1">↩</a> <a href="#fr-4-2">↩2</a></p>
 </li>
 <li id="footnote-5">
 <p>Because Uniswap charges fees on input amounts, the fee relative to the withdrawn amount is actually
-slightly higher: \(\frac{1}{1-0.003} - 1 = \frac{3}{997} \approx 0.3009203%\) <a href="#fr-5-1">↩</a> <a href="#fr-5-2">↩2</a></p>
+slightly higher: \(\frac{1}{1-0.003} - 1 = \frac{3}{997} \approx 0.3009203\%\)
+由于 Uniswap 对输入金额收取费用，因此相对于提取金额的费用实际上略高：\(\frac{1}{1-0.003} - 1 = \frac{3}{997} \approx 0.3009203\%\) <a href="#fr-5-1">↩</a> <a href="#fr-5-2">↩2</a></p>
 </li>
 <li id="footnote-6">
 <p>We can use this invariant, which does not account for liquidity tokens that were minted or burned,
-because we know that fees are collected every time liquidity is deposited or withdrawn. <a href="#fr-6-1">↩</a> <a href="#fr-6-2">↩2</a> <a href="#fr-6-3">↩3</a></p>
+because we know that fees are collected every time liquidity is deposited or withdrawn.</p>
+<p>我们可以使用这个不考虑铸造或销毁流动性代币的不变量，因为我们知道每次存入或提取流动性时都会收取费用。 <a href="#fr-6-1">↩</a> <a href="#fr-6-2">↩2</a></p>
 </li>
 <li id="footnote-7">
-<p>The signed message conforms to the EIP-712 standard, the same one used by meta transactions for tokens like CHAI and DAI. <a href="#fr-7-1">↩</a> <a href="#fr-7-2">↩2</a></p>
+<p>The signed message conforms to the EIP-712 standard, the same one used by meta transactions for tokens like CHAI and DAI.
+签名消息符合 EIP-712 标准，与 CHAI 和 DAI 等代币的元交易使用的标准相同。 <a href="#fr-7-1">↩</a> <a href="#fr-7-2">↩2</a></p>
 </li>
 <li id="footnote-8">
-<p>Note that using the new architecture, \(x*{in}\) is not provided by the user; instead, it is calculated by
-measuring the contract's balance after the callback, \(x_1\), and subtracting \((x_0 - x*{out})\) from it. This logic does
+<p>Note that using the new architecture, \(x_{in}\) is not provided by the user; instead, it is calculated by
+measuring the contract's balance after the callback, \(x_1\), and subtracting \((x_0 - x_{out})\) from it. This logic does
 not distinguish between assets sent into the contract before it is called and assets sent into the contract
-during the callback. \(y*{in}\) is computed in the same way, based on \(y_0\), \(y_1\), and \(y*{out}\). <a href="#fr-8-1">↩</a> <a href="#fr-8-2">↩2</a> <a href="#fr-8-3">↩3</a></p>
+during the callback. \(y_{in}\) is computed in the same way, based on \(y_0\), \(y_1\), and \(y_{out}\).</p>
+<p>请注意，使用新架构，\(x_{in}\) 不是由用户提供的；相反，它是通过测量回调后合约的余额 \(x_1\)，并从中减去 \((x_0 - x_{out})\) 来计算的。此逻辑不区分在调用合约之前发送到合约的资产和在回调期间发送到合约的资产。\(y_{in}\) 以相同的方式计算，基于\(y_0\)、\(y_1\) 和 \(y_{out}\)。 <a href="#fr-8-1">↩</a> <a href="#fr-8-2">↩2</a></p>
 </li>
 <li id="footnote-9">
-<p>As described above in section 3.2, Uniswap v2 core does not use transferFrom(). <a href="#fr-9-1">↩</a> <a href="#fr-9-2">↩2</a></p>
+<p>As described above in section 3.2, Uniswap v2 core does not use transferFrom().
+如上文 3.2 节所述，Uniswap v2 核心不使用 transferFrom()。 <a href="#fr-9-1">↩</a> <a href="#fr-9-2">↩2</a></p>
 </li>
 <li id="footnote-10">
 <p>This also reduces the likelihood of rounding errors, since the number of bits in the quantity of shares
 will be approximately the mean of the number of bits in the quantity of asset X in the reserves, and the
 number of bits in the quantity of asset Y in the reserves:
-\(\log_2 \sqrt{x \cdot y} = \frac{\log_2 x + \log_2 y}{2}\) <a href="#fr-10-1">↩</a></p>
+\(\log_2 \sqrt{x \cdot y} = \frac{\log_2 x + \log_2 y}{2}\)
+这也降低了舍入误差的可能性，因为份额数量的位数将大约是储备中资产 X 数量的位数和储备中资产 Y 数量的位数的平均值：\(\log_2 \sqrt{x \cdot y} = \frac{\log_2 x + \log_2 y}{2}\) <a href="#fr-10-1">↩</a> <a href="#fr-10-2">↩2</a></p>
 </li>
 <li id="footnote-11">
 <p>In theory, there are some cases where this burn could be non-negligible, such as pairs between high-value
 zero-decimal tokens. However, these pairs are a poor fit for Uniswap anyway, since rounding errors would
-make trading infeasible. <a href="#fr-11-1">↩</a></p>
+make trading infeasible.
+理论上，在某些情况下，这种销毁可能是不可忽略的，例如在高价值零小数代币之间的交易对。然而，这些交易对无论如何都不适合 Uniswap，因为舍入误差会使交易变得不可行。 <a href="#fr-11-1">↩</a> <a href="#fr-11-2">↩2</a></p>
 </li>
 <li id="footnote-12">
-<p>As of this writing, one of the highest-liquidity pairs on Uniswap v1 is the pair between ETH and WETH[7]. <a href="#fr-12-1">↩</a></p>
+<p>As of this writing, one of the highest-liquidity pairs on Uniswap v1 is the pair between ETH and WETH<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-7">7</a>.
+截至撰写本文时，Uniswap v1 上流动性最高的交易对之一是 ETH 和 WETH 之间的交易对<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-7">7</a>。 <a href="#fr-12-1">↩</a> <a href="#fr-12-2">↩2</a></p>
 </li>
 </ol><div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
 <p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20 提案中 approve 函数声明</a>提过的一种数据攻击。</p>
