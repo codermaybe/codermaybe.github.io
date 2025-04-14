@@ -2049,6 +2049,41 @@ contract SimpleToken {
 <li><strong>EVM改进</strong>：持续优化虚拟机性能</li>
 <li><strong>状态过期</strong>：解决状态膨胀问题</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
+<h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
+<p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
+<h4 id="二安装-ethersjs"><a class="header" href="#二安装-ethersjs">二、安装 ethers.js</a></h4>
+<p>在实现私钥还原公钥之前，需要先安装 <code>ethers.js</code>：</p>
+<pre><code class="language-bash">npm install ethers
+</code></pre>
+<h4 id="三使用-ethersjs-运算公钥"><a class="header" href="#三使用-ethersjs-运算公钥">三、使用 ethers.js 运算公钥</a></h4>
+<p>以下是通过 ethers.js 将私钥转换为公钥的完整代码：</p>
+<pre><code class="language-javascript">const { Wallet } = require('ethers');
+
+// 私钥（确保保密！）
+const privateKey = "0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d";
+
+// 从私钥生成钥包实例
+const wallet = new Wallet(privateKey);
+
+// 获取公钥
+const publicKey = wallet.publicKey;
+
+console.log("私钥:", privateKey);
+console.log("公钥:", publicKey);
+</code></pre>
+<h5 id="输出格式"><a class="header" href="#输出格式">输出格式</a></h5>
+<ul>
+<li><strong>私钥</strong>：输入值，64 个十六进制字符，前缀为 <code>0x</code>。</li>
+<li><strong>公钥</strong>：未压缩格式，524-bit （含前缀 <code>0x04</code>），起始为一个指针。</li>
+</ul>
+<h5 id="示例输出"><a class="header" href="#示例输出">示例输出</a></h5>
+<pre><code>私钥: 0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d
+公钥: 0x04bfcab4e67d19d84cf2047269de360f3e51b50fa5c45594f5365ff3c7ec8f3f482c909de42ccadf81a913e51e535fc327fced47adf968f2bf4bfdbc5f8862bb2d
+</code></pre>
+<h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
+<h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
+<p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc"><a class="header" href="#erc">ERC</a></h1>
 <p>ERC 是 Ethereum Request for Comments（以太坊请求评论）的缩写。它是以太坊社区定义的一系列智能合约标准。这些标准为以太坊上的智能合约开发提供了规则和指南，确保不同开发者创建的合约能够相互交互和兼容。</p>
 <p><a href="https://github.com/ethereum/ERCs/tree/master/ERCS">官方文档</a></p>
@@ -3890,9 +3925,130 @@ interface IERC777Sender {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="uniswap-1"><a class="header" href="#uniswap-1">Uniswap</a></h1>
 <p><a href="https://docs.uniswap.org/contracts/v4/overview">开发文档</a></p>
+<h2 id="概述-1"><a class="header" href="#概述-1">概述</a></h2>
+<p>Uniswap 是以太坊上最成功的去中心化交易所(DEX)之一，它通过创新的自动做市商(AMM)机制彻底改变了加密货币交易的方式。Uniswap 由 Hayden Adams 于 2018 年创建，最初是一个简单的概念验证项目，基于以太坊创始人 Vitalik Buterin 提出的自动做市商概念。</p>
+<h2 id="版本演进"><a class="header" href="#版本演进">版本演进</a></h2>
+<p>Uniswap 从 v1 到 v4 经历了多次重大升级，每个版本都带来了重要的创新和改进：</p>
+<h3 id="uniswap-v1-2018-年-11-月"><a class="header" href="#uniswap-v1-2018-年-11-月">Uniswap v1 (2018 年 11 月)</a></h3>
+<p>Uniswap v1 是第一个实现自动做市商(AMM)机制的 DEX，它引入了以下关键特性：</p>
+<ul>
+<li><strong>恒定乘积公式</strong>：使用\(x \cdot y = k\)公式，其中\(x\)和\(y\)是交易对中两种资产的储备量，\(k\)是一个常数。</li>
+<li><strong>ETH 作为基础资产</strong>：每个交易对都必须包含 ETH 作为基础资产。</li>
+<li><strong>简单的流动性提供机制</strong>：流动性提供者(LP)需要提供等值的两种资产。</li>
+<li><strong>0.3%的交易费用</strong>：所有交易费用都分配给流动性提供者。</li>
+</ul>
+<p>v1 的主要局限性是只能与 ETH 创建交易对，这限制了其灵活性和流动性。</p>
+<h3 id="uniswap-v2-2020-年-5-月"><a class="header" href="#uniswap-v2-2020-年-5-月">Uniswap v2 (2020 年 5 月)</a></h3>
+<p>Uniswap v2 解决了 v1 的许多局限性，引入了以下创新：</p>
+<ul>
+<li><strong>任意 ERC20 代币对</strong>：支持创建任意 ERC20 代币之间的交易对，不再需要 ETH 作为基础资产。</li>
+<li><strong>价格预言机</strong>：引入了强化的价格预言机，通过在每个区块开始时累积价格数据，使其他合约能够估算任意时间间隔内的时间加权平均价格(TWAP)。</li>
+<li><strong>闪电兑换</strong>：允许用户在同一笔交易中先接收资产，使用它们，然后再支付或归还，为套利和复杂交易策略提供便利。</li>
+<li><strong>协议费用</strong>：引入了可选的 0.05%协议费用，可以发送到指定的地址。</li>
+</ul>
+<p>v2 的智能合约架构包括：</p>
+<ul>
+<li><strong>工厂合约</strong>：负责创建和管理交易对合约。</li>
+<li><strong>交易对合约</strong>：存储流动性提供者的资金，执行交易逻辑。</li>
+<li><strong>路由器合约</strong>：提供用户友好的接口，计算交易或存款金额，并将资金转移到交易对合约。</li>
+</ul>
+<h3 id="uniswap-v3-2021-年-5-月"><a class="header" href="#uniswap-v3-2021-年-5-月">Uniswap v3 (2021 年 5 月)</a></h3>
+<p>Uniswap v3 带来了革命性的改进，大幅提高了资本效率：</p>
+<ul>
+<li><strong>集中流动性</strong>：允许流动性提供者将资金集中在特定价格范围内，而不是均匀分布在整个价格曲线上。</li>
+<li><strong>多费率等级</strong>：引入了多个费率等级(0.05%、0.30%和 1%)，允许 LP 根据资产对的波动性选择适当的费率。</li>
+<li><strong>改进的价格预言机</strong>：进一步改进了价格预言机，使其更加精确和高效。</li>
+<li><strong>非 ERC20 代币支持</strong>：增加了对非 ERC20 代币的支持，如 ETH 和 WETH。</li>
+</ul>
+<p>v3 的核心创新是集中流动性，它通过以下方式实现：</p>
+<ul>
+<li>LP 可以选择提供流动性的价格范围。</li>
+<li>流动性只在选定的价格范围内有效。</li>
+<li>当价格超出范围时，流动性会转换为单一资产，直到价格回到范围内。</li>
+</ul>
+<p>这种机制大大提高了资本效率，使 LP 能够获得更高的费用收入，但也增加了无常损失的风险。</p>
+<h3 id="uniswap-v4-2023-年-6-月"><a class="header" href="#uniswap-v4-2023-年-6-月">Uniswap v4 (2023 年 6 月)</a></h3>
+<p>Uniswap v4 是最新版本，引入了多项突破性创新：</p>
+<ul>
+<li><strong>钩子(Hooks)</strong>：允许开发者在流动性池的生命周期中的特定点执行自定义代码，为 AMM 提供了前所未有的可扩展性。</li>
+<li><strong>单例池(Singleton Pool)</strong>：所有池都存储在一个合约中，而不是每个交易对一个合约，这大大降低了部署和交互成本。</li>
+<li><strong>动态费用</strong>：支持基于市场条件的动态费用调整。</li>
+<li><strong>改进的闪电贷</strong>：提供了更灵活和高效的闪电贷机制。</li>
+<li><strong>自定义 AMM 曲线</strong>：允许创建自定义的 AMM 曲线，而不仅限于恒定乘积公式。</li>
+</ul>
+<p>v4 的钩子系统是其最显著的创新，它允许在以下关键时刻执行自定义逻辑：</p>
+<ul>
+<li>初始化池</li>
+<li>添加/移除流动性</li>
+<li>交易前/后</li>
+<li>闪电贷前/后</li>
+</ul>
+<p>这种灵活性使开发者能够创建各种创新的 AMM 变体，如：</p>
+<ul>
+<li>基于时间的费用调整</li>
+<li>基于交易量的费用调整</li>
+<li>自动再平衡池</li>
+<li>与外部预言机集成的池</li>
+</ul>
+<h2 id="技术实现"><a class="header" href="#技术实现">技术实现</a></h2>
+<h3 id="自动做市商amm模型"><a class="header" href="#自动做市商amm模型">自动做市商(AMM)模型</a></h3>
+<p>Uniswap 的核心是自动做市商模型，它通过数学公式自动确定交易价格，而不是依赖订单簿匹配。不同版本使用了不同的公式：</p>
+<ul>
+<li><strong>v1 和 v2</strong>：使用恒定乘积公式 \(x \cdot y = k\)</li>
+<li><strong>v3</strong>：使用改进的恒定乘积公式，支持集中流动性</li>
+<li><strong>v4</strong>：支持自定义 AMM 曲线，包括恒定乘积、恒定和、恒定平均值等</li>
+</ul>
+<h3 id="流动性提供机制"><a class="header" href="#流动性提供机制">流动性提供机制</a></h3>
+<p>不同版本的流动性提供机制有所不同：</p>
+<ul>
+<li><strong>v1 和 v2</strong>：LP 提供等值的两种资产，获得代表池中份额的 LP 代币</li>
+<li><strong>v3</strong>：LP 提供不等值的资产，并指定价格范围，获得代表特定价格范围内份额的 NFT</li>
+<li><strong>v4</strong>：支持更灵活的流动性提供机制，可以通过钩子实现各种创新</li>
+</ul>
+<h3 id="无常损失"><a class="header" href="#无常损失">无常损失</a></h3>
+<p>无常损失是指当 LP 提供流动性后，由于资产价格变化导致的潜在损失。不同版本的无常损失风险不同：</p>
+<ul>
+<li><strong>v1 和 v2</strong>：LP 在整个价格范围内面临无常损失风险</li>
+<li><strong>v3</strong>：LP 可以通过集中流动性减少无常损失风险，但也可能面临更高的风险</li>
+<li><strong>v4</strong>：通过钩子系统，可以创建减少无常损失的创新机制</li>
+</ul>
+<h2 id="经济模型"><a class="header" href="#经济模型">经济模型</a></h2>
+<h3 id="交易费用"><a class="header" href="#交易费用">交易费用</a></h3>
+<p>不同版本的交易费用模型有所不同：</p>
+<ul>
+<li><strong>v1</strong>：固定 0.3%的交易费用，全部归 LP 所有</li>
+<li><strong>v2</strong>：固定 0.3%的交易费用，其中 0.25%归 LP 所有，0.05%可能归协议所有</li>
+<li><strong>v3</strong>：多个费率等级(0.05%、0.30%和 1%)，LP 可以根据资产对的波动性选择适当的费率</li>
+<li><strong>v4</strong>：支持动态费用，可以通过钩子实现基于市场条件的费用调整</li>
+</ul>
+<h3 id="治理"><a class="header" href="#治理">治理</a></h3>
+<p>Uniswap 的治理由 UNI 代币持有者控制，他们可以投票决定协议的未来发展方向，包括：</p>
+<ul>
+<li>协议费用开关</li>
+<li>费用接收地址</li>
+<li>协议升级</li>
+<li>资金分配</li>
+</ul>
+<h2 id="生态系统"><a class="header" href="#生态系统">生态系统</a></h2>
+<p>Uniswap 已经发展成为一个庞大的生态系统，包括：</p>
+<ol>
+<li><strong>Uniswap 界面</strong>：用户友好的 Web 界面，用于与 Uniswap 协议交互</li>
+<li><strong>Uniswap SDK</strong>：开发者工具包，用于构建与 Uniswap 交互的应用程序</li>
+<li><strong>Uniswap 治理</strong>：UNI 代币持有者可以参与协议治理</li>
+<li><strong>Uniswap Labs</strong>：开发 Uniswap 协议的公司</li>
+<li><strong>Uniswap 基金会</strong>：支持 Uniswap 协议发展的非营利组织</li>
+</ol>
+<h2 id="参考资料"><a class="header" href="#参考资料">参考资料</a></h2>
+<ol>
+<li><a href="https://docs.uniswap.org/whitepaper.pdf">Uniswap v2 白皮书</a></li>
+<li><a href="https://app.uniswap.org/whitepaper-v3.pdf">Uniswap v3 白皮书</a></li>
+<li><a href="https://app.uniswap.org/whitepaper-v4.pdf">Uniswap v4 白皮书</a></li>
+<li><a href="https://docs.uniswap.org/">Uniswap 官方文档</a></li>
+<li>Uniswap GitHub 仓库</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="uniswap-v1"><a class="header" href="#uniswap-v1">Uniswap V1</a></h1>
 <p><a href="https://zhuanlan.zhihu.com/p/552867213">推荐链接-知乎</a></p>
-<h2 id="概述-1"><a class="header" href="#概述-1">概述</a></h2>
+<h2 id="概述-2"><a class="header" href="#概述-2">概述</a></h2>
 <p>Uniswap V1 是第一个完全去中心化的自动做市商（AMM）协议，由 Hayden Adams 于 2018 年 11 月推出。它通过智能合约实现了代币的自动交易，无需传统的订单簿。</p>
 <h2 id="核心机制"><a class="header" href="#核心机制">核心机制</a></h2>
 <h3 id="ammautomated-market-maker"><a class="header" href="#ammautomated-market-maker">AMM（Automated Market Maker）</a></h3>
@@ -3927,7 +4083,7 @@ interface IERC777Sender {
 </ul>
 </li>
 </ol>
-<h3 id="交易费用"><a class="header" href="#交易费用">交易费用</a></h3>
+<h3 id="交易费用-1"><a class="header" href="#交易费用-1">交易费用</a></h3>
 <ol>
 <li>
 <p><strong>费率</strong>：</p>
@@ -4056,7 +4212,119 @@ function getTokenToEthInputPrice(uint256 tokens_sold) external view returns (uin
 </ul>
 </li>
 </ol>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="v2"><a class="header" href="#v2">V2</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="uniswap-v2"><a class="header" href="#uniswap-v2">Uniswap V2</a></h1>
+<h2 id="概述-3"><a class="header" href="#概述-3">概述</a></h2>
+<p>Uniswap V2 是 Uniswap 协议的第二代版本，于 2020 年 5 月发布。它是对 V1 的重大改进，解决了 V1 的许多局限性，并引入了多项创新功能。V2 的核心改进是支持任意 ERC20 代币对，不再需要 ETH 作为基础资产，同时引入了价格预言机、闪电兑换和协议费用等新功能。</p>
+<h2 id="核心机制-1"><a class="header" href="#核心机制-1">核心机制</a></h2>
+<h3 id="自动做市商amm模型-1"><a class="header" href="#自动做市商amm模型-1">自动做市商(AMM)模型</a></h3>
+<p>Uniswap V2 继续使用自动做市商模型，通过数学公式自动确定交易价格，而不是依赖订单簿匹配。V2 使用"恒定乘积公式"：</p>
+<p>\[x \cdot y = k\]</p>
+<p>其中，\(x\)和\(y\)是交易对中两种资产的储备量，\(k\)是一个常数。这个公式确保无论交易量如何，两种资产的乘积保持不变。</p>
+<p>当用户进行交易时，他们支付一种资产并接收另一种资产，同时保持\(k\)不变。交易价格由以下公式决定：</p>
+<p>\[p = \frac{y}{x}\]</p>
+<p>其中，\(p\)是交易价格，表示用\(x\)资产购买\(y\)资产的价格。</p>
+<h3 id="流动性提供"><a class="header" href="#流动性提供">流动性提供</a></h3>
+<p>用户可以通过向交易对提供两种资产来成为流动性提供者(LP)。作为回报，LP 会收到代表其在池中份额的 LP 代币。这些 LP 代币可以用于赎回流动性，也可以用于赚取交易费用。</p>
+<p>在 Uniswap V2 中，LP 代币的铸造基于存入资产的几何平均值：</p>
+<p>\[s_{minted} = \sqrt{x_{deposited} \cdot y_{deposited}}\]</p>
+<p>其中，\(s*{minted}\)是铸造的 LP 代币数量，\(x*{deposited}\)和\(y_{deposited}\)是存入的资产数量。</p>
+<h3 id="交易费用-2"><a class="header" href="#交易费用-2">交易费用</a></h3>
+<p>Uniswap V2 对每笔交易收取 0.30%的费用，这些费用会分配给流动性提供者。此外，V2 还引入了可选的 0.05%协议费用，可以发送到指定的地址。</p>
+<h2 id="技术实现-1"><a class="header" href="#技术实现-1">技术实现</a></h2>
+<h3 id="智能合约架构-1"><a class="header" href="#智能合约架构-1">智能合约架构</a></h3>
+<p>Uniswap V2 采用了模块化的合约架构，主要包括三个核心合约：</p>
+<ol>
+<li>
+<p><strong>工厂合约(Factory)</strong>：负责创建和管理交易对合约。每个交易对都有一个唯一的地址，由工厂合约通过确定性地址派生算法计算得出。</p>
+</li>
+<li>
+<p><strong>交易对合约(Pair)</strong>：存储流动性提供者的资金，执行交易逻辑。每个交易对合约都实现了 ERC20 标准，代表该交易对的流动性份额。</p>
+</li>
+<li>
+<p><strong>路由器合约(Router)</strong>：提供用户友好的接口，计算交易或存款金额，并将资金转移到交易对合约。路由器合约处理复杂的交易路径，如多跳交易。</p>
+</li>
+</ol>
+<h3 id="价格预言机"><a class="header" href="#价格预言机">价格预言机</a></h3>
+<p>Uniswap V2 引入了强化的价格预言机，通过在每个区块开始时累积价格数据，使其他合约能够估算任意时间间隔内的时间加权平均价格(TWAP)。</p>
+<p>价格累积器使用以下公式：</p>
+<p>\[a_t = \sum_{i=1}^{t} p_i\]</p>
+<p>其中，\(a_t\)是时间\(t\)时的价格累积值，\(p_i\)是时间\(i\)时的价格。</p>
+<p>通过比较两个时间点的累积值，可以计算出该时间间隔内的 TWAP：</p>
+<p>\[TWAP = \frac{a_{t_2} - a_{t_1}}{t_2 - t_1}\]</p>
+<p>这种机制解决了 Uniswap V1 作为价格预言机容易被操纵的问题，因为操纵者需要在整个时间间隔内维持价格，而不仅仅是在单个时间点。</p>
+<h3 id="闪电兑换"><a class="header" href="#闪电兑换">闪电兑换</a></h3>
+<p>Uniswap V2 引入了"闪电兑换"功能，允许用户在同一笔交易中先接收资产，使用它们，然后再支付或归还。这为套利、抵押品交换和其他复杂交易策略提供了便利。</p>
+<p>闪电兑换的工作原理是：</p>
+<ol>
+<li>用户调用交易对合约的<code>swap</code>函数，指定要接收的资产数量和要支付的资产数量。</li>
+<li>交易对合约将资产转移给用户。</li>
+<li>用户使用这些资产执行其他操作（如套利）。</li>
+<li>在同一笔交易中，用户调用交易对合约的<code>swap</code>函数，将资产归还给交易对。</li>
+</ol>
+<p>如果用户没有在同一笔交易中归还资产，交易将回滚，确保交易对的安全。</p>
+<h2 id="安全考虑-4"><a class="header" href="#安全考虑-4">安全考虑</a></h2>
+<p>Uniswap V2 引入了多项安全改进：</p>
+<ol>
+<li>
+<p><strong>重入锁</strong>：防止重入攻击，特别是对支持 ERC-777 钩子的代币。</p>
+</li>
+<li>
+<p><strong>非标准 ERC-20 处理</strong>：更好地处理不符合标准的 ERC-20 代币实现，如没有返回布尔值的<code>transfer</code>函数。</p>
+</li>
+<li>
+<p><strong>应急函数</strong>：提供<code>sync()</code>和<code>skim()</code>函数，用于处理异常情况，如代币余额与储备量不一致。</p>
+</li>
+</ol>
+<h2 id="无常损失-1"><a class="header" href="#无常损失-1">无常损失</a></h2>
+<p>无常损失是指当 LP 提供流动性后，由于资产价格变化导致的潜在损失。当两种资产的价格比率发生变化时，LP 可能会遭受无常损失。</p>
+<p>无常损失的计算公式为：</p>
+<p>\[IL = 2 \cdot \sqrt{\frac{p_1}{p_0}} - \frac{p_1}{p_0} - 1\]</p>
+<p>其中，\(IL\)是无常损失，\(p_0\)是初始价格比率，\(p_1\)是最终价格比率。</p>
+<h2 id="应用场景-3"><a class="header" href="#应用场景-3">应用场景</a></h2>
+<p>Uniswap V2 广泛应用于以下场景：</p>
+<ol>
+<li>
+<p><strong>代币交换</strong>：用户可以直接在 Uniswap 上交换任意 ERC20 代币，无需通过中心化交易所。</p>
+</li>
+<li>
+<p><strong>价格发现</strong>：Uniswap V2 的价格预言机为其他 DeFi 协议提供了可靠的价格数据。</p>
+</li>
+<li>
+<p><strong>流动性提供</strong>：用户可以通过提供流动性赚取交易费用。</p>
+</li>
+<li>
+<p><strong>套利</strong>：交易者可以利用不同交易所之间的价格差异进行套利。</p>
+</li>
+<li>
+<p><strong>闪电贷</strong>：开发者可以利用闪电兑换功能创建闪电贷，在同一笔交易中借入资产，使用它们，然后再归还。</p>
+</li>
+</ol>
+<h2 id="与-v1-的比较"><a class="header" href="#与-v1-的比较">与 V1 的比较</a></h2>
+<p>Uniswap V2 相比 V1 有以下主要改进：</p>
+<ol>
+<li>
+<p><strong>任意 ERC20 代币对</strong>：V2 支持创建任意 ERC20 代币之间的交易对，而不仅限于 ETH。</p>
+</li>
+<li>
+<p><strong>价格预言机</strong>：V2 引入了强化的价格预言机，解决了 V1 作为价格预言机容易被操纵的问题。</p>
+</li>
+<li>
+<p><strong>闪电兑换</strong>：V2 引入了闪电兑换功能，为套利和复杂交易策略提供便利。</p>
+</li>
+<li>
+<p><strong>协议费用</strong>：V2 引入了可选的 0.05%协议费用，可以发送到指定的地址。</p>
+</li>
+<li>
+<p><strong>更好的安全措施</strong>：V2 引入了多项安全改进，如重入锁和非标准 ERC-20 处理。</p>
+</li>
+</ol>
+<h2 id="参考资料-1"><a class="header" href="#参考资料-1">参考资料</a></h2>
+<ol>
+<li>Uniswap V2 白皮书</li>
+<li>Uniswap V2 技术文档</li>
+<li>Uniswap V2 GitHub 仓库</li>
+<li>Uniswap 官方文档</li>
+</ol>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="针对-uniswapv2-白皮书精校翻译"><a class="header" href="#针对-uniswapv2-白皮书精校翻译">针对 uniswapv2 白皮书精校翻译</a></h1>
 <p><a href="https://docs.uniswap.org/whitepaper.pdf">uniswapv2-whitepaper 官方链接</a></p>
 <p>制作不易，转载此篇请注明出处</p>
@@ -4286,8 +4554,8 @@ ETH/USD 的平均价格：
 <h3 id="221-precision-精度"><a class="header" href="#221-precision-精度">2.2.1 Precision （精度）</a></h3>
 <p>Because Solidity does not have first-class support for non-integer numeric data types, the Uniswap v2 uses a simple binary fixed point format to encode and manipulate prices. Specifically, prices at a given moment are stored as UQ112.112 numbers, meaning that 112 fractional bits of precision are specified on either side of the decimal point, with no sign. These numbers have a range of \([0,2^{112}-1]\)<sup class="footnote-reference" id="fr-4-1"><a href="#footnote-4">4</a></sup> and a precision of \(\frac{1}{2^{112}}\).</p>
 <p>由于 Solidity 本身不支持非整数数值数据类型，Uniswap v2 使用一种简单的二进制定点格式来编码和操作价格。具体来说，某一时刻的价格存储为 UQ112.112 格式的数字，这意味着在小数点两侧都指定了 112 位的小数精度，并且没有符号。这些数字的范围是 \([0,2^{112}-1]\)<sup class="footnote-reference" id="fr-4-2"><a href="#footnote-4">4</a></sup>，精度为 \(\frac{1}{2^{112}}\).
-​
-The UQ112.112 format was chosen for a pragmatic reason — because these numbers can be stored in a uint224, this leaves 32 bits of a 256 bit storage slot free. It also happens that the reserves, each stored in a uint112, also leave 32 bits free in a (packed) 256 bit storage slot. These free spaces are used for the accumulation process described above. Specifically, the reserves are stored alongside the timestamp of the most recent block with at least one trade, modded with \(2^{32}\) so that it fits into 32 bits. Additionally, although the price at any given moment (stored as a UQ112.112 number) is guaranteed to fit in 224 bits, the accumulation of this price over an interval is not. The extra 32 bits on the end of the storage slots for the accumulated price of A/B and B/A are used to store overflow bits resulting from repeated summations of prices. This design means that the price oracle only adds an additional three SSTORE operations (a current cost of about 15,000 gas) to the first trade in each block.</p>
+​</p>
+<p>The UQ112.112 format was chosen for a pragmatic reason — because these numbers can be stored in a uint224, this leaves 32 bits of a 256 bit storage slot free. It also happens that the reserves, each stored in a uint112, also leave 32 bits free in a (packed) 256 bit storage slot. These free spaces are used for the accumulation process described above. Specifically, the reserves are stored alongside the timestamp of the most recent block with at least one trade, modded with \(2^{32}\) so that it fits into 32 bits. Additionally, although the price at any given moment (stored as a UQ112.112 number) is guaranteed to fit in 224 bits, the accumulation of this price over an interval is not. The extra 32 bits on the end of the storage slots for the accumulated price of A/B and B/A are used to store overflow bits resulting from repeated summations of prices. This design means that the price oracle only adds an additional three SSTORE operations (a current cost of about 15,000 gas) to the first trade in each block.</p>
 <p>选择 UQ112.112 格式是出于务实的考虑——因为这些数字可以存储在 uint224 中，这使得一个 256 位的存储槽空闲了 32 位。碰巧的是，储备金（每个都存储在 uint112 中）也在一个（紧凑的）256 位存储槽中留出了 32 位空闲空间。这些空闲空间用于上述的累积过程。具体来说，储备金与最近一次至少发生一笔交易的区块的时间戳一起存储，该时间戳会进行模 \(2^{32}\)运算，以截取此时间戳的末尾 32 位。此外，虽然任何给定时刻的价格（存储为 UQ112.112 数字）保证可以容纳在 224 位中，但该价格在一段时间内的累积却不能。存储槽末尾用于存储 A/B 和 B/A 累积价格的额外 32 位用于存储重复的价格求和产生的溢出位。这种设计意味着价格预言机在每个区块的第一笔交易中仅额外增加三个 SSTORE 操作（目前成本约为 15,000 gas）。</p>
 <blockquote>
 <h4 id="1-uq112112-格式的用途"><a class="header" href="#1-uq112112-格式的用途"><strong>1. <code>UQ112.112</code> 格式的用途</strong></a></h4>
@@ -4701,7 +4969,636 @@ make trading infeasible.
 <p>As of this writing, one of the highest-liquidity pairs on Uniswap v1 is the pair between ETH and WETH<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-7">7</a>.
 截至撰写本文时，Uniswap v1 上流动性最高的交易对之一是 ETH 和 WETH 之间的交易对<a href="BlockChain/Ethereum/Defi/Uniswap/V2/whitepaper/uniswapV2whitepaper.html#ref-7">7</a>。 <a href="#fr-12-1">↩</a> <a href="#fr-12-2">↩2</a></p>
 </li>
-</ol><div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
+</ol><div style="break-before: page; page-break-before: always;"></div><h1 id="v3"><a class="header" href="#v3">V3</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="针对-uniswapv3-白皮书"><a class="header" href="#针对-uniswapv3-白皮书">针对 uniswapv3 白皮书</a></h1>
+<h1 id="工作未完成"><a class="header" href="#工作未完成">工作未完成</a></h1>
+<p>whitepaper 原 pdf 经过 <a href="https://github.com/opendatalab/mineru">minerU</a> 转换</p>
+<hr />
+<h1 id="uniswap-v3-core"><a class="header" href="#uniswap-v3-core">Uniswap v3 Core</a></h1>
+<p>March 2021</p>
+<p>Hayden Adams hayden@uniswap.org</p>
+<p>Noah Zinsmeister noah@uniswap.org</p>
+<p>Moody Salem moody@uniswap.org</p>
+<p>River Keefer river@uniswap.org</p>
+<p>Dan Robinson dan@paradigm.xyz</p>
+<p><img src="https://cdn-mineru.openxlab.org.cn/extract/fec6859b-06b0-441f-8456-cb6a6d173bd8/1f2fc05d80d6730c856e87af807ecef13ad07c4a08d4ac1733ebc108a6c06ee6.jpg" alt="" /></p>
+<p>ABSTRACT</p>
+<p>Uniswap v3 is a noncustodial automated market maker implemented for the Ethereum Virtual Machine. In comparison to earlier versions of the protocol, Uniswap v3 provides increased capital efficiency and fine-tuned control to liquidity providers, improves the accuracy and convenience of the price oracle, and has a more flexible fee structure.</p>
+<h1 id="1-introduction"><a class="header" href="#1-introduction">1 INTRODUCTION</a></h1>
+<p>Automated market makers (AMMs) are agents that pool liquidity and make it available to traders according to an algorithm [5]. Constant function market makers (CFMMs), a broad class of AMMs of which Uniswap is a member, have seen widespread use in the context of decentralized finance, where they are typically implemented as smart contracts that trade tokens on a permissionless blockchain [2].</p>
+<p>CFMMs as they are implemented today are often capital inefficient. In the constant product market maker formula used by Uniswap v1 and v2, only a fraction of the assets in the pool are available at a given price. This is inefficient, particularly when assets are expected to trade close to a particular price at all times.</p>
+<p>Prior attempts to address this capital efficiency issue, such as Curve [3] and YieldSpace [4], have involved building pools that use different functions to describe the relation between reserves. This requires all liquidity providers in a given pool to adhere to a single formula, and could result in liquidity fragmentation if liquidity providers want to provide liquidity within different price ranges.</p>
+<p>In this paper, we present Uniswap v3, a novel AMM that gives liquidity providers more control over the price ranges in which their capital is used, with limited effect on liquidity fragmentation and gas inefficiency. This design does not depend on any shared assumption about the price behavior of the tokens. Uniswap v3 is based on the same constant product reserves curve as earlier versions [1], but offers several significant new features:</p>
+<p>• Concentrated Liquidity: Liquidity providers (LPs) are given the ability to concentrate their liquidity by “bounding" it within an arbitrary price range. This improves the pool’s capital efficiency and allows LPs to approximate their preferred reserves curve, while still being efficiently aggregated with the rest of the pool. We describe this feature in section 2 and its implementation in Section 6.<br />
+Flexible Fees: The swap fee is no longer locked at $0.30%$ . Rather, the fee tier for each pool (of which there can be multiple per asset pair) is set on initialization (Section 3.1). The initially supported fee tiers are $0.05%$ , $0.30%$ , and $1%$ . UNI governance is able to add additional values to this set.<br />
+• Protocol Fee Governance: UNI governance has more flexibility in setting the fraction of swap fees collected by the protocol (Section 6.2.2).<br />
+Improved Price Oracle: Uniswap v3 provides a way for users to query recent price accumulator values, thus avoiding the need to checkpoint the accumulator value at the exact beginning and end of the period for which a TWAP is being measured. (Section 5.1).</p>
+<p>• Liquidity Oracle: The contracts expose a time-weighted average liquidity oracle (Section 5.3).</p>
+<p>The Uniswap v2 core contracts are non-upgradeable by design, so Uniswap v3 is implemented as an entirely new set of contracts, available here. The Uniswap v3 core contracts are also non-upgradeable, with some parameters controlled by governance as described in Section 4.</p>
+<h2 id="2-concentrated-liquidity"><a class="header" href="#2-concentrated-liquidity">2 CONCENTRATED LIQUIDITY</a></h2>
+<p>The defining idea of Uniswap v3 is that of concentrated liquidity: liquidity bounded within some price range.</p>
+<p>In earlier versions, liquidity was distributed uniformly along the</p>
+<p>$$
+x\cdot y=k
+$$</p>
+<p>reserves curve, where $x$ and $y$ are the respective reserves of two assets $\mathsf{X}$ and Y, and $k$ is a constant [1]. In other words, earlier versions were designed to provide liquidity across the entire price range $(0,\infty)$ . This is simple to implement and allows liquidity to be efficiently aggregated, but means that much of the assets held in a pool are never touched.</p>
+<p>Having considered this, it seems reasonable to allow LPs to concentrate their liquidity to smaller price ranges than $(0,\infty)$ . We call liquidity concentrated to a finite range a position. A position only needs to maintain enough reserves to support trading within its range, and therefore can act like a constant product pool with larger reserves (we call these the virtual reserves) within that range.</p>
+<p><img src="https://cdn-mineru.openxlab.org.cn/extract/fec6859b-06b0-441f-8456-cb6a6d173bd8/aaa336379fef0ec7fc1f7e40ea2f966dc0ef0e1cd6ef7b6290d52dbc6e516c68.jpg" alt="" /><br />
+Figure 1: Simulation of Virtual Liquidity</p>
+<p>Specifically, a position only needs to hold enough of asset X to cover price movement to its upper bound, because upwards price movement1 corresponds to depletion of the X reserves. Similarly, it only needs to hold enough of asset Y to cover price movement to its lower bound. Fig. 1 depicts this relationship for a position on a range $[p_{a},p_{b}]$ and a current price $p_{c}\in[p_{a},p_{b}]$ . $x_{\mathrm{real}}$ and $y_{\mathrm{real}}$ denote the position’s real reserves.</p>
+<p>When the price exits a position’s range, the position’s liquidity is no longer active, and no longer earns fees. At that point, its liquidity is composed entirely of a single asset, because the reserves of the other asset must have been entirely depleted. If the price ever reenters the range, the liquidity becomes active again.</p>
+<p>The amount of liquidity provided can be measured by the value $L$ , which is equal to ${\sqrt{k}}.$ . The real reserves of a position are described by the curve:</p>
+<p>$$
+(x+{\frac{L}{\sqrt{p_{b}}}})(y+L\sqrt{p_{a}})=L^{2}
+$$</p>
+<p>This curve is a translation of formula 2.1 such that the position is solvent exactly within its range (Fig. 2).</p>
+<p><img src="https://cdn-mineru.openxlab.org.cn/extract/fec6859b-06b0-441f-8456-cb6a6d173bd8/8475aae58c7c209162163ba60121ce050d0d935b78587e82f7ddb4544b5867c7.jpg" alt="" /><br />
+Figure 2: Real Reserves</p>
+<p>Liquidity providers are free to create as many positions as they see fit, each on its own price range. In this way, LPs can approximate any desired distribution of liquidity on the price space (see Fig. 3 for a few examples). Moreover, this serves as a mechanism to let the market decide where liquidity should be allocated. Rational LPs can reduce their capital costs by concentrating their liquidity in a narrow band around the current price, and adding or removing tokens as the price moves to keep their liquidity active.</p>
+<h3 id="21-range-orders"><a class="header" href="#21-range-orders">2.1 Range Orders</a></h3>
+<p>Positions on very small ranges act similarly to limit orders—if the range is crossed, the position flips from being composed entirely of one asset, to being composed entirely of the other asset (plus accrued fees). There are two differences between this range order and a traditional limit order:</p>
+<p>• There is a limit to how narrow a position’s range can be. While the price is within that range, the limit order might be partially executed.<br />
+• When the position has been crossed, it needs to be withdrawn. If it is not, and the price crosses back across that range, the position will be traded back, effectively reversing the trade.</p>
+<p><img src="https://cdn-mineru.openxlab.org.cn/extract/fec6859b-06b0-441f-8456-cb6a6d173bd8/2be5ded2665cb1dbaa7c8ec401a423789b8f5d7a8b2edd5d7778f3e003ed77d3.jpg" alt="" /><br />
+Figure 3: Example Liquidity Distributions</p>
+<h2 id="3-architectural-changes"><a class="header" href="#3-architectural-changes">3 ARCHITECTURAL CHANGES</a></h2>
+<p>Uniswap v3 makes a number of architectural changes, some of which are necessitated by the inclusion of concentrated liquidity, and some of which are independent improvements.</p>
+<h3 id="31-multiple-pools-per-pair"><a class="header" href="#31-multiple-pools-per-pair">3.1 Multiple Pools Per Pair</a></h3>
+<p>In Uniswap v1 and v2, every pair of tokens corresponds to a single liquidity pool, which applies a uniform fee of $0.30%$ to all swaps. While this default fee tier historically worked well enough for many tokens, it is likely too high for some pools (such as pools between two stablecoins), and too low for others (such as pools that include highly volatile or rarely traded tokens).</p>
+<p>Uniswap v3 introduces multiple pools for each pair of tokens, each with a different swap fee. All pools are created by the same factory contract. The factory contract initially allows pools to be created at three fee tiers: $0.05%$ , $0.30%$ , and $1%$ . Additional fee tiers can be enabled by UNI governance.</p>
+<h3 id="32-non-fungible-liquidity"><a class="header" href="#32-non-fungible-liquidity">3.2 Non-Fungible Liquidity</a></h3>
+<p>3.2.1 Non-Compounding Fees. Fees earned in earlier versions were continuously deposited in the pool as liquidity. This meant that liquidity in the pool would grow over time, even without explicit deposits, and that fee earnings compounded.</p>
+<p>In Uniswap v3, due to the non-fungible nature of positions, this is no longer possible. Instead, fee earnings are stored separately and held as the tokens in which the fees are paid (see Section 6.2.2).</p>
+<p>3.2.2 Removal of Native Liquidity Tokens. In Uniswap v1 and v2, the pool contract is also an ERC-20 token contract, whose tokens represent liquidity held in the pool. While this is convenient, it actually sits uneasily with the Uniswap v2 philosophy that anything that does not need to be in the core contracts should be in the periphery, and blessing one “canonical" ERC-20 implementation discourages the creation of improved ERC-20 token wrappers. Arguably, the ERC-20 token implementation should have been in the periphery, as a wrapper on a single liquidity position in the core contract.</p>
+<p>The changes made in Uniswap v3 force this issue by making completely fungible liquidity tokens impossible. Due to the custom liquidity provision feature, fees are now collected and held by the pool as individual tokens, rather than automatically reinvested as liquidity in the pool.</p>
+<p>As a result, in v3, the pool contract does not implement the ERC-20 standard. Anyone can create an ERC-20 token contract in the periphery that makes a liquidity position more fungible, but it will have to have additional logic to handle distribution of, or reinvestment of, collected fees. Alternatively, anyone could create a periphery contract that wraps an individual liquidity position (including collected fees) in an ERC-721 non-fungible token.</p>
+<h2 id="4-governance"><a class="header" href="#4-governance">4 GOVERNANCE</a></h2>
+<p>The factory has an owner, which is initially controlled by UNI tokenholders.2 The owner does not have the ability to halt the operation of any of the core contracts.</p>
+<p>As in Uniswap v2, Uniswap v3 has a protocol fee that can be turned on by UNI governance. In Uniswap v3, UNI governance has more flexibility in choosing the fraction of swap fees that go to the protocol, and is able to choose any fraction $\textstyle{\frac{1}{N}}$ where $4\leq N\leq10$ or 0. This parameter can be set on a per-pool basis.</p>
+<p>UNI governance also has the ability to add additional fee tiers. When it adds a new fee tier, it can also define the tickSpacing (see Section 6.1) corresponding to that fee tier. Once a fee tier is added to the factory, it cannot be removed (and the tickSpacing cannot be changed). The initial fee tiers and tick spacings supported are $0.05%$ (with a tick spacing of 10, approximately $0.10%$ between initializable ticks), $0.30%$ (with a tick spacing of 60, approximately $0.60%$ between initializable ticks), and $1%$ (with a tick spacing of 200, approximately $2.02%$ between ticks.</p>
+<p>Finally, UNI governance has the power to transfer ownership to another address.</p>
+<h2 id="5-oracle-upgrades"><a class="header" href="#5-oracle-upgrades">5 ORACLE UPGRADES</a></h2>
+<p>Uniswap v3 includes three significant changes to the time-weighted average price (TWAP) oracle that was introduced by Uniswap v2.</p>
+<p>Most significantly, Uniswap v3 removes the need for users of the oracle to track previous values of the accumulator externally. Uniswap v2 requires users to checkpoint the accumulator value at both the beginning and end of the time period for which they wanted to compute a TWAP. Uniswap v3 brings the accumulator checkpoints into core, allowing external contracts to compute onchain TWAPs over recent periods without storing checkpoints of the accumulator value.</p>
+<p>Another change is that instead of accumulating the sum of prices, allowing users to compute the arithmetic mean TWAP, Uniswap v3 tracks the sum of log prices, allowing users to compute the geometric mean TWAP.</p>
+<p>Finally, Uniswap v3 adds a liquidity accumulator that is tracked alongside the price accumulator, which accumulates $\textstyle{\frac{1}{L}}$ for each second. This liquidity accumulator is useful for external contracts that want to implement liquidity mining on top of Uniswap v3. It can also be used by other contracts to inform a decision on which of the pools corresponding to a pair (see section 3.1) will have the most reliable TWAP.</p>
+<h3 id="51-oracle-observations"><a class="header" href="#51-oracle-observations">5.1 Oracle Observations</a></h3>
+<p>As in Uniswap v2, Uniswap v3 tracks a running accumulator of the price at the beginning of each block, multiplied by the number of seconds since the last block.</p>
+<p>A pool in Uniswap v2 stores only the most recent value of this price accumulator—that is, the value as of the last block in which a swap occurred. When computing average prices in Uniswap v2, it is the responsibility of the external caller to provide the previous value of the price accumulator. With many users, each will have to provide their own methodology for checkpointing previous values of the accumulator, or coordinate on a shared method to reduce costs. And there is no way to guarantee that every block in which the pool is touched will be reflected in the accumulator.</p>
+<p>In Uniswap v3, the pool stores a list of previous values for the price accumulator (as well as the liquidity accumulator described in section 5.3). It does this by automatically checkpointing the accumulator value every time the pool is touched for the first time in a block, cycling through an array where the oldest checkpoint is eventually overwritten by a new one, similar to a circular buffer. While this array initially only has room for a single checkpoint, anyone can initialize additional storage slots to lengthen the array, extending to as many as 65,536 checkpoints. This imposes the one-time gas cost of initializing additional storage slots for this array on whoever wants this pair to checkpoint more slots.</p>
+<p>The pool exposes the array of past observations to users, as well as a convenience function for finding the (interpolated) accumulator value at any historical timestamp within the checkpointed period.</p>
+<h3 id="52-geometric-mean-price-oracle"><a class="header" href="#52-geometric-mean-price-oracle">5.2 Geometric Mean Price Oracle</a></h3>
+<p>Uniswap v2 maintains two price accumulators—one for the price of token0 in terms of token1, and one for the price of token1 in terms of token0. Users can compute the time-weighted arithmetic mean of the prices over any period, by subtracting the accumulator value at the beginning of the period from the accumulator at the end of the period, then dividing the difference by the number of seconds in the period. Note that accumulators for token0 and token1 are tracked separately, since the time-weighted arithmetic mean price of token0 is not equivalent to the reciprocal of the time-weighted arithmetic mean price of token1.</p>
+<p>Using the time-weighted geometric mean price, as Uniswap v3 does, avoids the need to track separate accumulators for these ratios. The geometric mean of a set of ratios is the reciprocal of the geometric mean of their reciprocals. It is also easy to implement in Uniswap v3 because of its implementation of custom liquidity provision, as described in section 6. In addition, the accumulator can be stored in a smaller number of bits, since it tracks log $P$ rather than $P$ , and $\log P$ can represent a wide range of prices with consistent precision. Finally, there is a theoretical argument that the timeweighted geometric mean price should be a truer representation of the average price.</p>
+<p>Instead of tracking the cumulative sum of the price $P$ , Uniswap v3 accumulates the cumulative sum of the current tick index $(l o g_{1.0001}P$ , the logarithm of price for base 1.0001, which is precise up to 1 basis point). The accumulator at any given time is equal to the sum of $l o g_{1.0001}(P)$ for every second in the history of the contract:</p>
+<p>$$
+a_{t}=\sum_{i=1}^{t}\log_{1.0001}\left(P_{i}\right)
+$$</p>
+<p>We want to estimate the geometric mean time-weighted average price $(p_{t_{1},t_{2}})$ over any period $t_{1}$ to $t_{2}$ .</p>
+<p>$$
+P_{t_{1},t_{2}}=\left(\prod_{i=t_{1}}^{t_{2}}P_{i}\right)^{\frac{1}{t_{2}-t_{1}}}
+$$</p>
+<p>To compute this, you can lo«ok at t¬he accumulator’s value at $t_{1}$ and at $t_{2}$ , subtract the first value from the second, divide by the number of seconds elapsed, and compute $1.0001^{x}$ to compute the time weighted geometric mean price.</p>
+<p>$$
+\log_{1.0001}\left(P_{t_{1},t_{2}}\right)=\frac{\sum_{i=t_{1}}^{t_{2}}\log_{1.0001}\left(P_{i}\right)}{t_{2}-t_{1}}
+$$</p>
+<p>$$
+\log_{1.0001}\left(P_{t_{1},t_{2}}\right)=\frac{a_{t_{2}}-a_{t_{1}}}{t_{2}-t_{1}}
+$$</p>
+<p>$$
+\begin{array}{r}{P_{t_{1},t_{2}}=1.0001^{\frac{a_{t_{2}}-a_{t_{1}}}{t_{2}-t_{1}}}}\end{array}
+$$</p>
+<h3 id="53-liquidity-oracle"><a class="header" href="#53-liquidity-oracle">5.3 Liquidity Oracle</a></h3>
+<p>In addition to the seconds-weighted accumulator of $\log_{1.0001}{p r i c e}$ Uniswap v3 also tracks a seconds-weighted accumulator of $\textstyle{\frac{1}{L}}$ (the reciprocal of the virtual liquidity currently in range) at the beginning of each block: secondsPerLiquidityCumulative $(s_{p l})$ .</p>
+<p>This can be used by external liquidity mining contracts to fairly allocate rewards. If an external contract wants to distribute rewards at an even rate of $R$ tokens per second to all active liquidity in the contract, and a position with $L$ liquidity was active from $t_{0}$ to $t_{1}$ , then its rewards for that period would be $R{\cdot}\mathrm{L}{\cdot}(s_{p l}(t_{1})-s_{p l}(t_{0}))$ .</p>
+<p>In order to extend this so that concentrated liquidity is rewarded only when it is in range, Uniswap v3 stores a computed checkpoint based on this value every time a tick is crossed, as described in section 6.3.</p>
+<p>This accumulator can also be used by on-chain contracts to make their oracles stronger (such as by evaluating which fee-tier pool to use the oracle from).</p>
+<h2 id="6-implementing-concentrated-liquidity"><a class="header" href="#6-implementing-concentrated-liquidity">6 IMPLEMENTING CONCENTRATED LIQUIDITY</a></h2>
+<p>The rest of this paper describes how concentrated liquidity provision works, and gives a high-level description of how it is implemented in the contracts.</p>
+<h3 id="61-ticks-and-ranges"><a class="header" href="#61-ticks-and-ranges">6.1 Ticks and Ranges</a></h3>
+<p>To implement custom liquidity provision, the space of possible prices is demarcated by discrete ticks. Liquidity providers can provide liquidity in a range between any two ticks (which need not be adjacent).</p>
+<p>Each range can be specified as a pair of signed integer tick indices: a lower tick $(i_{l})$ and an upper tick $(i_{u})$ . Ticks represent prices at which the virtual liquidity of the contract can change. We will assume that prices are always expressed as the price of one of the tokens—called token0—in terms of the other token—token1. The assignment of the two tokens to token0 and token1 is arbitrary and does not affect the logic of the contract (other than through possible rounding errors).</p>
+<p>Conceptually, there is a tick at every price $\boldsymbol{p}$ that is an integer power of 1.0001. Identifying ticks by an integer index $i$ , the price at each is given by:</p>
+<p>$$
+p(i)=1.0001^{i}
+$$</p>
+<p>This has the desirable property of each tick being a . $01%$ (1 basis point) price movement away from each of its neighboring ticks.</p>
+<p>For technical reasons explained in 6.2.1, however, pools actually track ticks at every square root price that is an integer power of $\sqrt{1.0001}$ . Consider the above equation, transformed into square root price space:</p>
+<p>$$
+{\sqrt{p}}(i)={\sqrt{1.0001}}^{i}=1.0001^{\frac{i}{2}}
+$$</p>
+<p>As an example, $\sqrt{p}(0)-$ the square root price at tick 0—is 1, ${\sqrt{p}}(1)$ is √1.0001 ≈ 1.00005, and √𝑝 (−1) is √1.10001 $\begin{array}{r}{\frac{1}{\sqrt{1.0001}}\approx0.99995}\end{array}$ .</p>
+<p>When liquidity is added to a range, if one or both of the ticks is not already used as a bound in an existing position, that tick is initialized.</p>
+<p>Not every tick can be initialized. The pool is instantiated with a parameter, tickSpacing $(t_{s})$ ; only ticks with indexes that are divisible by tickSpacing can be initialized. For example, if tickSpacing is 2, then only even ticks $(...4,-2,0,2,4...)$ can be initialized. Small choices for tickSpacing allow tighter and more precise ranges, but may cause swaps to be more gas-intensive (since each initialized tick that a swap crosses imposes a gas cost on the swapper).</p>
+<p>Whenever the price crosses an initialized tick, virtual liquidity is kicked in or out. The gas cost of an initialized tick crossing is constant, and is not dependent on the number of positions being kicked in or out at that tick.</p>
+<p>Ensuring that the right amount of liquidity is kicked in and out of the pool when ticks are crossed, and ensuring that each position earns its proportional share of the fees that were accrued while it was within range, requires some accounting within the pool. The pool contract uses storage variables to track state at a global (per-pool) level, at a per-tick level, and at a per-position level.</p>
+<h3 id="62-global-state"><a class="header" href="#62-global-state">6.2 Global State</a></h3>
+<p>The global state of the contract includes seven storage variables relevant to swaps and liquidity provision. (It has other storage variables that are used for the oracle, as described in section 5.)</p>
+<p>Table 1: Global State</p>
+<html><body><table><tr><td>Type</td><td>Variable Name</td><td>Notation</td></tr><tr><td>uint128</td><td>liquidity</td><td>L</td></tr><tr><td>uint160</td><td>sqrtPriceX96</td><td>√P</td></tr><tr><td>int24</td><td>tick</td><td>ic</td></tr><tr><td>uint256</td><td>feeGrowthGlobal0X128</td><td>fg,0</td></tr><tr><td>uint256</td><td>feeGrowthGlobal1X128</td><td>fg,1</td></tr><tr><td>uint128</td><td>protocolFees.token0</td><td>fp,0</td></tr><tr><td>uint128</td><td>protocolFees.token1</td><td>fp,1</td></tr></table></body></html>
+<p>6.2.1 Price and Liquidity. In Uniswap v2, each pool contract tracks the pool’s current reserves, $x$ and $y$ . In Uniswap v3, the contract could be thought of as having virtual reserves—values for $x$ and $y$ that allow you to describe the contract’s behavior (between two adjacent ticks) as if it followed the constant product formula.</p>
+<p>Instead of tracking those virtual reserves, however, the pool contract tracks two different values: liquidity $(L)$ and sqrtPrice $({\sqrt{P}})$ . These could be computed from the virtual reserves with the following formulas:</p>
+<p>$$
+L={\sqrt{x y}}
+$$</p>
+<p>$$
+{\sqrt{P}}={\sqrt{\frac{y}{x}}}
+$$</p>
+<p>Conversely, these values could be used to compute the virtual reserves:</p>
+<p>$$
+x={\frac{L}{\sqrt{P}}}
+$$</p>
+<p>$$
+y=L\cdot{\sqrt{P}}
+$$</p>
+<p>Using $L$ and $\sqrt{P}$ is convenient because only one of them changes at a time. Price (and thus $\sqrt{P}$ ) changes when swapping within a tick; liquidity changes when crossing a tick, or when minting or burning liquidity. This avoids some rounding errors that could be encountered if tracking virtual reserves.</p>
+<p>You may notice that the formula for liquidity (based on virtual reserves) is similar to the formula used to initialize the quantity of liquidity tokens (based on actual reserves) in Uniswap v2. before any fees have been earned. In some ways, liquidity can be thought of as virtual liquidity tokens.</p>
+<p>Alternatively, liquidity can be thought of as the amount that token1 reserves (either actual or virtual) changes for a given change in $\sqrt{P}$ :</p>
+<p>$$
+L={\frac{\Delta Y}{\Delta{\sqrt{P}}}}
+$$</p>
+<p>We track $\sqrt{P}$ instead of $P$ to take advantage of this relationship, and to avoid having to take any square roots when computing swaps, as described in section 6.2.3.</p>
+<p>The global state also tracks the current tick index as tick $(i_{c})$ , a signed integer representing the current tick (more specifically, the nearest tick below the current price). This is an optimization (and a way of avoiding precision issues with logarithms), since at any time, you should be able to compute the current tick based on the current sqrtPrice. Specifically, at any given time, the following equation should be true:</p>
+<p>$$
+i_{c}=\left\lfloor\log_{\sqrt{1.0001}}\sqrt{P}\right\rfloor
+$$</p>
+<p>6.2.2 Fees. Each pool is initialized with an immutable value, fee $(\gamma)$ , representing the fee paid by swappers in units of hundredths of a basis point $(0.0001%)$ .</p>
+<p>It also tracks the current protocol fee, $\phi$ (which is initialized to zero, but can changed by UNI governance). This number gives you the fraction of the fees paid by swappers that currently goes to the protocol rather than to liquidity providers. $\phi$ only has a limited set of permitted values: $0,1/4,1/5,1/6,1/7,1/8,1/9$ , or $1/10$ .</p>
+<p>The global state also tracks two numbers: feeGrowthGlobal0 $(f_{g,0})$ and feeGrowthGlobal1 $(f_{g,1})$ . These represent the total amount of fees that have been earned per unit of virtual liquidity (𝐿), over the entire history of the contract. You can think of them as the total amount of fees that would have been earned by 1 unit of unbounded liquidity that was deposited when the contract was first initialized. They are stored as fixed-point unsigned $128\mathrm{x}128$ numbers. Note that in Uniswap v3, fees are collected in the tokens themselves rather than in liquidity, for reasons explained in section 3.2.1.</p>
+<p>Finally, the global state tracks the total accumulated uncollected protocol fee in each token, protocolFees0 $(f_{p,0})$ and protocolFees1 $(f_{p,1})$ . This is an unsigned uint128. The accumulated protocol fees can be collected by UNI governance, by calling the collectProtocol function.</p>
+<p>6.2.3 Swapping Within a Single Tick. For small enough swaps, that do not move the price past a tick, the contracts act like an $x\cdot y=k$ pool.</p>
+<p>Suppose $\gamma$ is the fee, i.e., 0.003, and $y_{i n}$ as the amount of token1 sent in.</p>
+<p>First, feeGrowthGlobal1 and protocolFees1 are incremented:</p>
+<p>$$
+\Delta f_{g,1}=y_{i n}\cdot\gamma\cdot(1-\phi)
+$$</p>
+<p>$$
+\Delta f_{\boldsymbol{p},1}=\boldsymbol{y}_{i n}\cdot\boldsymbol{\gamma}\cdot\boldsymbol{\phi}
+$$</p>
+<p>$\Delta y$ is the increase in $y$ (after the fee is taken out).</p>
+<p>$$
+\Delta y=y_{i n}\cdot(1-\gamma)
+$$</p>
+<p>If you used the computed virtual reserves $(x\operatorname{and}y)$ for the token0 and token1 balances, then this formula could be used to find the amount of token0 sent out:</p>
+<p>$$
+x_{e n d}=\frac{x\cdot y}{y+\Delta y}
+$$</p>
+<p>But remember that in v3, the contract actually tracks liquidity $(L)$ and square root of price $({\sqrt{P}})$ instead of $x$ and $y$ . We could compute $x$ and $y$ from those values, and then use those to calculate the execution price of the trade. But it turns out that there are simple formulas that describe the relationship between $\Delta\sqrt{P}$ and $\Delta y$ , for a given $L$ (which can be derived from formula 6.7):</p>
+<p>$$
+\Delta{\sqrt{P}}={\frac{\Delta y}{L}}
+$$</p>
+<p>$$
+\Delta y=\Delta{\sqrt{P}}\cdot L
+$$</p>
+<p>There are also simple formulas that describe the relationship between $\Delta{\frac{1}{\sqrt{P}}}$ and $\Delta x$ :</p>
+<p>$$
+\Delta\frac{1}{\sqrt{P}}=\frac{\Delta x}{L}
+$$</p>
+<p>$$
+\Delta x=\Delta{\frac{1}{\sqrt{P}}}\cdot L
+$$</p>
+<p>When swapping one token for the other, the pool contract can first compute the new $\sqrt{P}$ using formula 6.13 or 6.15, and then can compute the amount of token0 or token1 to send out using formula 6.14 or 6.16.</p>
+<p>These formulas will work for any swap that does not push $\sqrt{P}$ past the price of the next initialized tick. If the computed $\Delta\sqrt{P}$ would cause $\sqrt{P}$ to move past that next initialized tick, the contract must only cross up to that tick—using up only part of the swap—and then cross the tick, as described in section 6.3.1, before continuing with the rest of the swap.</p>
+<p>6.2.4 Initialized Tick Bitmap. If a tick is not used as the endpoint of a range with any liquidity in it—that is, if the tick is uninitialized—then that tick can be skipped during swaps.</p>
+<p>As an optimization to make finding the next initialized tick more efficient, the pool tracks a bitmap tickBitmap of initialized ticks. The position in the bitmap that corresponds to the tick index is set to 1 if the tick is initialized, and 0 if it is not initialized.</p>
+<p>When a tick is used as an endpoint for a new position, and that tick is not currently used by any other liquidity, the tick is initialized, and the corresponding bit in the bitmap is set to 1. An initialized tick can become uninitialized again if all of the liquidity for which it is an endpoint is removed, in which case that tick’s position on the bitmap is zeroed out.</p>
+<h3 id="63-tick-indexed-state"><a class="header" href="#63-tick-indexed-state">6.3 Tick-Indexed State</a></h3>
+<p>The contract needs to store information about each tick in order to track the amount of net liquidity that should be added or removed when the tick is crossed, as well as to track the fees earned above and below that tick.</p>
+<p><img src="https://cdn-mineru.openxlab.org.cn/extract/fec6859b-06b0-441f-8456-cb6a6d173bd8/8b601f3c1094cc418c3d5421194214dc2ae549e68aacad90b4e069400d9fb6e6.jpg" alt="" /><br />
+Figure 4: Swap Control Flow</p>
+<p>The contract stores a mapping from tick indexes (int24) to the following seven values:</p>
+<p>Table 2: Tick-Indexed State</p>
+<html><body><table><tr><td>Type</td><td>Variable Name</td><td>Notation</td></tr><tr><td>int128</td><td>liquidityNet</td><td>△L</td></tr><tr><td>uint128</td><td>liquidityGross</td><td>Lg </td></tr><tr><td>uint256</td><td>feeGrowthOutside0X128</td><td>fo,0</td></tr><tr><td>uint256</td><td>feeGrowth0utside1X128</td><td>fo,1</td></tr><tr><td>uint256</td><td>secondsOutside</td><td>So</td></tr><tr><td>uint256</td><td>tickCumulativeOutside</td><td>io</td></tr><tr><td>uint256</td><td>secondsPerLiquidityOutsideX128</td><td>Slo</td></tr></table></body></html>
+<p>Each tick tracks $\Delta L$ , the total amount of liquidity that should be kicked in or out when the tick is crossed. The tick only needs to track one signed integer: the amount of liquidity added (or, if negative, removed) when the tick is crossed going left to right. This value does not need to be updated when the tick is crossed (but only when a position with a bound at that tick is updated).</p>
+<p>We want to be able to uninitialize a tick when there is no longer any liquidity referencing that tick. Since $\Delta L$ is a net value, it’s necessary to track a gross tally of liquidity referencing the tick, liquidityGross. This value ensures that even if net liquidity at a tick is 0, we can still know if a tick is referenced by at least one underlying position or not, which tells us whether to update the tick bitmap.</p>
+<p>feeGrowthOutside{0,1} are used to track how many fees were accumulated within a given range. Since the formulas are the same for the fees collected in token0 and token1, we will omit that subscript for the rest of this section.</p>
+<p>You can compute the fees earned per unit of liquidity in token 0 above $(f_{a})$ and below $(f_{b})$ a tick 𝑖 with a formula that depends on whether the price is currently within or outside that range—that is, whether the current tick index $i_{c}$ is greater than or equal to $i$ :</p>
+<p>$$
+\begin{array}{r l}&amp;{f_{a}(i)=\left{\begin{array}{l l}{f_{g}-f_{o}(i)}&amp;{i_{c}\geq i}\ {f_{o}(i)}&amp;{i_{c}&lt;i}\end{array}\right.}\ &amp;{f_{b}(i)=\left{\begin{array}{l l}{f_{o}(i)}&amp;{i_{c}\geq i}\ {f_{g}-f_{o}(i)}&amp;{i_{c}&lt;i}\end{array}\right.}\end{array}
+$$</p>
+<p>We can use these functions to compute the total amount of cumulative fees per share $f_{r}$ in the range between two ticks $-\mathtt{a}$ lower tick $i_{l}$ and an upper tick $i_{u}$ :</p>
+<p>$$
+f_{r}=f_{g}-f_{b}(i_{l})-f_{a}(i_{u})
+$$</p>
+<p>$f_{o}$ needs to be updated each time the tick is crossed. Specifically, as a tick $i$ is crossed in either direction, its $f_{o}$ (for each token) should be updated as follows:</p>
+<p>$$
+f_{o}(i):=f_{g}-f_{o}(i)
+$$</p>
+<p>$f_{o}$ is only needed for ticks that are used as either the lower or upper bound for at least one position. As a result, for efficiency, $f_{o}$ is not initialized (and thus does not need to be updated when crossed) until a position is created that has that tick as one of its bounds. When $f_{o}$ is initialized for a tick $i$ , the value—by convention—is chosen as if all of the fees earned to date had occurred below that tick:</p>
+<p>$$
+f_{o}:=\left{{f}<em>{g}\quad i</em>{c}\geq i\atop0\quad i_{c}&lt;i\right.
+$$</p>
+<p>Note that since $f_{o}$ values for different ticks could be initialized at different times, comparisons of the $f_{o}$ values for different ticks are not meaningful, and there is no guarantee that values for $f_{o}$ will be consistent. This does not cause a problem for per-position accounting, since, as described below, all the position needs to know is the growth in $g$ within a given range since that position was last touched.</p>
+<p>Finally, the contract also stores secondsOutside $(s_{o})$ , secondsPerLiquidityOutside, and tickCumulativeOutside for each tick. These values are not used within the contract, but are tracked for the benefit of external contracts that need more finegrained information about the pool’s behavior (for purposes like liquidity mining).</p>
+<p>All three of these indexes work similarly to the fee growth indexes described above. But where the feeGrowthOutside ${\emptyset,1}$ indexes track feeGrowthGlobal{0,1}, the secondsOutside index tracks seconds (that is, the current timestamp), secondsPerLiquidityOutside tracks the $1/L$ accumulator (secondsPerLiquidityCumulative) described in section 5.3, and tickCumulativeOutside tracks the $\log_{1.0001}P$ accumulator described in section 5.2.</p>
+<p>For example, the seconds spent above $(s_{a})$ and below $(s_{b})$ a given tick is computed differently based on whether the current price is within that range, and the seconds spent within a range $(s_{r})$ can be computed using the values of $s_{a}$ and $s_{b}$ :</p>
+<p>$$
+\begin{array}{l l}{t_{a}(i)=\left{\begin{array}{l l}{t-t_{o}(i)}&amp;{i_{c}\geq i}\ {t_{o}(i)}&amp;{i_{c}&lt;i}\end{array}\right.}\ {t_{b}(i)=\left{\begin{array}{l l}{t_{o}(i)}&amp;{i_{c}\geq i}\ {t-t_{o}(i)}&amp;{i_{c}&lt;i}\end{array}\right.}\end{array}
+$$</p>
+<p>$$
+t_{r}(i_{l},i_{u})=t-t_{b}(i_{l})-t_{a}(i_{u})
+$$</p>
+<p>The number of seconds spent within a range between two times $t_{1}$ and $t_{2}$ can be computed by recording the value of $s_{r}(i_{l},i_{u})$ at $t_{1}$ and at $t_{2}$ , and subtracting the former from the latter.</p>
+<p>Like $f_{o},s_{o}$ does not need to be tracked for ticks that are not on the edge of any position. Therefore, it is not initialized until a position is created that is bounded by that tick. By convention, it is initialized as if every second since the Unix timestamp 0 had been spent below that tick:</p>
+<p>$$
+t_{o}(i):=\left{\begin{array}{l l}{t}&amp;{i_{c}\geq i}\ {0}&amp;{i_{c}&lt;i}\end{array}\right.
+$$</p>
+<p>As with $f_{o}$ values, $t_{o}$ values are not meaningfully comparable across different ticks. $t_{o}$ is only meaningful in computing the number of seconds that liquidity was within some particular range between some defined start time (which must be after $t_{o}$ was initialized for both ticks) and some end time.</p>
+<p>6.3.1 Crossing a Tick. As described in section 6.2.3, Uniswap v3 acts like it obeys the constant product formula when swapping between initialized ticks. When a swap crosses an initialized tick, however, the contract needs to add or remove liquidity, to ensure that no liquidity provider is insolvent. This means the $\Delta L$ is fetched from the tick, and applied to the global $L$ .</p>
+<p>The contract also needs to update the tick’s own state, in order to track the fees earned (and seconds spent) within ranges bounded by this tick. The feeGrowthOutside ${\boldsymbol{\mathfrak{0}},1}$ and secondsOutside values are updated to both reflect current values, as well as the proper orientation relative to the current tick:</p>
+<p>$$
+f_{o}:=f_{g}-f_{o}
+$$</p>
+<p>$$
+t_{o}:=t-t_{o}
+$$</p>
+<p>Once a tick is crossed, the swap can continue as described in section 6.2.3 until it reaches the next initialized tick.</p>
+<h3 id="64-position-indexed-state"><a class="header" href="#64-position-indexed-state">6.4 Position-Indexed State</a></h3>
+<p>The contract has a mapping from user (an address), lower bound (a tick index, int24), and upper bound (a tick index, int24) to a specific Position struct. Each Position tracks three values:</p>
+<p>Table 3: Position-Indexed State</p>
+<html><body><table><tr><td>Type</td><td>Variable Name Notation</td></tr><tr><td>uint128</td><td>liquidity</td></tr><tr><td>uint256</td><td>feeGrowthInside0LastX128 fr,o(to)</td></tr><tr><td>uint256</td><td>feeGrowthInside1LastX128 fr,1(to)</td></tr></table></body></html>
+<p>liquidity (𝑙) means the amount of virtual liquidity that the position represented the last time this position was touched. Specifically, liquidity could be thought of as $\sqrt{x\cdot y}$ , where $x$ and $y$ are the respective amounts of virtual token0 and virtual token1 that this liquidity contributes to the pool at any time that it is within range. Unlike pool shares in Uniswap v2 (where the value of each share grows over time), the units for liquidity do not change as fees are accumulated; it is always measured as $\sqrt{x\cdot y}$ , where $x$ and $y$ are quantities of token0 and token1, respectively.</p>
+<p>This liquidity number does not reflect the fees that have been accumulated since the contract was last touched, which we will call uncollected fees. Computing these uncollected fees requires additional stored values on the position, feeGrowthInside0Last $(f_{r,0}(t_{0}))$ and feeGrowthInside1Last $(f_{r,1}(t_{0}))$ , as described below.</p>
+<p>6.4.1 setPosition. The setPosition function allows a liquidity provider to update their position.</p>
+<p>Two of the arguments to setPosition —lowerTick and upperTick— when combined with the msg.sender, together specify a position.</p>
+<p>The function takes one additional parameter, liquidityDelta, to specify how much virtual liquidity the user wants to add or (if negative) remove.</p>
+<p>First, the function computes the uncollected fees $(f_{u})$ that the position is entitled to, in each token.7 The amount collected in fees is credited to the user and netted against the amount that they would send in or out for their virtual liquidity deposit.</p>
+<p>To compute uncollected fees of a token, you need to know how much $f_{r}$ for the position’s range (calculated from the range’s $i_{l}$ and $i_{r}$ as described in section 6.3) has grown since the last time fees were collected for that position. The growth in fees in a given range per unit of liquidity over between times $t_{0}$ and $t_{1}$ is simply $f_{r}(t_{1})-f_{r}(t_{0})$ (where $f_{r}(t_{0})$ is stored in the position as feeGrowthInside{0,1}Last, and $f_{r}(t_{1})$ can be computed from the current state of the ticks). Multiplying this by the position’s liquidity gives us the total uncollected fees in token 0 for this position:</p>
+<p>$$
+f_{u}=l\cdot(f_{r}(t_{1})-f_{r}(t_{0}))
+$$</p>
+<p>Then, the contract updates the position’s liquidity by adding liquidityDelta. It also adds liquidityDelta to the liquidityNet value for the tick at the bottom end of the range, and subtracts it from the liquidityNet at the upper tick (to reflect that this new liquidity would be added when the price crosses the lower tick going up, and subtracted when the price crosses the upper tick going up). If the pool’s current price is within the range of this position, the contract also adds liquidityDelta to the contract’s global liquidity value.</p>
+<p>Finally, the pool transfers tokens from (or, if liquidityDelta is negative, to) the user, corresponding to the amount of liquidity burned or minted.</p>
+<p>The amount of token0 $(\Delta X)$ or token1 $(\Delta Y)$ that needs to be deposited can be thought of as the amount that would be sold from the position if the price were to move from the current price $(P)$ to the upper tick or lower tick (for token0 or token1, respectively). These formulas can be derived from formulas 6.14 and 6.16, and depend on whether the current price is below, within, or above the range of the position:</p>
+<p>$$
+\begin{array}{l l}{\Delta Y=\left{\begin{array}{l l}{0}&amp;{i_{c}&lt;i_{l}}\ {\Delta L\cdot(\sqrt{P}-\sqrt{P(i_{l})})}&amp;{i_{l}\leq i_{c}&lt;i_{u}}\ {\Delta L\cdot(\sqrt{P(i_{u})}-\sqrt{P(i_{l})})}&amp;{i_{c}\geq i_{u}}\end{array}\right.}\ {\Delta X=\left{\begin{array}{l l}{\Delta L\cdot(\frac{1}{\sqrt{P(i_{l})}}-\frac{1}{\sqrt{P(i_{u})}})}&amp;{i_{c}&lt;i_{l}}\ {\Delta L\cdot(\frac{1}{\sqrt{P}}-\frac{1}{\sqrt{P(i_{u})}})}&amp;{i_{l}\leq i_{c}&lt;i_{u}}\ {0}&amp;{i_{c}\geq i_{u}}\end{array}\right.}\end{array}
+$$</p>
+<h1 id="references-1"><a class="header" href="#references-1">REFERENCES</a></h1>
+<p>[1] Hayden Adams, Noah Zinsmeister, and Dan Robinson. 2020. Uniswap v2 Core. Retrieved Feb 24, 2021 from https://uniswap.org/whitepaper.pdf<br />
+[2] Guillermo Angeris and Tarun Chitra. 2020. Improved Price Oracles: Constant Function Market Makers. In Proceedings of the 2nd ACM Conference on Advances in Financial Technologies (AFT ’20). Association for Computing Machinery, New York, NY, United States, 80–91. https://doi.org/10.1145/3419614.3423251<br />
+[3] Michael Egorov. 2019. StableSwap - Efficient Mechanism for Stablecoin Liquidity. Retrieved Feb 24, 2021 from https://www.curve.fi/stableswap-paper.pdf<br />
+[4] Allan Niemerg, Dan Robinson, and Lev Livnev. 2020. YieldSpace: An Automated Liquidity Provider for Fixed Yield Tokens. Retrieved Feb 24, 2021 from https: //yield.is/YieldSpace.pdf<br />
+[5] Abraham Othman. 2012. Automated Market Making: Theory and Practice. Ph.D. Dissertation. Carnegie Mellon University.</p>
+<h1 id="disclaimer"><a class="header" href="#disclaimer">DISCLAIMER</a></h1>
+<p>This paper is for general information purposes only. It does not constitute investment advice or a recommendation or solicitation to buy or sell any investment and should not be used in the evaluation of the merits of making any investment decision. It should not be relied upon for accounting, legal or tax advice or investment recommendations. This paper reflects current opinions of the authors and is not made on behalf of Uniswap Labs, Paradigm, or their affiliates and does not necessarily reflect the opinions of Uniswap Labs, Paradigm, their affiliates or individuals associated with them. The opinions reflected herein are subject to change without being updated.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solidity-合约安全问题解析"><a class="header" href="#solidity-合约安全问题解析">Solidity 合约安全问题解析</a></h1>
+<h2 id="引言-1"><a class="header" href="#引言-1">引言</a></h2>
+<p>智能合约安全是区块链开发中最关键的考虑因素之一。由于智能合约一旦部署就无法修改，且通常管理着大量资产，任何安全漏洞都可能导致严重的资金损失。</p>
+<h2 id="1-重入攻击-reentrancy-attack"><a class="header" href="#1-重入攻击-reentrancy-attack">1. 重入攻击 (Reentrancy Attack)</a></h2>
+<p>重入攻击是最著名的智能合约漏洞之一，曾在 2016 年导致 The DAO 事件，造成约 6000 万美元的损失。</p>
+<h3 id="漏洞原理"><a class="header" href="#漏洞原理">漏洞原理</a></h3>
+<p>重入攻击发生在合约在完成所有状态更新之前就调用外部合约时。攻击者可以利用回调函数重复进入合约，导致状态不一致。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract Vulnerable {
+    mapping(address =&gt; uint) public balances;
+
+    function withdraw() public {
+        uint amount = balances[msg.sender];
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+        balances[msg.sender] = 0;
+    }
+}
+</code></pre>
+<h3 id="防范措施"><a class="header" href="#防范措施">防范措施</a></h3>
+<ol>
+<li>使用检查-效果-交互模式 (Checks-Effects-Interactions pattern)</li>
+<li>使用 ReentrancyGuard</li>
+<li>在调用外部合约前完成所有状态更新</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract Secure {
+    mapping(address =&gt; uint) public balances;
+    bool private locked;
+
+    modifier noReentrancy() {
+        require(!locked, "Reentrancy detected");
+        locked = true;
+        _;
+        locked = false;
+    }
+
+    function withdraw() public noReentrancy {
+        uint amount = balances[msg.sender];
+        balances[msg.sender] = 0;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Transfer failed");
+    }
+}
+</code></pre>
+<h2 id="2-整数溢出和下溢-integer-overflowunderflow"><a class="header" href="#2-整数溢出和下溢-integer-overflowunderflow">2. 整数溢出和下溢 (Integer Overflow/Underflow)</a></h2>
+<h3 id="漏洞原理-1"><a class="header" href="#漏洞原理-1">漏洞原理</a></h3>
+<p>在 Solidity 0.8.0 之前，整数运算不会自动检查溢出和下溢，这可能导致意外的行为。</p>
+<pre><code class="language-solidity">// 不安全的代码示例 (Solidity &lt; 0.8.0)
+contract UnsafeMath {
+    uint8 public count = 255;
+
+    function increment() public {
+        count += 1; // 会导致溢出，count 变为 0
+    }
+}
+</code></pre>
+<h3 id="防范措施-1"><a class="header" href="#防范措施-1">防范措施</a></h3>
+<ol>
+<li>使用 Solidity 0.8.0 或更高版本</li>
+<li>使用 SafeMath 库（在旧版本中）</li>
+<li>手动检查边界条件</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SafeMath {
+    uint8 public count = 255;
+
+    function increment() public {
+        require(count &lt; type(uint8).max, "Overflow");
+        count += 1;
+    }
+}
+</code></pre>
+<h2 id="3-访问控制漏洞-access-control"><a class="header" href="#3-访问控制漏洞-access-control">3. 访问控制漏洞 (Access Control)</a></h2>
+<h3 id="漏洞原理-2"><a class="header" href="#漏洞原理-2">漏洞原理</a></h3>
+<p>不当的访问控制可能导致未授权用户执行特权操作。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract Admin {
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function changeAdmin(address newAdmin) public {
+        admin = newAdmin; // 任何人都可以更改管理员
+    }
+}
+</code></pre>
+<h3 id="防范措施-2"><a class="header" href="#防范措施-2">防范措施</a></h3>
+<ol>
+<li>使用适当的修饰器</li>
+<li>实现多重签名机制</li>
+<li>使用 OpenZeppelin 的 AccessControl 合约</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract SecureAdmin is AccessControl {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    constructor() {
+        _setupRole(ADMIN_ROLE, msg.sender);
+    }
+
+    function changeAdmin(address newAdmin) public onlyRole(ADMIN_ROLE) {
+        _setupRole(ADMIN_ROLE, newAdmin);
+    }
+}
+</code></pre>
+<h2 id="4-时间戳依赖-timestamp-dependence"><a class="header" href="#4-时间戳依赖-timestamp-dependence">4. 时间戳依赖 (Timestamp Dependence)</a></h2>
+<h3 id="漏洞原理-3"><a class="header" href="#漏洞原理-3">漏洞原理</a></h3>
+<p>使用 <code>block.timestamp</code> 作为随机数源或时间依赖逻辑可能导致操纵。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract TimestampDependent {
+    function random() public view returns(uint) {
+        return uint(keccak256(abi.encodePacked(block.timestamp))) % 100;
+    }
+}
+</code></pre>
+<h3 id="防范措施-3"><a class="header" href="#防范措施-3">防范措施</a></h3>
+<ol>
+<li>避免使用 <code>block.timestamp</code> 作为随机数源</li>
+<li>使用更大的时间窗口</li>
+<li>考虑使用预言机提供的时间</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecureTime {
+    uint public constant TIME_WINDOW = 1 hours;
+
+    function isWithinTimeWindow(uint targetTime) public view returns(bool) {
+        return block.timestamp &gt;= targetTime &amp;&amp;
+               block.timestamp &lt;= targetTime + TIME_WINDOW;
+    }
+}
+</code></pre>
+<h2 id="5-未初始化的存储指针-uninitialized-storage-pointers"><a class="header" href="#5-未初始化的存储指针-uninitialized-storage-pointers">5. 未初始化的存储指针 (Uninitialized Storage Pointers)</a></h2>
+<h3 id="漏洞原理-4"><a class="header" href="#漏洞原理-4">漏洞原理</a></h3>
+<p>在 Solidity 中，未初始化的存储指针可能指向意外的存储位置。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract StorageVulnerable {
+    struct User {
+        uint balance;
+        bool isActive;
+    }
+
+    function unsafe() public {
+        User memory user; // 错误：应该使用 storage
+        user.balance = 100;
+    }
+}
+</code></pre>
+<h3 id="防范措施-4"><a class="header" href="#防范措施-4">防范措施</a></h3>
+<ol>
+<li>明确声明存储位置</li>
+<li>使用映射而不是数组来存储动态数据</li>
+<li>注意结构体的存储位置</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecureStorage {
+    struct User {
+        uint balance;
+        bool isActive;
+    }
+
+    mapping(address =&gt; User) public users;
+
+    function safe(address userAddress) public {
+        User storage user = users[userAddress];
+        user.balance = 100;
+        user.isActive = true;
+    }
+}
+</code></pre>
+<h2 id="6-前端运行攻击-front-running"><a class="header" href="#6-前端运行攻击-front-running">6. 前端运行攻击 (Front-Running)</a></h2>
+<h3 id="漏洞原理-5"><a class="header" href="#漏洞原理-5">漏洞原理</a></h3>
+<p>矿工或用户可以通过支付更高的 gas 费用来优先执行交易，从而获取优势。</p>
+<pre><code class="language-solidity">// 易受攻击的代码示例
+contract FrontRunnable {
+    mapping(address =&gt; uint) public prices;
+
+    function setPrice(uint newPrice) public {
+        prices[msg.sender] = newPrice;
+    }
+}
+</code></pre>
+<h3 id="防范措施-5"><a class="header" href="#防范措施-5">防范措施</a></h3>
+<ol>
+<li>使用提交-揭示方案</li>
+<li>实现最小价格变动限制</li>
+<li>使用批量交易</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecurePrice {
+    struct PriceCommitment {
+        bytes32 hash;
+        uint timestamp;
+    }
+
+    mapping(address =&gt; PriceCommitment) public commitments;
+    mapping(address =&gt; uint) public prices;
+
+    function commitPrice(bytes32 hash) public {
+        commitments[msg.sender] = PriceCommitment(hash, block.timestamp);
+    }
+
+    function revealPrice(uint price, bytes32 salt) public {
+        PriceCommitment memory commitment = commitments[msg.sender];
+        require(
+            keccak256(abi.encodePacked(price, salt)) == commitment.hash,
+            "Invalid reveal"
+        );
+        require(
+            block.timestamp &gt;= commitment.timestamp + 1 hours,
+            "Too early"
+        );
+        prices[msg.sender] = price;
+    }
+}
+</code></pre>
+<h2 id="7-拒绝服务攻击-denial-of-service"><a class="header" href="#7-拒绝服务攻击-denial-of-service">7. 拒绝服务攻击 (Denial of Service)</a></h2>
+<h3 id="漏洞原理-6"><a class="header" href="#漏洞原理-6">漏洞原理</a></h3>
+<p>攻击者可能通过耗尽 gas 或锁定关键功能来阻止合约正常运作。</p>
+<pre><code class="language-solidity">// 易受攻击的代码示例
+contract VulnerableToDoS {
+    address[] public users;
+
+    function addUser(address user) public {
+        users.push(user);
+    }
+
+    function distributeRewards() public {
+        for(uint i = 0; i &lt; users.length; i++) {
+            // 如果用户列表太长，可能耗尽 gas
+            payable(users[i]).transfer(1 ether);
+        }
+    }
+}
+</code></pre>
+<h3 id="防范措施-6"><a class="header" href="#防范措施-6">防范措施</a></h3>
+<ol>
+<li>使用提款模式而不是推送模式</li>
+<li>限制循环次数</li>
+<li>实现分页机制</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecureDistribution {
+    mapping(address =&gt; uint) public rewards;
+    uint public constant MAX_USERS_PER_TX = 50;
+
+    function addReward(address user, uint amount) public {
+        rewards[user] += amount;
+    }
+
+    function claimReward() public {
+        uint amount = rewards[msg.sender];
+        require(amount &gt; 0, "No rewards");
+        rewards[msg.sender] = 0;
+        payable(msg.sender).transfer(amount);
+    }
+}
+</code></pre>
+<h2 id="8-未检查的外部调用返回值-unchecked-call-return-values"><a class="header" href="#8-未检查的外部调用返回值-unchecked-call-return-values">8. 未检查的外部调用返回值 (Unchecked Call Return Values)</a></h2>
+<h3 id="漏洞原理-7"><a class="header" href="#漏洞原理-7">漏洞原理</a></h3>
+<p>忽略外部调用的返回值可能导致交易失败但状态已更改。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract UncheckedCall {
+    function transfer(address payable to, uint amount) public {
+        to.send(amount); // send 返回 bool 但未检查
+        // 继续执行...
+    }
+}
+</code></pre>
+<h3 id="防范措施-7"><a class="header" href="#防范措施-7">防范措施</a></h3>
+<ol>
+<li>总是检查外部调用的返回值</li>
+<li>使用 <code>transfer</code> 或 <code>call</code> 时进行适当的错误处理</li>
+<li>考虑使用 OpenZeppelin 的 Address 库</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+import "@openzeppelin/contracts/utils/Address.sol";
+
+contract SecureTransfer {
+    using Address for address payable;
+
+    function transfer(address payable to, uint amount) public {
+        require(to.send(amount), "Transfer failed");
+        // 继续执行...
+    }
+}
+</code></pre>
+<h2 id="9-浮点数和精度问题-floating-point-and-precision"><a class="header" href="#9-浮点数和精度问题-floating-point-and-precision">9. 浮点数和精度问题 (Floating Point and Precision)</a></h2>
+<h3 id="漏洞原理-8"><a class="header" href="#漏洞原理-8">漏洞原理</a></h3>
+<p>Solidity 不支持浮点数，不当的数值处理可能导致精度损失。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract PrecisionVulnerable {
+    function calculate(uint a, uint b) public pure returns(uint) {
+        return a * b / 100; // 可能导致精度损失
+    }
+}
+</code></pre>
+<h3 id="防范措施-8"><a class="header" href="#防范措施-8">防范措施</a></h3>
+<ol>
+<li>使用足够大的数值单位</li>
+<li>先乘后除</li>
+<li>使用专门的数学库</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecurePrecision {
+    uint public constant PRECISION = 1e18;
+
+    function calculate(uint a, uint b) public pure returns(uint) {
+        return (a * PRECISION * b) / (100 * PRECISION);
+    }
+}
+</code></pre>
+<h2 id="10-构造函数漏洞-constructor-vulnerabilities"><a class="header" href="#10-构造函数漏洞-constructor-vulnerabilities">10. 构造函数漏洞 (Constructor Vulnerabilities)</a></h2>
+<h3 id="漏洞原理-9"><a class="header" href="#漏洞原理-9">漏洞原理</a></h3>
+<p>构造函数中的错误可能导致合约初始化不当。</p>
+<pre><code class="language-solidity">// 不安全的代码示例
+contract UnsafeConstructor {
+    address public owner;
+
+    constructor() {
+        // 忘记设置 owner
+    }
+}
+</code></pre>
+<h3 id="防范措施-9"><a class="header" href="#防范措施-9">防范措施</a></h3>
+<ol>
+<li>使用初始化函数模式</li>
+<li>实现适当的访问控制</li>
+<li>考虑使用代理模式</li>
+</ol>
+<pre><code class="language-solidity">// 安全的代码示例
+contract SecureConstructor {
+    address public owner;
+    bool private initialized;
+
+    modifier onlyOnce() {
+        require(!initialized, "Already initialized");
+        _;
+        initialized = true;
+    }
+
+    function initialize(address _owner) public onlyOnce {
+        owner = _owner;
+    }
+}
+</code></pre>
+<h2 id="参考资料-2"><a class="header" href="#参考资料-2">参考资料</a></h2>
+<ol>
+<li><a href="https://docs.soliditylang.org/">Solidity 文档</a></li>
+<li><a href="https://github.com/OpenZeppelin/openzeppelin-contracts">OpenZeppelin 合约</a></li>
+<li><a href="https://consensys.github.io/smart-contract-best-practices/">Consensys 智能合约最佳实践</a></li>
+<li><a href="https://swcregistry.io/">SWC 注册表</a></li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="授权竞争攻击approval-race-condition"><a class="header" href="#授权竞争攻击approval-race-condition">授权竞争攻击（Approval Race Condition）</a></h1>
 <p><a href="https://github.com/ethereum/ercs/blob/master/ERCS/erc-20.md#approve">EIP20 提案中 approve 函数声明</a>提过的一种数据攻击。</p>
 <h3 id="缺陷代码示例"><a class="header" href="#缺陷代码示例">缺陷代码示例</a></h3>
 <p>在区块链中，<strong>授权竞争攻击（Approval Race Condition）</strong> 是一种与代币授权机制（如 ERC-20 标准中的<code>approve</code>函数）相关的攻击方式。它利用了区块链交易的异步性和用户授权行为的时间差，允许攻击者在用户不知情的情况下窃取代币。这种攻击通常发生在用户与去中心化应用（DApp）或智能合约交互时，尤其是在涉及代币转移的场景中。以下是对授权竞争攻击的详细讲解：</p>
@@ -4890,7 +5787,7 @@ function withdraw(uint256 _amount) public nonReentrant {
 <p><strong>结论</strong></p>
 <p>重入攻击是智能合约安全领域一个重要的威胁，其历史案例警示着开发者在设计和实现合约时必须高度重视安全性。通过理解重入攻击的原理并采用正确的防御措施，我们可以构建更安全、更可靠的去中心化应用，保护用户和平台的资产安全。始终遵循安全最佳实践，进行充分的代码审查和测试，是防范此类漏洞的关键。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="整数溢出"><a class="header" href="#整数溢出">整数溢出</a></h1>
-<h2 id="概述-2"><a class="header" href="#概述-2">概述</a></h2>
+<h2 id="概述-4"><a class="header" href="#概述-4">概述</a></h2>
 <p>整数溢出（Integer Overflow）是一种常见的编程错误，发生在数值运算结果超出了数据类型所能表示的范围时。这种错误在智能合约中尤其危险，因为它可能导致意外的资金损失或安全漏洞。
 在 0.8.0 版本中自带了溢出检查的功能，而早期的智能合约依赖 safemath 库</p>
 <h2 id="基本原理"><a class="header" href="#基本原理">基本原理</a></h2>
@@ -5036,6 +5933,403 @@ function add(uint256 a, uint256 b) public pure returns (uint256) {
 <img src="BlockChain/Ethereum/Advanced/SafetyProblems/integerOverflow/./541118%20%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%8E%9F%E4%B9%A6%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%89_4.jpg" alt="alert text" />
 <img src="BlockChain/Ethereum/Advanced/SafetyProblems/integerOverflow/./541118%20%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%8E%9F%E4%B9%A6%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%89_5.jpg" alt="alert text" />
 <img src="BlockChain/Ethereum/Advanced/SafetyProblems/integerOverflow/./541118%20%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%EF%BC%88%E5%8E%9F%E4%B9%A6%E7%AC%AC%E4%B8%89%E7%89%88%EF%BC%89_6.jpg" alt="alert text" /></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="权限控制问题"><a class="header" href="#权限控制问题">权限控制问题</a></h1>
+<h2 id="权限管理不当的严重性"><a class="header" href="#权限管理不当的严重性">权限管理不当的严重性</a></h2>
+<p>智能合约中的权限管理问题本质上源于对关键功能访问控制的不严谨设计或实现错误。这类漏洞可能允许未经授权的用户执行本应受限的操作，如无限制铸造代币、转移用户资产或修改合约核心逻辑。</p>
+<p><strong>典型案例</strong>包括管理员账户被过度赋权，例如一个简单的代币合约中，管理员可以无限制地铸造新代币并将其转移到任意账户。如果管理员私钥泄露或初始设置错误，攻击者便可利用这一点无限增发代币，导致严重的通胀和经济系统崩溃。</p>
+<p>更危险的是，某些合约中存在"后门"函数，允许特权账户（如 owner 或 admin）直接销毁或转移任意用户的资产。安全研究人员在对大量合约审计中发现，这类问题相当普遍，包括<code>burn()</code>、<code>burnFrom()</code>、<code>destroyTokens()</code>等函数都可能被滥用。例如，某些合约中的<code>burnFrom()</code>函数允许合约所有者销毁任意地址的代币，而<code>melt()</code>函数则允许 CFO（首席财务官角色）执行类似操作。</p>
+<h2 id="常见权限漏洞模式"><a class="header" href="#常见权限漏洞模式">常见权限漏洞模式</a></h2>
+<h3 id="1-过度集中的权限控制"><a class="header" href="#1-过度集中的权限控制">1. 过度集中的权限控制</a></h3>
+<p>许多合约采用单一管理员模式，将所有特权集中在一个地址上。如下面这个漏洞合约示例：</p>
+<pre><code class="language-solidity">contract MismanagedPermissions {
+    mapping(address =&gt; uint256) public balances;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
+    }
+
+    function mint(address to, uint256 amount) public {
+        require(msg.sender == admin, "Only admin can mint");
+        balances[to] += amount;
+    }
+}
+</code></pre>
+<p>这个合约中，<code>admin</code>可以无限制地调用<code>mint</code>函数创建新代币。一旦这个账户被攻破，整个经济系统将面临灾难性后果。</p>
+<h3 id="2-条件判断逻辑错误"><a class="header" href="#2-条件判断逻辑错误">2. 条件判断逻辑错误</a></h3>
+<p>某些权限漏洞源于简单的编码错误，如应该使用<code>==</code>的地方误用了<code>!=</code>。在一个实际案例中，韩国区块链项目 ICON(ICX)的智能合约就曾因此类错误导致严重后果：</p>
+<pre><code class="language-solidity">modifier onlyFromWallet {
+    require(msg.sender != walletAddress); // 错误地使用了!=
+    _;
+}
+</code></pre>
+<p>本意是限制只有钱包地址能调用特定函数，但由于条件判断写反，实际上<strong>除了</strong>钱包地址，其他所有地址都能调用该函数。</p>
+<h3 id="3-缺乏权限分层与限制"><a class="header" href="#3-缺乏权限分层与限制">3. 缺乏权限分层与限制</a></h3>
+<p>即使实施了权限控制，很多合约也缺乏对特权操作的合理限制。例如，管理员可能被赋予无限的铸造权限，而没有每日限额、总量上限或时间锁等安全机制。</p>
+<h3 id="4-后门函数与过度特权"><a class="header" href="#4-后门函数与过度特权">4. 后门函数与过度特权</a></h3>
+<p>许多合约包含允许特权账户直接操作用户资产的函数，如：</p>
+<ul>
+<li><code>burn(address from, uint amount)</code>：允许 owner 销毁任意用户的代币</li>
+<li><code>sweep(address from, address to, uint amount)</code>：允许 owner 转移任意用户的资金</li>
+<li><code>zero_fee_transaction(address from, address to, uint amount)</code>：允许特殊账户无需授权即可转账</li>
+</ul>
+<p>这些函数本意可能是用于紧急情况或特殊业务需求，但一旦被滥用或泄露，将严重破坏用户信任。</p>
+<h2 id="权限管理最佳实践"><a class="header" href="#权限管理最佳实践">权限管理最佳实践</a></h2>
+<h3 id="1-最小权限原则"><a class="header" href="#1-最小权限原则">1. 最小权限原则</a></h3>
+<p>每个角色只应拥有完成其职责所需的最小权限。例如，铸造功能可以设置每日上限：</p>
+<pre><code class="language-solidity">contract SafePermissions {
+    uint256 public dailyMintLimit;
+    uint256 public dailyMinted;
+
+    function mint(address to, uint256 amount) public onlyAdmin {
+        require(dailyMinted + amount &lt;= dailyMintLimit, "Daily limit exceeded");
+        balances[to] += amount;
+        dailyMinted += amount;
+    }
+}
+</code></pre>
+<p>这种方式即使管理员账户被攻破，攻击者也无法无限制地铸造代币。</p>
+<h3 id="2-多签与多重验证"><a class="header" href="#2-多签与多重验证">2. 多签与多重验证</a></h3>
+<p>对于关键操作，应引入多签机制，要求多个独立方批准才能执行。OpenZeppelin 的 AccessControl 库提供了角色管理的标准实现：</p>
+<pre><code class="language-solidity">import "@openzeppelin/contracts/access/AccessControl.sol";
+
+contract MyContract is AccessControl {
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    constructor() {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(ADMIN_ROLE, msg.sender);
+    }
+
+    function criticalOperation() public onlyRole(ADMIN_ROLE) {
+        // 需要ADMIN_ROLE才能执行
+    }
+}
+</code></pre>
+<p>这种方式可以避免单点故障。</p>
+<h3 id="3-基于角色的访问控制rbacrole-based-access-control"><a class="header" href="#3-基于角色的访问控制rbacrole-based-access-control">3. 基于角色的访问控制(RBAC:Role-Based Access Control)</a></h3>
+<p>更复杂的系统可以采用基于角色的访问控制模型，定义不同角色并分配相应权限。中国银行的一项专利就展示了如何将 RBAC 应用于金融业务合约，实现细粒度的权限管理。</p>
+<h3 id="4-权限审计与时效性"><a class="header" href="#4-权限审计与时效性">4. 权限审计与时效性</a></h3>
+<p>所有权限操作应记录在事件日志中供审计，同时权限应设置有效期，过期后需要重新授权。例如：</p>
+<pre><code class="language-solidity">mapping(address =&gt; uint256) public adminExpiry;
+
+function addAdmin(address newAdmin, uint256 expiryTime) public onlyAdmin {
+    admins[newAdmin] = true;
+    adminExpiry[newAdmin] = expiryTime;
+}
+
+modifier onlyAdmin() {
+    require(admins[msg.sender] &amp;&amp; adminExpiry[msg.sender] &gt; block.timestamp, "Not admin or expired");
+    _;
+}
+</code></pre>
+<h3 id="5-严格的代码审查与测试"><a class="header" href="#5-严格的代码审查与测试">5. 严格的代码审查与测试</a></h3>
+<p>特别要检查权限修饰器的逻辑是否正确，避免出现类似<code>onlyFromWallet</code>中的反向条件错误。自动化工具和形式化验证可以帮助捕捉这类问题。</p>
+<h2 id="行业创新与未来方向"><a class="header" href="#行业创新与未来方向">行业创新与未来方向</a></h2>
+<p>金融科技领域正在探索更先进的权限管理方案。中国银行最近获得的一项专利"一种业务合约权限控制方法、装置及设备"(CN114969788B)结合了大数据分析与机器学习，能够根据实时交易数据动态调整权限设置。这种创新方法有望解决传统智能合约权限管理过于静态化的问题。</p>
+<p>另一个重要趋势是将基于属性的访问控制(ABAC：Attribute-Based Access Control)引入智能合约。与传统的 RBAC 相比，ABAC 可以根据交易上下文、时间条件、参与方信誉等多维属性做出更精细的权限决策。</p>
+<h3 id="现实案例"><a class="header" href="#现实案例">现实案例</a></h3>
+<h4 id="1-the-dao-攻击2016-年"><a class="header" href="#1-the-dao-攻击2016-年">1. <strong>The DAO 攻击（2016 年）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：重入攻击（访问控制不足）</li>
+<li><strong>影响</strong>：攻击者利用递归调用漏洞，从 The DAO 合约中盗取了 360 万枚 ETH（当时价值约 5000 万美元），最终导致以太坊硬分叉，分裂为 ETH 和 ETC。</li>
+<li><strong>原因</strong>：合约在转账时未采用“检查-生效-交互”（Checks-Effects-Interactions, CEI）模式，允许攻击者在余额清零前多次提取资金。</li>
+</ul>
+<h4 id="2-parity-多重签名钱包漏洞2017-年"><a class="header" href="#2-parity-多重签名钱包漏洞2017-年">2. <strong>Parity 多重签名钱包漏洞（2017 年）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：函数可见性错误（未限制关键函数调用权限）</li>
+<li><strong>影响</strong>：攻击者利用未正确设置访问控制的<code>initWallet</code>函数，将 Parity 钱包合约变为“自杀”状态，导致约 15.3 万枚 ETH（当时价值 3000 万美元）被永久锁定。</li>
+<li><strong>原因</strong>：关键初始化函数未设置为<code>internal</code>或<code>private</code>，允许任意用户调用并接管合约。</li>
+</ul>
+<h4 id="3-sushiswap-攻击2023-年"><a class="header" href="#3-sushiswap-攻击2023-年">3. <strong>Sushiswap 攻击（2023 年）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：访问控制错误（未验证调用者权限）</li>
+<li><strong>影响</strong>：攻击者利用未正确限制的<code>setMinter</code>函数，恶意铸造代币并套现，造成数百万美元损失。</li>
+<li><strong>原因</strong>：合约未对敏感函数（如代币铸造）进行严格的<code>onlyOwner</code>或权限检查。</li>
+</ul>
+<h4 id="4-akutars-nft-事件2022-年"><a class="header" href="#4-akutars-nft-事件2022-年">4. <strong>Akutars NFT 事件（2022 年）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：过度限制函数（合约被永久锁定）</li>
+<li><strong>影响</strong>：由于合约管理员权限过大，且未正确处理退款逻辑，导致合约被冻结，3400 万美元资金无法提取。</li>
+<li><strong>原因</strong>：合约采用过于严格的权限控制，导致合法操作（如退款）被意外阻止。</li>
+</ul>
+<h4 id="5-hashforether-越权攻击早期案例"><a class="header" href="#5-hashforether-越权攻击早期案例">5. <strong>HashForEther 越权攻击（早期案例）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：未限制关键函数调用权限</li>
+<li><strong>影响</strong>：攻击者直接调用未受保护的<code>_sendWinnings</code>函数，窃取合约资金。</li>
+<li><strong>原因</strong>：关键资金提取函数未设置<code>private</code>或<code>onlyOwner</code>修饰符。</li>
+</ul>
+<h4 id="6-sirtrading-杠杆交易攻击2025-年"><a class="header" href="#6-sirtrading-杠杆交易攻击2025-年">6. <strong>SIR.trading 杠杆交易攻击（2025 年）</strong></a></h4>
+<ul>
+<li><strong>漏洞类型</strong>：瞬态存储权限绕过（EIP-1153 引入的新问题）</li>
+<li><strong>影响</strong>：攻击者利用瞬态存储未正确清除的特性，绕过回调函数权限检查，盗取 30 万美元资产。</li>
+<li><strong>原因</strong>：合约未在函数调用后及时清除瞬态存储值，导致攻击者可伪造权限验证。</li>
+</ul>
+<h1 id="建议"><a class="header" href="#建议">建议</a></h1>
+<ol>
+<li>遵循最小权限原则，避免过度赋权</li>
+<li>实施多因素认证和多重签名机制</li>
+<li>采用经过验证的权限库如 OpenZeppelin AccessControl</li>
+<li>建立完善的权限审计和监控机制</li>
+<li>对特权函数进行严格的安全审查</li>
+<li>开发者应使用<code>OpenZeppelin</code>的<code>Ownable</code>或<code>AccessControl</code>库，并严格遵循最小权限原则。</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dos-攻击拒绝服务攻击"><a class="header" href="#dos-攻击拒绝服务攻击">DOS 攻击(拒绝服务攻击)</a></h1>
+<p>不同于传统的网络层 DoS 攻击，智能合约中的 DoS 攻击利用的是以太坊虚拟机(EVM)的特性、Solidity 语言的缺陷或合约逻辑漏洞，使合约功能无法正常执行或永久锁定用户资金。</p>
+<h2 id="智能合约-dos-攻击的本质与危害"><a class="header" href="#智能合约-dos-攻击的本质与危害">智能合约 DoS 攻击的本质与危害</a></h2>
+<p>在区块链环境中，拒绝服务攻击是指通过技术手段使智能合约无法正常执行其预定功能的攻击行为。与传统的网络层 DoS 攻击不同，智能合约 DoS 攻击通常不依赖于流量洪水，而是利用以下机制实现攻击目的：</p>
+<ul>
+<li><strong>Gas 耗尽</strong>：通过精心构造的交易使合约执行超出区块 Gas 限制</li>
+<li><strong>状态锁定</strong>：使合约关键状态无法更新，永久阻塞正常功能</li>
+<li><strong>资源竞争</strong>：垄断合约关键资源，阻止其他用户访问</li>
+<li><strong>外部依赖破坏</strong>：利用对外部合约的错误假设导致功能失效</li>
+</ul>
+<p>智能合约一旦部署便<strong>不可更改</strong>的特性使得 DoS 攻击的影响尤为严重。根据区块链安全审计报告，约 15%的智能合约漏洞与潜在的 DoS 攻击向量相关。成功的 DoS 攻击可导致以下后果：</p>
+<ol>
+<li><strong>资金永久锁定</strong>：用户资产无法提取，如 The DAO 事件中价值数百万美元的 ETH 被冻结</li>
+<li><strong>业务逻辑中断</strong>：关键功能无法执行，如众筹合约无法完成资金分发</li>
+<li><strong>系统信誉受损</strong>：用户对项目方技术能力产生质疑，导致代币价值下跌</li>
+<li><strong>连锁反应</strong>：依赖该合约的其他协议也可能受到影响，如 DeFi 组合性风险</li>
+</ol>
+<h2 id="solidity-中常见的-dos-攻击类型与技术分析"><a class="header" href="#solidity-中常见的-dos-攻击类型与技术分析">Solidity 中常见的 DoS 攻击类型与技术分析</a></h2>
+<h3 id="1-gas-耗尽攻击gas-exhaustion-attacks"><a class="header" href="#1-gas-耗尽攻击gas-exhaustion-attacks">1. Gas 耗尽攻击(Gas Exhaustion Attacks)</a></h3>
+<p>Gas 耗尽攻击是最典型的智能合约 DoS 形式，攻击者通过操纵合约中的循环或递归结构，使交易执行超过区块 Gas 限制而失败。</p>
+<p><strong>典型场景</strong>：</p>
+<ul>
+<li>遍历外部用户可控制的变长数组</li>
+<li>递归调用没有深度限制</li>
+<li>复杂计算未设置 Gas 上限</li>
+</ul>
+<p><strong>漏洞合约示例</strong>：</p>
+<pre><code class="language-solidity">contract VulnerableAirdrop {
+    address[] public recipients;
+    mapping(address =&gt; uint) public balances;
+
+    function addRecipient(address recipient) public {
+        recipients.push(recipient);
+    }
+
+    // 危险：遍历外部可控的数组
+    function distribute() public {
+        for(uint i = 0; i &lt; recipients.length; i++) {
+            balances[recipients[i]] += 1 ether;
+        }
+    }
+}
+</code></pre>
+<p>在此合约中，攻击者可以不断调用<code>addRecipient</code>添加大量地址，使<code>distribute</code>函数遍历时消耗的 Gas 超过区块限制。</p>
+<p><strong>防御方案</strong>：</p>
+<ul>
+<li>使用<strong>提现模式</strong>(Pull over Push)：让用户自行提取而非合约主动分发</li>
+<li>限制单次操作处理的元素数量</li>
+<li>使用映射(mapping)替代数组存储大规模数据集</li>
+</ul>
+<h3 id="2-外部调用阻塞攻击external-call-freezing"><a class="header" href="#2-外部调用阻塞攻击external-call-freezing">2. 外部调用阻塞攻击(External Call Freezing)</a></h3>
+<p>当合约状态变更依赖于外部调用结果时，恶意合约可能通过故意使调用失败来永久阻塞主合约功能。</p>
+<p><strong>典型案例</strong>：</p>
+<pre><code class="language-solidity">contract VulnerableAuction {
+    address public highestBidder;
+    uint public highestBid;
+
+    function bid() external payable {
+        require(msg.value &gt; highestBid);
+        // 危险：状态变更依赖于外部调用
+        require(payable(highestBidder).send(highestBid));
+        highestBidder = msg.sender;
+        highestBid = msg.value;
+    }
+}
+</code></pre>
+<p>攻击者可部署一个恶意合约，在<code>fallback</code>函数中实现<code>revert()</code>，使其成为<code>highestBidder</code>后，所有后续<code>bid</code>调用都会因退款失败而回滚。</p>
+<p><strong>防御方案</strong>：</p>
+<ul>
+<li>采用"检查-效果-交互"模式(Checks-Effects-Interactions)</li>
+<li>分离状态变更与外部调用</li>
+<li>为关键操作设置超时机制</li>
+</ul>
+<h3 id="3-拒绝-ether-接收攻击ether-rejection-attacks"><a class="header" href="#3-拒绝-ether-接收攻击ether-rejection-attacks">3. 拒绝 Ether 接收攻击(Ether Rejection Attacks)</a></h3>
+<p>某些合约逻辑要求必须成功转账 Ether 才能继续执行，但如果接收方是恶意合约或未实现<code>receive</code>/<code>fallback</code>函数的合约，将导致整个交易回滚。</p>
+<p><strong>漏洞模式</strong>：</p>
+<pre><code class="language-solidity">function claimThrone() external payable {
+    require(msg.value &gt; currentBid);
+    // 危险：未检查转账是否成功
+    currentKing.call{value: currentBid}("");
+    currentKing = msg.sender;
+    currentBid = msg.value;
+}
+</code></pre>
+<p>当<code>currentKing</code>是如下合约时，所有<code>claimThrone</code>调用都将失败：</p>
+<pre><code class="language-solidity">contract MaliciousKing {
+    fallback() external payable { revert(); }
+}
+</code></pre>
+<p><strong>防御方案</strong>：</p>
+<ul>
+<li>使用<strong>提现模式</strong>替代主动转账</li>
+<li>检查接收地址是否为合约(<code>extcodesize &gt; 0</code>)</li>
+<li>记录欠款让用户自行提取</li>
+</ul>
+<h3 id="4-特权账户丢失攻击privileged-account-loss"><a class="header" href="#4-特权账户丢失攻击privileged-account-loss">4. 特权账户丢失攻击(Privileged Account Loss)</a></h3>
+<p>当合约关键功能依赖于特定特权账户(如 owner)时，若该账户私钥丢失或变为非活动状态，将导致合约功能永久冻结。</p>
+<p><strong>漏洞示例</strong>：</p>
+<pre><code class="language-solidity">contract FrozenContract {
+    address public owner;
+    bool public isFinalized;
+
+    constructor() { owner = msg.sender; }
+
+    function finalize() public {
+        require(msg.sender == owner);
+        isFinalized = true;
+    }
+
+    function transfer(address to, uint amount) public {
+        require(isFinalized);
+        // ...转账逻辑
+    }
+}
+</code></pre>
+<p>如果<code>owner</code>私钥丢失，<code>finalize</code>将无法调用，所有<code>transfer</code>操作被永久禁用。</p>
+<p><strong>防御方案</strong>：</p>
+<ul>
+<li>采用多签机制替代单一管理员</li>
+<li>设置时间锁自动执行关键操作</li>
+<li>实现权限恢复机制</li>
+</ul>
+<h3 id="5-return-bomb-攻击"><a class="header" href="#5-return-bomb-攻击">5. Return Bomb 攻击</a></h3>
+<p>这是一种较隐蔽的 DoS 攻击，利用 EVM 处理大返回值时的高 Gas 消耗特性，通过恶意合约返回超大体积数据使调用方交易因 Gas 不足而失败。</p>
+<p><strong>攻击原理</strong>：</p>
+<ul>
+<li>EVM 处理<code>call</code>返回数据时需要将数据存入内存</li>
+<li>内存扩展的 Gas 成本随数据量平方级增长</li>
+<li>攻击合约通过汇编返回极大数据块：</li>
+</ul>
+<pre><code class="language-solidity">contract ReturnBomb {
+    fallback() external payable {
+        assembly {
+            return(0, 0xFFFF) // 返回超大内存区域
+        }
+    }
+}
+</code></pre>
+<p>当受害合约调用此类合约时，可能因处理返回数据耗尽 Gas。</p>
+<p><strong>防御方案</strong>：</p>
+<ul>
+<li>限制外部调用的 Gas 用量</li>
+<li>检查返回数据大小</li>
+<li>使用 OpenZeppelin 的安全库函数处理外部调用</li>
+</ul>
+<h2 id="防御-dos-攻击的综合策略"><a class="header" href="#防御-dos-攻击的综合策略">防御 DoS 攻击的综合策略</a></h2>
+<h3 id="1-合约架构设计原则"><a class="header" href="#1-合约架构设计原则">1. 合约架构设计原则</a></h3>
+<ul>
+<li><strong>提现模式优先</strong>：让用户主动提取资金而非合约主动发送</li>
+<li><strong>最小依赖原则</strong>：减少对外部合约的状态依赖</li>
+<li><strong>权限分散</strong>：避免单一控制点，采用多签或 DAO 治理</li>
+<li><strong>状态隔离</strong>：关键功能不共享状态变量</li>
+</ul>
+<h3 id="2-编码最佳实践"><a class="header" href="#2-编码最佳实践">2. 编码最佳实践</a></h3>
+<ul>
+<li>
+<p><strong>Gas 消耗控制</strong>：</p>
+<pre><code class="language-solidity">function safeBatchTransfer(uint start, uint end) public {
+    require(end - start &lt; 50, "Too many items");
+    for(uint i = start; i &lt; end &amp;&amp; gasleft() &gt; 50000; i++) {
+        // 处理单个元素
+    }
+}
+</code></pre>
+<p>限制单次操作处理的项目数量并检查剩余 Gas。</p>
+</li>
+<li>
+<p><strong>外部调用防护</strong>：</p>
+<pre><code class="language-solidity">function safeExternalCall(address target, uint value) internal {
+    (bool success, ) = target.call{gas: 100000, value: value}("");
+    if(!success) {
+        // 记录失败，不影响主逻辑
+        failedTransfers[target] += value;
+    }
+}
+</code></pre>
+<p>限制调用 Gas 并处理失败情况。</p>
+</li>
+<li>
+<p><strong>权限与时效控制</strong>：</p>
+<pre><code class="language-solidity">struct Proposal {
+    uint executeAfter;
+    bool executed;
+}
+
+mapping(bytes32 =&gt; Proposal) public proposals;
+
+function executeProposal(bytes32 id) public {
+    Proposal storage p = proposals[id];
+    require(block.timestamp &gt;= p.executeAfter &amp;&amp; !p.executed);
+    // 执行操作
+}
+</code></pre>
+<p>为关键操作引入时间锁机制。</p>
+</li>
+</ul>
+<h3 id="3-测试与监控"><a class="header" href="#3-测试与监控">3. 测试与监控</a></h3>
+<ul>
+<li><strong>Gas 消耗分析</strong>：使用<code>eth_estimateGas</code>测试边界情况</li>
+<li><strong>模糊测试</strong>：输入异常参数验证合约健壮性</li>
+<li><strong>事件监控</strong>：实时检测异常交易模式</li>
+<li><strong>压力测试</strong>：模拟高负载下合约行为</li>
+</ul>
+<h3 id="4-安全工具与库"><a class="header" href="#4-安全工具与库">4. 安全工具与库</a></h3>
+<ul>
+<li><strong>OpenZeppelin Contracts</strong>：提供<code>ReentrancyGuard</code>、<code>PullPayment</code>等安全基元</li>
+<li><strong>SafeMath</strong>：防止算术操作导致的意外回滚(Solidity 0.8+已内置)</li>
+<li><strong>MythX</strong>：智能合约安全分析平台</li>
+<li><strong>Slither</strong>：静态分析工具检测潜在漏洞</li>
+</ul>
+<h2 id="历史案例分析"><a class="header" href="#历史案例分析">历史案例分析</a></h2>
+<h3 id="1-king-of-the-ether-攻击2016"><a class="header" href="#1-king-of-the-ether-攻击2016">1. King of the Ether 攻击(2016)</a></h3>
+<p>早期以太坊游戏合约因未考虑合约账户可能拒绝接收 Ether 而导致 DoS 漏洞。攻击者部署恶意合约成为"国王"后，所有后续挑战交易都因 Ether 退款失败而回滚，游戏永久停滞。</p>
+<p><strong>漏洞代码</strong>：</p>
+<pre><code class="language-solidity">function claimThrone() external payable {
+    require(msg.value &gt; currentBid);
+    king.transfer(currentBid); // 可能失败
+    king = msg.sender;
+    currentBid = msg.value;
+}
+</code></pre>
+<h3 id="2-governmental-合约冻结2016"><a class="header" href="#2-governmental-合约冻结2016">2. GovernMental 合约冻结(2016)</a></h3>
+<p>著名的庞氏合约因依赖单一管理员账户且未设置超时机制，当管理员私钥丢失后，所有资金被永久锁定在合约中无法提取。</p>
+<h3 id="3-某-defi-协议-gas-耗尽攻击2021"><a class="header" href="#3-某-defi-协议-gas-耗尽攻击2021">3. 某 DeFi 协议 Gas 耗尽攻击(2021)</a></h3>
+<p>某 DeFi 协议在计算用户奖励时遍历所有历史存款记录，当用户数量增长到一定规模后，奖励分配交易始终因 Gas 不足失败，导致用户无法领取奖励。</p>
+<h2 id="未来防护趋势"><a class="header" href="#未来防护趋势">未来防护趋势</a></h2>
+<ol>
+<li><strong>形式化验证</strong>：数学方法证明合约不存在特定类型的 DoS 漏洞</li>
+<li><strong>WASM 智能合约</strong>：Ethereum 2.0 的 eWASM 可能提供更精细的 Gas 控制</li>
+<li><strong>状态通道</strong>：将频繁交互移至链下，减少链上 DoS 风险</li>
+<li><strong>零知识证明</strong>：将复杂计算移至链下验证，降低主链负载</li>
+</ol>
+<h2 id="总结与建议"><a class="header" href="#总结与建议">总结与建议</a></h2>
+<ol>
+<li><strong>严格限制循环和递归</strong>：避免遍历外部可控的数据结构，或设置明确的上限</li>
+<li><strong>谨慎处理外部调用</strong>：假定所有外部调用都可能失败，不影响关键状态</li>
+<li><strong>采用提现模式</strong>：让用户主动提取而非合约主动发送资金</li>
+<li><strong>分散权限控制</strong>：避免单一故障点，采用多签或时间锁机制</li>
+<li><strong>全面测试</strong>：包括 Gas 消耗分析、边界测试和压力测试</li>
+</ol>
+<p>开发者在编写智能合约时应始终<strong>假设所有外部调用都可能失败</strong>，<strong>所有用户输入都可能恶意</strong>，<strong>所有状态都可能被操纵</strong>。通过遵循这些原则和使用 OpenZeppelin 等经过验证的安全库，可以显著降低合约遭受 DoS 攻击的风险。</p>
+<p><strong>检查清单</strong>：</p>
+<ul>
+<li><input disabled="" type="checkbox"/>
+所有循环都有明确的迭代上限</li>
+<li><input disabled="" type="checkbox"/>
+不依赖外部调用的成功来完成状态变更</li>
+<li><input disabled="" type="checkbox"/>
+关键功能有超时或替代执行路径</li>
+<li><input disabled="" type="checkbox"/>
+使用提现模式处理用户资金分发</li>
+<li><input disabled="" type="checkbox"/>
+权限控制采用多因素认证而非单一账户</li>
+<li><input disabled="" type="checkbox"/>
+进行了充分的 Gas 消耗测试</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="rollup"><a class="header" href="#rollup">Rollup</a></h1>
 <p>以太坊作为领先的去中心化应用平台，面临着日益增长的用户需求和交易吞吐量瓶颈。为了解决这些问题，Layer-2 扩展方案应运而生，而 <strong>Rollup</strong> 正是其中最具前景的技术之一。它的出现极大的提升了以太坊主链的交易速度，减少了交易频次还降低了 gas 费。但实质以太坊主链的 tps 并没有改变，只是转移到其他的更高处理速度的链进行了交易处理。</p>
 <p><strong>以太坊的扩展性挑战</strong></p>
@@ -5194,41 +6488,6 @@ function add(uint256 a, uint256 b) public pure returns (uint256) {
 <li><strong>合规性:</strong> 企业可以在不泄露商业机密的情况下向监管机构证明其符合特定的法规要求。</li>
 <li><strong>投票系统:</strong> 可以构建既能保证投票隐私又能验证投票有效性的电子投票系统。</li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
-<h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
-<p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
-<h4 id="二安装-ethersjs"><a class="header" href="#二安装-ethersjs">二、安装 ethers.js</a></h4>
-<p>在实现私钥还原公钥之前，需要先安装 <code>ethers.js</code>：</p>
-<pre><code class="language-bash">npm install ethers
-</code></pre>
-<h4 id="三使用-ethersjs-运算公钥"><a class="header" href="#三使用-ethersjs-运算公钥">三、使用 ethers.js 运算公钥</a></h4>
-<p>以下是通过 ethers.js 将私钥转换为公钥的完整代码：</p>
-<pre><code class="language-javascript">const { Wallet } = require('ethers');
-
-// 私钥（确保保密！）
-const privateKey = "0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d";
-
-// 从私钥生成钥包实例
-const wallet = new Wallet(privateKey);
-
-// 获取公钥
-const publicKey = wallet.publicKey;
-
-console.log("私钥:", privateKey);
-console.log("公钥:", publicKey);
-</code></pre>
-<h5 id="输出格式"><a class="header" href="#输出格式">输出格式</a></h5>
-<ul>
-<li><strong>私钥</strong>：输入值，64 个十六进制字符，前缀为 <code>0x</code>。</li>
-<li><strong>公钥</strong>：未压缩格式，524-bit （含前缀 <code>0x04</code>），起始为一个指针。</li>
-</ul>
-<h5 id="示例输出"><a class="header" href="#示例输出">示例输出</a></h5>
-<pre><code>私钥: 0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d
-公钥: 0x04bfcab4e67d19d84cf2047269de360f3e51b50fa5c45594f5365ff3c7ec8f3f482c909de42ccadf81a913e51e535fc327fced47adf968f2bf4bfdbc5f8862bb2d
-</code></pre>
-<h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
-<h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
-<p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc常用实战"><a class="header" href="#erc常用实战">ERC常用实战</a></h1>
 <p>ERC20</p>
 <p>ERC721</p>
@@ -5878,6 +7137,15 @@ function bulkNotify(uint256 start, uint256 end) external {
 <ul>
 <li>能不用循环就不用</li>
 <li>必须用循环时：减少存储访问 + 限制最大迭代次数 + 使用 unchecked</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="bnb-源码分析"><a class="header" href="#bnb-源码分析">BNB 源码分析</a></h1>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/BNB/./WBNB/WBNB.html">WBNB</a></p>
+<ul>
+<li>币安链上的原生代币，实现方式效仿 WETH 对于原生以太坊代币封装，使其具有 ERC20 类似的代币功能</li>
+</ul>
+<p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/BNB/./BNB-ETH/BNB.html">BNB-ETH</a></p>
+<ul>
+<li>以太坊链上的 BNB，代码精简，适合初学者</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="wbnb"><a class="header" href="#wbnb">WBNB</a></h1>
 <p><mark>币安链的原生代币为BNB，与以太坊的ETH类似。</mark>
@@ -9610,6 +10878,52 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 <h2 id="入门指南书"><a class="header" href="#入门指南书">入门指南书</a></h2>
 <p><a href="https://book.getfoundry.sh/">官网导航</a></p>
 <p><a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">中文版-登链社区</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="forge-clone"><a class="header" href="#forge-clone">forge clone</a></h1>
+<p>forge clone 命令可用于克隆已经验证的合约，并以 forge 自己的文件管理方式创建项目
+默认情况下将从 ETH 主网的 etherscan 上获取数据</p>
+<p>格式:</p>
+<pre><code class="language-bash"> forge clone &lt;address&gt; &lt;repostory-name&gt;
+</code></pre>
+<ul>
+<li>效果:从 Etherscan 主网获取到已验证的<address>地址的合约,并创建名为<repostory-name>的目录保存</li>
+</ul>
+<p>实例：</p>
+<pre><code class="language-bash"> forge clone 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH9
+</code></pre>
+<h1 id="常见错误"><a class="header" href="#常见错误">常见错误</a></h1>
+<ul>
+<li>
+<p>处理场景：未创建 foundry 项目时执行上述命令</p>
+<ul>
+<li>
+<p>无效的 Etherscan api</p>
+<p><img src="BlockChain/Foundry/ForgeClone/./api_invalid.JPG" alt="alert text" /></p>
+</li>
+<li>
+<p>原因：一般项目执行 forge clone 时会读取当前目录 forge 仓库中的 forge.toml 文件。而此处未创建项目的情况下无任何配置文件读取。</p>
+</li>
+<li>
+<p>解决办法:
+使用-e 指令指定 etherscan api key (此方法不会主动在新创建的 foundry.toml 中添加入私人 apikey)</p>
+<pre><code class="language-bash">forge clone 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 WETH9 -e your-etherscan-api
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="soldeer-一个-solidity-包管理工具"><a class="header" href="#soldeer-一个-solidity-包管理工具">soldeer 一个 solidity 包管理工具</a></h1>
+<h1 id="常见错误-1"><a class="header" href="#常见错误-1">常见错误</a></h1>
+<ul>
+<li>处理场景
+<ul>
+<li>在原生 git bash 环境中<strong>初次</strong>调用 forge soldeer init 无法完成初始化
+<img src="BlockChain/Foundry/ForgeSoldeer/./init_error.JPG" alt="alert text" />
+原因: git bash 原生的字符集以及输入支持有隐藏问题,尝试使用 vscode 等嵌入的 terminal 调用 bash 执行命令。去除隐藏字符问题
+解决效果图:
+<img src="BlockChain/Foundry/ForgeSoldeer/./init_success.JPG" alt="alert text" /></li>
+</ul>
+</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solana"><a class="header" href="#solana">Solana</a></h1>
 <p>本篇基础学习章节大部分为个人翻译，由于带有主观理解因素，可能会对读者的学习过程带来一定的影响。建议对照官网阅读学习</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="账户模型"><a class="header" href="#账户模型">账户模型</a></h1>

@@ -52,21 +52,6 @@ uint256 constant = 2**256 - 1;  // 每次调用都计算
 uint256 constant = type(uint256).max;  // 编译时计算
 ```
 
-### 循环优化
-
-```solidity
-// 不推荐
-for(uint i = 0; i < array.length; i++) {
-    // 每次循环都计算 array.length
-}
-
-// 推荐
-uint length = array.length;
-for(uint i = 0; i < length; i++) {
-    // 只计算一次长度
-}
-```
-
 ## 数学函数优化
 
 ### 取整优化
