@@ -3,13 +3,13 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title></title>
+        <title>Xu&#x27;s Blog</title>
         <meta name="robots" content="noindex">
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="This blog record my learning progress">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -30,6 +30,7 @@
         <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/custom.css">
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -39,11 +40,23 @@
             const path_to_root = "";
             const default_light_theme = "rust";
             const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc.js"></script>
     </head>
     <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
     <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
@@ -84,10 +97,13 @@
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -121,12 +137,12 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -141,7 +157,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -162,14 +183,14 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="免责声明"><a class="header" href="#免责声明">免责声明</a></h1>
-<p>本站为<a href="index.html"><strong>个人博客</strong></a>，分享记录个人学习过程和相关信息。所有内容如有外部来源，将会在分享时明确标注，如有遗漏，请通过<a href="mailto://web3test1@outlook.com">邮件</a>联系以便及时删除。未标注来源的部分（如代码等），读者可以自由使用，但需自行承担使用可能带来的后果。关于信息的准确性请读者自行鉴别，这不是科普，绝大多数情况下无法做到精准描述。</p>
+<p>本站为<a href="index.html"><strong>个人博客</strong></a>，分享记录个人学习过程和相关信息。所有内容如有外部来源，将会在分享时明确标注，如有遗漏，请通过<a href="mailto:web3test1@outlook.com">邮件</a>联系以便及时删除。未标注来源的部分（如代码等），读者可以自由使用，但需自行承担使用可能带来的后果。关于信息的准确性请读者自行鉴别，这不是科普，绝大多数情况下无法做到精准描述。</p>
 <h2 id="个人代码仓库"><a class="header" href="#个人代码仓库">个人代码仓库</a></h2>
 <p><a href="https://github.com/codermaybe">github.com/codermaybe</a></p>
 <h1 id="about-languages"><a class="header" href="#about-languages">About languages</a></h1>
 <p>If you have some difficulties in reading Chinese, usually because you are not a native Chinese speaker. It is recommended to use the Chrome plugin <a href="https://immersivetranslate.com/en/">Immersive Translate</a> to read this blog. Welcome everyone to learn about my learning experience.</p>
 <h1 id="关于个人"><a class="header" href="#关于个人">关于个人</a></h1>
 <p>我是 <strong>徐</strong> ，此博客旨在分享技术学习和个人见解。欢迎查阅我的简历，部分信息<a href="./Personal/%E7%AE%80%E5%8E%86.html">在此</a>。</p>
-<p>希望能找到一个对于区块链行业有热忱的团队一起奋进。如果我的技术栈刚好符合你的需求，可以通过<a href="mailto://web3test1@outlook.com">邮件</a>与我进一步联系。部分技术栈不匹配的问题也可以后续跟进。</p>
+<p>希望能找到一个对于区块链行业有热忱的团队一起奋进。如果我的技术栈刚好符合你的需求，可以通过<a href="mailto:web3test1@outlook.com">邮件</a>与我进一步联系。部分技术栈不匹配的问题也可以后续跟进。</p>
 <p><img src="image.png" alt="alt text" /></p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="资源导航"><a class="header" href="#资源导航">资源导航</a></h1>
 <blockquote>
@@ -186,7 +207,7 @@
 <p><a href="https://scholar.google.com/">谷歌学术搜索</a></p>
 <h2 id="娱乐影视"><a class="header" href="#娱乐影视">娱乐影视</a></h2>
 <p><a href="https://yinghezhinan.com/">硬核指南</a></p>
-<p><a href="https://ddys.pro/">低端影视</a></p>
+<p><a href="https://ddys.pro/"><del>低端影视-2025.11月宣布停运-可惜</del></a></p>
 <p><a href="https://www.nfyingshi.com/">奈菲影视</a></p>
 <h2 id="前端部分"><a class="header" href="#前端部分">前端部分</a></h2>
 <p><a href="https://www.emojiall.com/">emoji</a></p>
@@ -419,7 +440,7 @@
 </ul>
 </li>
 </ul>
-<p><strong>Open Source Projects (Recommend checking the GitHub repository directly: <a href="Personal/github.com/codermaybe">github.com/codermaybe</a>)</strong></p>
+<p><strong>Open Source Projects (Recommend checking the GitHub repository directly: <a href="https://github.com/codermaybe">github.com/codermaybe</a>)</strong></p>
 <ul>
 <li><strong>Blockchain Interaction Tools</strong>
 <ul>
@@ -1450,7 +1471,7 @@ PoH不决定区块生产者，而是为PoS提供时间框架，由质押的验�
 <h2 id="1-什么是-ed25519"><a class="header" href="#1-什么是-ed25519"><strong>1. 什么是 Ed25519？</strong></a></h2>
 <p>Ed25519 是一种基于 <strong>Edwards-curve Digital Signature Algorithm (EdDSA)</strong> 的高效签名方案，使用 <strong>Curve25519</strong> 椭圆曲线。其特点包括：</p>
 <ul>
-<li><strong>128 位安全性</strong>（抗量子计算暴力破解）。</li>
+<li><strong>128 位经典安全性</strong>（不抗量子计算）。</li>
 <li><strong>确定性签名</strong>：无需随机数生成器，避免 ECDSA 的随机数重用风险。</li>
 <li><strong>64 字节签名</strong>：紧凑且易于处理。</li>
 <li><strong>高性能</strong>：比 RSA 和传统 ECDSA 更快。</li>
@@ -1482,7 +1503,7 @@ ed25519-dalek = { version = "2.0.0", features = ["rand_core"] }
 rand_core = { version = "0.6.4", features = ["getrandom"] }
 </code></pre>
 <h3 id="步骤-2生成密钥对"><a class="header" href="#步骤-2生成密钥对"><strong>步骤 2：生成密钥对</strong></a></h3>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>use ed25519_dalek::{Keypair, Signer, Verifier, Signature};
 use rand_core::OsRng;
@@ -1494,7 +1515,7 @@ fn generate_keypair() -&gt; Keypair {
 }
 <span class="boring">}</span></code></pre></pre>
 <h3 id="步骤-3签名与验证"><a class="header" href="#步骤-3签名与验证"><strong>步骤 3：签名与验证</strong></a></h3>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn sign_and_verify() {
     // 1. 生成密钥对
@@ -1513,7 +1534,7 @@ fn generate_keypair() -&gt; Keypair {
 }
 <span class="boring">}</span></code></pre></pre>
 <h3 id="步骤-4完整代币交易示例"><a class="header" href="#步骤-4完整代币交易示例"><strong>步骤 4：完整代币交易示例</strong></a></h3>
-<pre><pre class="playground"><code class="language-rust">struct TokenTransaction {
+<pre><pre class="playground"><code class="language-rust edition2018">struct TokenTransaction {
     sender: String,
     receiver: String,
     amount: u64,
@@ -1760,6 +1781,8 @@ fn main() {
 <li>支持多种输出格式</li>
 <li>持续更新维护</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="security-and-risks"><a class="header" href="#security-and-risks">Security and Risks</a></h1>
+<p>This page is a placeholder for security- and risk-related content in blockchain systems. Content to be added.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ethereum"><a class="header" href="#ethereum">Ethereum</a></h1>
 <h2 id="概览官方介绍"><a class="header" href="#概览官方介绍">概览(<a href="https://ethereum.org/zh/what-is-ethereum/">官方介绍</a>)</a></h2>
 <p>什么是以太坊？</p>
@@ -2049,6 +2072,7 @@ contract SimpleToken {
 <li><strong>EVM改进</strong>：持续优化虚拟机性能</li>
 <li><strong>状态过期</strong>：解决状态膨胀问题</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="ethers"><a class="header" href="#ethers">Ethers</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h3 id="ethersjs-通过私钥还原公钥"><a class="header" href="#ethersjs-通过私钥还原公钥">Ethers.js 通过私钥还原公钥</a></h3>
 <h4 id="一什么是私钥和公钥"><a class="header" href="#一什么是私钥和公钥">一、什么是私钥和公钥？</a></h4>
 <p>在以太坊和其他区块链平台中，私钥是一个源信息，用于命令链上账户进行操作。公钥则是从私钥中运算出的，用于验证操作的合法性和完整性。</p>
@@ -2061,7 +2085,7 @@ contract SimpleToken {
 <pre><code class="language-javascript">const { Wallet } = require('ethers');
 
 // 私钥（确保保密！）
-const privateKey = "0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d";
+const privateKey = "0x&lt;64-hex-characters&gt;";
 
 // 从私钥生成钥包实例
 const wallet = new Wallet(privateKey);
@@ -2075,14 +2099,14 @@ console.log("公钥:", publicKey);
 <h5 id="输出格式"><a class="header" href="#输出格式">输出格式</a></h5>
 <ul>
 <li><strong>私钥</strong>：输入值，64 个十六进制字符，前缀为 <code>0x</code>。</li>
-<li><strong>公钥</strong>：未压缩格式，524-bit （含前缀 <code>0x04</code>），起始为一个指针。</li>
+<li><strong>公钥</strong>：未压缩格式，65 字节（520 bits），以 <code>0x04</code> 开头表示未压缩格式，随后为 X、Y 坐标。</li>
 </ul>
 <h5 id="示例输出"><a class="header" href="#示例输出">示例输出</a></h5>
 <pre><code>私钥: 0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d
 公钥: 0x04bfcab4e67d19d84cf2047269de360f3e51b50fa5c45594f5365ff3c7ec8f3f482c909de42ccadf81a913e51e535fc327fced47adf968f2bf4bfdbc5f8862bb2d
 </code></pre>
 <h4 id="四运算原理解析"><a class="header" href="#四运算原理解析">四、运算原理解析</a></h4>
-<h5 id="使用的替代secp256k1"><a class="header" href="#使用的替代secp256k1">使用的替代：<code>secp256k1</code></a></h5>
+<h5 id="使用的曲线secp256k1"><a class="header" href="#使用的曲线secp256k1">使用的曲线：<code>secp256k1</code></a></h5>
 <p><code>ethers.js</code> 使用了 <code>secp256k1</code> 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。<code>secp256k1</code> 定义了一个椭圆曲线方程：<code>y^2 = x^3 + 7</code>，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc"><a class="header" href="#erc">ERC</a></h1>
 <p>ERC 是 Ethereum Request for Comments（以太坊请求评论）的缩写。它是以太坊社区定义的一系列智能合约标准。这些标准为以太坊上的智能合约开发提供了规则和指南，确保不同开发者创建的合约能够相互交互和兼容。</p>
@@ -2685,6 +2709,74 @@ erc20Contract.methods.balanceOf('0xYourAddress').call()
   }
 ]
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc-725-区块链身份标准"><a class="header" href="#erc-725-区块链身份标准">ERC-725: 区块链身份标准</a></h1>
+<h2 id="摘要"><a class="header" href="#摘要">摘要</a></h2>
+<p>ERC-725 是一个为基于区块链的身份（或任何事物）建立的通用、可扩展的标准。它允许智能合约拥有一个去中心化的身份，并通过一个统一的接口来管理与之关联的数据和权限。这个标准主要分为两部分：ERC-725X (执行) 和 ERC-725Y (数据)。</p>
+<hr />
+<h2 id="1-背景为什么需要链上身份"><a class="header" href="#1-背景为什么需要链上身份">1. 背景：为什么需要链上身份？</a></h2>
+<p>在以太坊上，EOA（外部拥有账户）和合约账户本身不包含任何元数据。一个地址 <code>0x...</code> 无法告诉我们它代表的是一个人、一个组织、一台设备还是一个 DApp。为了解决这个问题，我们需要一个标准化的方式来为账户附加信息和管理权限，这就是 ERC-725 的目标。</p>
+<p>ERC-725 旨在为任何地址（无论是合约还是未来的账户抽象钱包）创建一个可编程的、自我主权的身份。</p>
+<hr />
+<h2 id="2-核心概念"><a class="header" href="#2-核心概念">2. 核心概念</a></h2>
+<p>ERC-725 身份由两个核心部分组成，它们通常在同一个智能合约中实现。</p>
+<h3 id="erc-725y-通用键值数据存储"><a class="header" href="#erc-725y-通用键值数据存储">ERC-725Y: 通用键值数据存储</a></h3>
+<p>ERC-725Y 提出了一种使用键值对来存储身份数据的标准。这使得身份信息变得非常灵活和可扩展。</p>
+<ul>
+<li><strong>数据键 (Data Key)</strong>：是一个 <code>bytes32</code> 值，用于标识一段特定的数据。为了避免冲突并实现互操作性，社区定义了一个通用标准 <strong>LSP2 (LUKSO Standard Proposal 2)</strong> 来规范如何生成这些键。例如，一个名为 <code>UserProfile</code> 的 JSON 对象的键可以被标准化地哈希为一个 <code>bytes32</code> 值。</li>
+<li><strong>数据值 (Data Value)</strong>：是与键关联的 <code>bytes</code> 数据。它可以是任何信息，例如个人资料、认证声明、其他资产的地址等。</li>
+</ul>
+<p>通过 <code>getData(bytes32 key)</code> 和 <code>setData(bytes32 key, bytes value)</code> 这两个核心函数，任何外部应用都可以以标准化的方式读取或写入（如果权限允许）一个身份的数据。</p>
+<p><strong>示例：</strong>
+一个用户的身份合约可以存储以下信息：</p>
+<ul>
+<li><code>keccak256("LSP3Profile")</code> -&gt; <code>0x...</code> (指向一个包含个人资料 JSON 文件的 IPFS CID)</li>
+<li><code>keccak256("LSP5ReceivedAssets[]")</code> -&gt; <code>[0x..., 0x...]</code> (该身份拥有的资产列表)</li>
+</ul>
+<h3 id="erc-725x-通用执行"><a class="header" href="#erc-725x-通用执行">ERC-725X: 通用执行</a></h3>
+<p>ERC-725X 允许身份的所有者或授权的密钥，通过该身份合约执行任意操作。</p>
+<ul>
+<li><strong><code>execute(uint256 operationType, address target, uint256 value, bytes calldata)</code></strong>：这是 ERC-725X 的核心函数。它允许身份合约与其他智能合约进行交互。
+<ul>
+<li><code>operationType</code>: 定义了操作类型，如 <code>CALL</code>, <code>CREATE</code>, <code>STATICCALL</code> 等。</li>
+<li><code>target</code>: 目标合约地址。</li>
+<li><code>value</code>: 发送的 ETH 数量。</li>
+<li><code>calldata</code>: 要执行的函数调用数据。</li>
+</ul>
+</li>
+</ul>
+<p>这种设计将 <strong>“谁可以执行”</strong> (权限管理) 和 <strong>“可以执行什么”</strong> (具体操作) 分离开来。身份合约的所有者可以授予不同的密钥不同的权限，例如：</p>
+<ul>
+<li>一个密钥只能用于在社交媒体 DApp 上发帖 (<code>execute</code> 调用该 DApp 的 <code>post</code> 函数)。</li>
+<li>另一个密钥可以转移资产 (<code>execute</code> 调用 ERC20 的 <code>transfer</code> 函数)。</li>
+<li>主密钥拥有管理其他密钥的最高权限。</li>
+</ul>
+<hr />
+<h2 id="3-权限管理与密钥"><a class="header" href="#3-权限管理与密钥">3. 权限管理与密钥</a></h2>
+<p>ERC-725 的强大之处在于其灵活的权限管理系统。身份的所有权不是由单个私钥（像 EOA 那样）控制，而是由一组具有不同权限的密钥来管理。</p>
+<ul>
+<li><strong>密钥 (Key)</strong>：可以是 EOA 地址或另一个合约地址。</li>
+<li><strong>目的 (Purpose)</strong>：每个密钥都被分配一个或多个“目的”，定义了它能做什么。例如：
+<ul>
+<li><code>PURPOSE_MANAGEMENT</code>: 管理密钥和权限。</li>
+<li><code>PURPOSE_EXECUTION</code>: 执行交易。</li>
+<li><code>PURPOSE_ENCRYPTION</code>: 用于加密数据。</li>
+</ul>
+</li>
+<li><strong>方案 (Scheme)</strong>：定义了签名的类型，例如 <code>ECDSA</code> (用于 EOA) 或 <code>EIP1271</code> (用于合约签名)。</li>
+</ul>
+<p>这种模型被称为 <strong>“元交易 (Meta-Transactions)”</strong> 的一种实现，因为交易的验证逻辑（签名和权限检查）是在合约内部处理的，而不是由以太坊协议本身处理。</p>
+<hr />
+<h2 id="4-用例"><a class="header" href="#4-用例">4. 用例</a></h2>
+<p>ERC-725 的应用场景非常广泛：</p>
+<ol>
+<li><strong>自我主权身份 (Self-Sovereign Identity, SSI)</strong>：用户可以完全控制自己的数字身份，管理个人数据，并有选择地向 DApp 授予访问权限，而无需依赖中心化服务商。</li>
+<li><strong>通用 DApp 配置文件</strong>：用户可以在其 ERC-725 身份上存储一次个人资料（如用户名、头像），所有集成了该标准的 DApp 都可以读取这份资料，无需重复创建。</li>
+<li><strong>设备与物联网 (IoT)</strong>：为物联网设备创建一个链上身份，使其能够自主地进行交易、注册或与其他设备交互。</li>
+<li><strong>组织与 DAO</strong>：为去中心化自治组织 (DAO) 创建一个身份，管理其成员、投票权和资产。</li>
+</ol>
+<hr />
+<h2 id="结论-1"><a class="header" href="#结论-1">结论</a></h2>
+<p>ERC-725 是构建去中心化社会 (DeSoc) 和 Web3 的一个基础构件。它通过提供一个标准化的、可扩展的身份层，将以太坊从一个纯粹的金融交易网络，转变为一个能够承载复杂社会和经济活动的平台。随着账户抽象 (ERC-4337) 的普及，基于 ERC-725 的智能合约钱包有望成为未来用户进入 Web3 的主要入口。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc-777-token-standard"><a class="header" href="#erc-777-token-standard">ERC-777: Token Standard</a></h1>
 <h2 id="与-erc-20-的异同点"><a class="header" href="#与-erc-20-的异同点">与 ERC-20 的异同点</a></h2>
 <h3 id="相同点"><a class="header" href="#相同点">相同点</a></h3>
@@ -3591,6 +3683,147 @@ interface IERC777Sender {
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip2612"><a class="header" href="#eip2612">EIP2612</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="eip3009"><a class="header" href="#eip3009">EIP3009</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="erc-4337-无需修改共识层的账户抽象"><a class="header" href="#erc-4337-无需修改共识层的账户抽象">ERC-4337: 无需修改共识层的账户抽象</a></h1>
+<h2 id="摘要-1"><a class="header" href="#摘要-1">摘要</a></h2>
+<p>ERC-4337 是在不改变以太坊共识层协议的情况下实现账户抽象（Account Abstraction, AA）的以太坊标准。它通过引入一个更高层的伪交易对象 <code>UserOperation</code>，以及一系列新的角色（Bundler, Paymaster），使得用户可以使用智能合约作为其主账户，从而实现多签、社交恢复、Gas 费代付等高级功能，极大地改善了用户体验。</p>
+<hr />
+<h2 id="1-背景为什么需要账户抽象"><a class="header" href="#1-背景为什么需要账户抽象">1. 背景：为什么需要账户抽象？</a></h2>
+<p>在以太坊中，账户分为两类：</p>
+<ol>
+<li>
+<p><strong>外部拥有账户 (Externally Owned Account, EOA)</strong>：</p>
+<ul>
+<li>由公私钥对控制。</li>
+<li>能够发起交易（支付 Gas）和签署消息。</li>
+<li>缺点：私钥丢失意味着资产永久丢失，无法实现复杂逻辑（如多签、限额），每次交易都需要用户手动签名。</li>
+</ul>
+</li>
+<li>
+<p><strong>合约账户 (Contract Account, CA)</strong>：</p>
+<ul>
+<li>由代码逻辑控制，没有私钥。</li>
+<li>可以实现任意复杂的逻辑。</li>
+<li>缺点：无法主动发起交易，只能被 EOA 或其他合约调用。</li>
+</ul>
+</li>
+</ol>
+<p>这种二元结构导致了糟糕的用户体验。例如，用户需要用 EOA 来调用合约钱包，并且必须持有 ETH 来支付 Gas 费。账户抽象的目标是模糊这两者的界限，让用户可以直接使用一个具有可编程逻辑的智能合约账户来发起交易。</p>
+<hr />
+<h2 id="2-erc-4337-核心思想"><a class="header" href="#2-erc-4337-核心思想">2. ERC-4337 核心思想</a></h2>
+<p>ERC-4337 的巧妙之处在于，它完全避开了对核心协议的修改。它在应用层实现了一个独立的 <code>UserOperation</code> 内存池，并引入了一个特殊的角色——<strong>Bundler</strong>。</p>
+<ul>
+<li><strong>用户 (User)</strong>：不再直接发送传统的 <code>transaction</code>，而是创建一个描述其意图的 <code>UserOperation</code> 对象，并将其发送到一个专门的 P2P 内存池。</li>
+<li><strong>打包者 (Bundler)</strong>：一个类似于矿工/验证者的节点，它从内存池中抓取一批 <code>UserOperation</code>，将它们打包成一个标准的 <code>transaction</code>，然后发送到链上的全局<strong>入口点合约 (EntryPoint)</strong>。</li>
+<li><strong>入口点合约 (EntryPoint)</strong>：一个全局单例合约，负责验证和执行打包好的 <code>UserOperation</code>。它是整个系统的信任和安全中心。</li>
+</ul>
+<p>这个流程将用户的复杂操作（如调用某个合约）封装在 <code>UserOperation</code> 中，而由 Bundler 负责将其“翻译”成一笔能在以太坊上执行的真实交易。</p>
+<hr />
+<h2 id="3-核心组件详解"><a class="header" href="#3-核心组件详解">3. 核心组件详解</a></h2>
+<p>ERC-4337 定义了几个关键的链上合约和链下角色。</p>
+<h3 id="链上组件"><a class="header" href="#链上组件">链上组件</a></h3>
+<ol>
+<li>
+<p><strong><code>UserOperation</code> (结构体)</strong>
+这是一个在 ABI 中定义的结构体，而非真实的链上对象。它包含了用户发起操作所需的所有信息：</p>
+<ul>
+<li><code>sender</code>: 发起操作的智能合约钱包地址。</li>
+<li><code>nonce</code>: 与 <code>sender</code> 关联的防重放随机数。</li>
+<li><code>initCode</code>: 用于创建 <code>sender</code> 钱包的初始化代码（如果钱包尚未部署）。</li>
+<li><code>callData</code>: 调用 <code>sender</code> 钱包时执行的具体操作数据。</li>
+<li><code>callGasLimit</code>, <code>verificationGasLimit</code>, <code>preVerificationGas</code>: Gas 相关限制。</li>
+<li><code>maxFeePerGas</code>, <code>maxPriorityFeePerGas</code>: EIP-1559 费用参数。</li>
+<li><code>paymasterAndData</code>: （可选）指定 Paymaster 合约地址和相关数据，用于 Gas 费代付。</li>
+<li><code>signature</code>: 用户对 <code>UserOperation</code> 哈希的签名，用于授权。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>EntryPoint</code> (合约)</strong>
+这是所有 <code>UserOperation</code> 的执行入口。Bundler 调用它的 <code>handleOps</code> 函数。其核心逻辑分为两步：</p>
+<ul>
+<li><strong>验证循环 (Verification Loop)</strong>：
+<ul>
+<li>检查 <code>initCode</code>，如果钱包不存在则创建。</li>
+<li>调用钱包的 <code>validateUserOp</code> 函数，传入 <code>UserOperation</code> 和签名。钱包合约负责验证签名是否有效。</li>
+<li>（可选）如果指定了 <code>paymaster</code>，则调用 <code>paymaster</code> 的 <code>validatePaymasterUserOp</code> 函数，检查其是否愿意支付 Gas。</li>
+</ul>
+</li>
+<li><strong>执行循环 (Execution Loop)</strong>：
+<ul>
+<li>依次调用每个钱包，执行 <code>UserOperation</code> 中定义的 <code>callData</code>。</li>
+<li>（可选）执行完毕后，调用 <code>paymaster</code> 的 <code>postOp</code> 函数，让 <code>paymaster</code> 可以执行回调逻辑（例如向用户收费）。</li>
+<li>计算 Gas 费用并向 Bundler 或 Paymaster 报销。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>智能合约钱包 (Smart Contract Wallet)</strong>
+用户实际控制的账户。它必须实现 <code>IAccount</code> 接口，其中最核心的是 <code>validateUserOp</code> 函数，用于验证用户的签名和授权操作。</p>
+</li>
+<li>
+<p><strong>Paymaster (合约)</strong>
+一个可选的合约，用于为用户代付 Gas。它可以实现各种业务逻辑，例如：</p>
+<ul>
+<li><strong>应用赞助</strong>：DApp 项目方为用户支付 Gas 费。</li>
+<li><strong>ERC20 支付</strong>：允许用户使用指定的 ERC20 Token 支付 Gas。</li>
+<li><strong>广告模式</strong>：用户观看广告以换取 Gas 费。</li>
+</ul>
+</li>
+</ol>
+<h3 id="链下角色"><a class="header" href="#链下角色">链下角色</a></h3>
+<ol>
+<li>
+<p><strong>Bundler</strong></p>
+<ul>
+<li>监听 <code>UserOperation</code> 内存池。</li>
+<li>通过模拟来验证 <code>UserOperation</code> 的有效性。</li>
+<li>将多个 <code>UserOperation</code> 打包成一笔交易，发送给 <code>EntryPoint</code>。</li>
+<li>Bundler 通过从用户支付的 Gas 费中赚取差价来盈利。</li>
+</ul>
+</li>
+<li>
+<p><strong><code>UserOperation</code> 内存池</strong>
+一个独立的、专门用于广播 <code>UserOperation</code> 的 P2P 网络，与以太坊主网的交易内存池隔离。</p>
+</li>
+</ol>
+<hr />
+<h2 id="4-交易流程"><a class="header" href="#4-交易流程">4. 交易流程</a></h2>
+<p>一个完整的 ERC-4337 交易生命周期如下：</p>
+<ol>
+<li><strong>构建与签名</strong>：用户的钱包应用（客户端）根据用户的意图（例如，转账 100 USDC）构建一个 <code>UserOperation</code> 对象，并请求用户签名。</li>
+<li><strong>广播</strong>：钱包应用将签好名的 <code>UserOperation</code> 发送给一个或多个 Bundler 节点。</li>
+<li><strong>打包</strong>：Bundler 接收到 <code>UserOperation</code>，进行模拟验证，确保其有效且有利可图，然后将其与其他 <code>UserOperation</code> 一起打包。</li>
+<li><strong>上链</strong>：Bundler 将打包好的 <code>UserOperation</code> 数组作为参数，调用 <code>EntryPoint</code> 合约的 <code>handleOps</code> 函数，发起一笔标准的以太坊交易。</li>
+<li><strong>验证</strong>：<code>EntryPoint</code> 遍历 <code>UserOperation</code> 数组，对每一个 <code>UserOperation</code>：
+<ul>
+<li>调用其 <code>sender</code>（智能合约钱包）的 <code>validateUserOp</code> 函数进行签名验证。</li>
+<li>如果存在 <code>paymaster</code>，调用 <code>paymaster</code> 进行资格验证。</li>
+</ul>
+</li>
+<li><strong>执行</strong>：验证通过后，<code>EntryPoint</code> 再次遍历 <code>UserOperation</code> 数组，对每一个 <code>UserOperation</code>，通过 <code>call</code> 指令执行其 <code>callData</code>。</li>
+<li><strong>费用结算</strong>：<code>EntryPoint</code> 计算每个操作消耗的 Gas，并从钱包的质押、Paymaster 的质押或直接从钱包余额中，将费用支付给 Bundler。</li>
+</ol>
+<hr />
+<h2 id="5-优势与影响"><a class="header" href="#5-优势与影响">5. 优势与影响</a></h2>
+<p>ERC-4337 带来的好处是革命性的：</p>
+<ul>
+<li><strong>更优的用户体验</strong>：
+<ul>
+<li><strong>社交恢复</strong>：不再依赖助记词，可以通过预设的监护人或多签来恢复账户。</li>
+<li><strong>Gas 抽象</strong>：用户可以用 ERC20 Token 支付 Gas，或者由 DApp 代付，无需持有 ETH。</li>
+<li><strong>交易批处理</strong>：可以将多个操作（如 <code>approve</code> + <code>swap</code>）合并成一个原子性的 <code>UserOperation</code>，一次签名即可完成。</li>
+</ul>
+</li>
+<li><strong>更高的安全性</strong>：
+<ul>
+<li><strong>可编程策略</strong>：可以实现每日转账限额、白名单、欺诈监控等安全策略。</li>
+<li><strong>会话密钥 (Session Keys)</strong>：可以为某个游戏或应用授权一个临时密钥，该密钥只能执行特定操作且有时间限制，主密钥保持离线，极大降低了风险。</li>
+</ul>
+</li>
+<li><strong>无需硬分叉</strong>：作为应用层标准，它可以在任何 EVM 兼容链上快速部署，而无需等待核心协议的漫长升级周期。</li>
+</ul>
+<h2 id="结论-2"><a class="header" href="#结论-2">结论</a></h2>
+<p>ERC-4337 通过一种非侵入式的方式，为以太坊带来了期待已久的账户抽象功能。它将钱包的“验证逻辑”与“执行逻辑”解耦，为大规模采用加密应用扫清了关键障碍。随着生态系统（如 Bundler 节点、Paymaster 服务和智能钱包）的成熟，ERC-4337 有望成为未来所有用户的默认账户标准。</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc-4626-tokenized-vault-standard"><a class="header" href="#erc-4626-tokenized-vault-standard">ERC-4626: Tokenized Vault Standard</a></h1>
 <p>ERC-4626 是一个以太坊代币化金库（Tokenized Vault）标准，它定义了一个用于代币化金库的接口，这些金库代表对底层代币（如 ERC-20）的份额。该标准由 Joey Santoro 等人于 2022 年 3 月提出。</p>
 <h2 id="标准概述-1"><a class="header" href="#标准概述-1">标准概述</a></h2>
@@ -3923,6 +4156,273 @@ interface IERC777Sender {
   }
 ]
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="defi"><a class="header" href="#defi">DeFi</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="web3-交易所核心订单撮合机制深度解析"><a class="header" href="#web3-交易所核心订单撮合机制深度解析">Web3 交易所核心：订单撮合机制深度解析</a></h1>
+<h2 id="摘要-2"><a class="header" href="#摘要-2">摘要</a></h2>
+<p>在金融世界中，交易所的核心功能是“撮合”——将买家的订单与卖家的订单匹配以促成交易。当我们将交易所迁移到 Web3 和区块链上时，如何在去中心化、安全和高效之间找到平衡，成为一个巨大的挑战。本文将深入探讨 Web3 交易所（特别是去中心化交易所，DEX）中主流的订单撮合机制，分析其设计思路、优缺点，并通过流程图展示其运作方式。</p>
+<hr />
+<h2 id="1-基础什么是订单簿-order-book"><a class="header" href="#1-基础什么是订单簿-order-book">1. 基础：什么是订单簿 (Order Book)？</a></h2>
+<p>在讨论撮合机制之前，我们必须先理解<strong>订单簿</strong>。这是一个包含特定资产所有未成交买单（Bids）和卖单（Asks）的实时列表。</p>
+<ul>
+<li><strong>买单 (Bids)</strong>：代表买家愿意以特定价格购买的数量。</li>
+<li><strong>卖单 (Asks)</strong>：代表卖家愿意以特定价格出售的数量。</li>
+<li><strong>价差 (Spread)</strong>：最高买单价和最低卖单价之间的差距。</li>
+</ul>
+<p>当一个新的买单价格高于或等于最低卖单价，或者一个新的卖单价格低于或等于最高买单价时，<strong>撮合引擎 (Matching Engine)</strong> 就会执行交易。这个过程就是<strong>订单撮合</strong>。</p>
+<hr />
+<h2 id="2-核心挑战在区块链上实现订单簿"><a class="header" href="#2-核心挑战在区块链上实现订单簿">2. 核心挑战：在区块链上实现订单簿</a></h2>
+<p>将传统的订单簿模型直接搬到 Layer-1 区块链（如以太坊主网）上会遇到几个严重的问题，这源于区块链的“不可能三角”——去中心化、安全、可扩展性：</p>
+<ol>
+<li><strong>成本高昂</strong>：在以太坊上，每一个操作（下单、取消订单、修改订单）都需要作为一笔交易上链，并支付 Gas 费。在高频交易场景下，这笔费用会变得无法承受。</li>
+<li><strong>速度缓慢</strong>：交易需要等待下一个区块才能被确认，延迟通常在十几秒到几分钟不等，这对于需要快速响应市场变化的交易者是致命的。</li>
+<li><strong>抢跑交易 (Front-running)</strong>：由于交易在被打包进区块前会进入公开的内存池 (Mempool)，恶意的矿工或机器人可以观察到即将到来的大额订单，并抢先执行自己的交易来获利，损害了原始用户的利益。</li>
+</ol>
+<p>为了克服这些挑战，Web3 社区探索出了几种不同的订单撮合架构。</p>
+<hr />
+<h2 id="3-主流订单撮合机制的设计与对比"><a class="header" href="#3-主流订单撮合机制的设计与对比">3. 主流订单撮合机制的设计与对比</a></h2>
+<h3 id="模式一完全链上订单簿-fully-on-chain-order-book"><a class="header" href="#模式一完全链上订单簿-fully-on-chain-order-book">模式一：完全链上订单簿 (Fully On-Chain Order Book)</a></h3>
+<p>这是最符合去中心化理想的模型，所有订单的生命周期——提交、存储、撮合、取消——都在链上通过智能合约完成。</p>
+<ul>
+<li>
+<p><strong>工作流程</strong>:</p>
+<ol>
+<li>用户 A 调用智能合约的 <code>placeOrder</code> 函数，提交一个买单。这笔交易被打包上链，订单被存储在合约中。</li>
+<li>用户 B 调用 <code>placeOrder</code> 函数，提交一个价格匹配的卖单。</li>
+<li>智能合约的撮合逻辑被触发，识别到这两个订单可以匹配。</li>
+<li>合约自动执行资产交换，将资产分别发送给 A 和 B。</li>
+</ol>
+</li>
+<li>
+<p><strong>Mermaid 流程图</strong>:</p>
+</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant UA as &quot;用户 A&quot;
+    participant UB as &quot;用户 B&quot;
+    participant OBC as &quot;订单簿合约&quot;
+    participant BC as &quot;区块链&quot;
+
+    UA-&gt;&gt;OBC: 下单（买入 ETH）
+    OBC-&gt;&gt;BC: 存储买单
+    BC--&gt;&gt;UA: 订单已提交（确认）
+
+    UB-&gt;&gt;OBC: 下单（卖出 ETH）
+    OBC-&gt;&gt;OBC: 匹配成功（A 买单 vs B 卖单）
+    OBC-&gt;&gt;BC: 执行交换并结算
+    BC--&gt;&gt;UB: 订单已匹配并结算
+    BC--&gt;&gt;UA: 订单已匹配并结算
+</pre>
+<ul>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>完全去中心化和抗审查</strong>：没有单点故障或控制方。</li>
+<li><strong>透明可信</strong>：所有操作都在链上公开可验证。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>极度昂贵和缓慢</strong>：如前所述，每个操作都需要 Gas 和区块确认时间。</li>
+<li><strong>抢跑风险高</strong>：所有意图都暴露在内存池中。</li>
+</ul>
+</li>
+<li><strong>适用场景</strong>:
+<ul>
+<li>几乎不适用于高频交易。仅在 Layer-2 或高性能专用链上才变得有可行性。</li>
+</ul>
+</li>
+</ul>
+<h3 id="模式二链下撮合链上结算-off-chain-matching-on-chain-settlement"><a class="header" href="#模式二链下撮合链上结算-off-chain-matching-on-chain-settlement">模式二：链下撮合，链上结算 (Off-Chain Matching, On-Chain Settlement)</a></h3>
+<p>这是目前最主流和实用的订单簿 DEX 模型，也被称为<strong>混合模型 (Hybrid Model)</strong>。它将计算密集型且需要高速响应的订单管理和撮合过程移至链下，仅将最终的交易结果上链进行结算。</p>
+<ul>
+<li>
+<p><strong>工作流程</strong>:</p>
+<ol>
+<li>用户 A 在前端界面上创建一个买单，然后用自己的私钥对这个订单数据进行<strong>签名</strong>，这不消耗 Gas。</li>
+<li>这个经过签名的订单被发送到一个中心化的<strong>中继方 (Relayer)</strong> 的服务器上。</li>
+<li>用户 B 同样签名一个卖单，并发送给同一个 Relayer。</li>
+<li>Relayer 的撮合引擎在自己的链下数据库中匹配这两个订单。</li>
+<li>一旦匹配成功，Relayer 会将 A 和 B 的两个签名订单捆绑在一起，打包成一笔交易，并调用链上的<strong>结算合约 (Settlement Contract)</strong>。</li>
+<li>结算合约在链上验证 A 和 B 的签名是否有效，并检查他们是否有足够的资产。验证通过后，合约执行原子化的资产交换。</li>
+</ol>
+</li>
+<li>
+<p><strong>Mermaid 流程图</strong>:</p>
+</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant UA as &quot;用户 A&quot;
+    participant UB as &quot;用户 B&quot;
+    participant R as &quot;中继者（链下）&quot;
+    participant SC as &quot;结算合约（链上）&quot;
+
+    UA-&gt;&gt;UA: 创建并签署买单
+    UA-&gt;&gt;R: 提交已签名订单
+
+    UB-&gt;&gt;UB: 创建并签署卖单
+    UB-&gt;&gt;R: 提交已签名订单
+
+    R-&gt;&gt;R: 在链下数据库中撮合订单
+    R-&gt;&gt;SC: 提交匹配订单及签名
+    
+    SC-&gt;&gt;SC: 1. 验证签名 A
+    SC-&gt;&gt;SC: 2. 验证签名 B
+    SC-&gt;&gt;SC: 3. 执行原子交换
+    SC--&gt;&gt;R: 结算已确认
+</pre>
+<ul>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>用户体验好</strong>：下单和取消订单免费且即时。</li>
+<li><strong>成本低</strong>：只有在交易成功撮合后才需要支付一次性的链上结算 Gas 费（通常由 Taker 或 Relayer 支付）。</li>
+<li><strong>高性能</strong>：撮合速度接近中心化交易所。</li>
+<li><strong>抗抢跑</strong>：由于撮合过程在链下，抢跑者无法在内存池中提前发现订单。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>中心化风险</strong>：Relayer 成为一个中心化组件。它可能会审查订单、选择性撮合，甚至宕机导致服务中断。（可以通过去中心化的 Relayer 网络缓解，如 0x Protocol）。</li>
+<li><strong>非托管性</strong>：尽管 Relayer 无法偷走用户的资金（因为没有私钥），但它在撮合环节引入了中心化信任。</li>
+</ul>
+</li>
+<li><strong>代表项目</strong>:
+<ul>
+<li><strong>0x Protocol</strong>, <strong>dYdX (早期版本)</strong>, <strong>Loopring</strong>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="模式三自动做市商-automated-market-maker-amm"><a class="header" href="#模式三自动做市商-automated-market-maker-amm">模式三：自动做市商 (Automated Market Maker, AMM)</a></h3>
+<p>虽然 AMM 不使用传统的订单簿和撮合引擎，但它作为一种去中心化的交易机制，是理解 DEX 生态的关键。它通过算法和流动性池来自动定价和执行交易。</p>
+<ul>
+<li><strong>工作流程</strong>:
+<ol>
+<li>流动性提供者 (LP) 将两种代币存入一个资金池。</li>
+<li>当用户想要交易时，他们与资金池进行交互，而不是与另一个交易者。</li>
+<li>价格由池中两种代币的比例决定，通常遵循一个确定性算法，如 Uniswap 的 <code>x * y = k</code>。</li>
+</ol>
+</li>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>始终有流动性</strong>：只要池中有资金，交易就可以随时进行，无需等待对手方。</li>
+<li><strong>完全去中心化和无需许可</strong>。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>滑点 (Slippage)</strong>：大额交易会显著影响价格。</li>
+<li><strong>无常损失 (Impermanent Loss)</strong>：对流动性提供者有风险。</li>
+<li><strong>无法挂限价单</strong>：只能以当前市场价（或滑点范围内）进行交易。</li>
+</ul>
+</li>
+<li><strong>代表项目</strong>:
+<ul>
+<li><strong>Uniswap</strong>, <strong>Curve</strong>, <strong>Balancer</strong>。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="4-总结与展望"><a class="header" href="#4-总结与展望">4. 总结与展望</a></h2>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">特性</th><th style="text-align: left">完全链上订单簿</th><th style="text-align: left">链下撮合，链上结算</th><th style="text-align: left">自动做市商 (AMM)</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong>去中心化程度</strong></td><td style="text-align: left">最高</td><td style="text-align: left">中等（依赖 Relayer）</td><td style="text-align: left">高</td></tr>
+<tr><td style="text-align: left"><strong>交易速度</strong></td><td style="text-align: left">慢 (区块时间)</td><td style="text-align: left">快 (链下撮合)</td><td style="text-align: left">中等 (区块时间)</td></tr>
+<tr><td style="text-align: left"><strong>交易成本</strong></td><td style="text-align: left">非常高</td><td style="text-align: left">低（仅结算）</td><td style="text-align: left">中等（单次 Swap）</td></tr>
+<tr><td style="text-align: left"><strong>用户体验</strong></td><td style="text-align: left">差</td><td style="text-align: left">好</td><td style="text-align: left">好</td></tr>
+<tr><td style="text-align: left"><strong>支持订单类型</strong></td><td style="text-align: left">市价单、限价单</td><td style="text-align: left">市价单、限价单</td><td style="text-align: left">仅市价单</td></tr>
+<tr><td style="text-align: left"><strong>抗抢跑性</strong></td><td style="text-align: left">差</td><td style="text-align: left">好</td><td style="text-align: left">中等（有 MEV 风险）</td></tr>
+</tbody></table>
+</div>
+<p><strong>结论：</strong></p>
+<p>在当前的区块链技术（特别是 Layer-1）限制下，<strong>“链下撮合，链上结算”的混合模型</strong> 是实现高性能、低成本订单簿 DEX 的最佳方案，它在用户体验和去中心化之间取得了巧妙的平衡。</p>
+<p>与此同时，<strong>AMM</strong> 以其简洁和完全去中心化的特性，开辟了另一条成功的道路，并成为目前 DeFi 领域交易量最大的模式。</p>
+<p>展望未来，随着 Layer-2 扩容方案（如 ZK-Rollups 和 Optimistic Rollups）的成熟，交易成本将大幅降低，执行速度显著提升。这可能会让<strong>完全链上订单簿</strong>模型重新焕发生机，在高性能的 L2 环境中实现接近中心化交易所的体验，同时保留区块链的去中心化和安全优势。</p>
+<hr />
+<h2 id="5-深入链下撮合链上结算的安全与验证"><a class="header" href="#5-深入链下撮合链上结算的安全与验证">5. 深入：链下撮合、链上结算的安全与验证</a></h2>
+<p>本节补充“链下撮合、链上结算”模式的关键设计点，涵盖签名与域隔离、价格与数量校验、余额与授权检查、部分成交与取消、以及前置/抢跑的缓解手段。</p>
+<h3 id="51-参与方与职责"><a class="header" href="#51-参与方与职责">5.1 参与方与职责</a></h3>
+<ul>
+<li>Maker（发单方）：签名授权愿意成交的代币、价格/数量、有效期、是否允许部分成交等约束。</li>
+<li>Taker（吃单/执行）：选择订单并发起链上结算，或委托撮合引擎代为执行。</li>
+<li>Relayer/撮合引擎：聚合订单与撮合配对，可代付 Gas 并收取撮合费（可选）。</li>
+<li>结算合约：验证签名与约束、检查余额与授权、执行代币交换、记录成交与取消状态。</li>
+</ul>
+<h3 id="52-订单结构与签名eip712"><a class="header" href="#52-订单结构与签名eip712">5.2 订单结构与签名（EIP‑712）</a></h3>
+<ul>
+<li>常见字段：<code>maker</code>、<code>taker（可选）</code>、<code>sellToken</code>、<code>buyToken</code>、<code>sellAmount</code>、<code>minBuyAmount/price</code>、<code>deadline</code>、<code>nonce/salt</code>、<code>receiver</code>、<code>feeRecipient</code>、<code>feeBps/feeAmount</code>、<code>chainId</code>、<code>verifyingContract</code>、<code>partialFill</code> 等。</li>
+<li>签名：使用 EIP‑712 Typed Data。Domain 至少包含 <code>name</code>、<code>version</code>、<code>chainId</code>、<code>verifyingContract</code>，避免跨链/跨合约重放。</li>
+<li>支持合约署名：如机构账户用 ERC‑1271 校验。</li>
+</ul>
+<h3 id="53-结算合约验证流程关键步骤"><a class="header" href="#53-结算合约验证流程关键步骤">5.3 结算合约验证流程（关键步骤）</a></h3>
+<ul>
+<li>域隔离：校验 <code>chainId</code> 与 <code>verifyingContract</code> 是否匹配。</li>
+<li>签名恢复：<code>ecrecover</code>/OpenZeppelin ECDSA 或 ERC‑1271 验证签名者为 <code>maker</code>。</li>
+<li>期限/重放保护：检查 <code>deadline</code>、<code>used[orderHash]</code> 与 <code>filled[orderHash]</code>（允许部分成交时按累计量校验）。</li>
+<li>价格与数量约束：校验 <code>sell/buy</code> 方向相反，成交量满足双方最小接收/价格区间；计算填单量的取整方向需固定，避免被四舍五入套利。</li>
+<li>授权与余额：
+<ul>
+<li>非托管：检查 <code>balanceOf(maker)</code> 与 <code>allowance(maker, settlement)</code> 是否足够。</li>
+<li>可选即刻授权：支持 EIP‑2612/Permit2，先 <code>permit</code> 再结算，减少“授权被用户修改导致失败”。</li>
+</ul>
+</li>
+<li>代币转账：使用 <code>SafeERC20</code> 做 <code>transferFrom</code>，考虑非标准返回值与税/通缩代币；费用按约定结算给 <code>feeRecipient</code>。</li>
+<li>状态更新与事件：更新 <code>filled/used</code>，<code>emit</code> 成交事件，便于索引与审计。</li>
+</ul>
+<h3 id="54-防止用户在执行前转走资产"><a class="header" href="#54-防止用户在执行前转走资产">5.4 防止用户在执行前转走资产</a></h3>
+<ul>
+<li>无法从协议层“禁止”用户转资；常见策略是：
+<ul>
+<li>即刻授权（Permit/Permit2）减少失败概率；</li>
+<li>上链前仿真（eth_call/Tenderly）检查余额与可行性；</li>
+<li>指定 <code>taker</code> + 短 <code>deadline</code>，缩短状态变化窗口；</li>
+<li>托管/预存模式（在合约/二层账户中持有余额），以可用余额为准保障执行确定性。</li>
+</ul>
+</li>
+</ul>
+<h3 id="55-取消与部分成交"><a class="header" href="#55-取消与部分成交">5.5 取消与部分成交</a></h3>
+<ul>
+<li>取消：提供 <code>cancel(orderHash)</code> 或 <code>cancelUpTo(nonceFloor)</code>，也可签名“取消指令”由第三方代上链。</li>
+<li>部分成交：<code>filled[orderHash]</code> 记录累计成交量，完全成交或取消后标记 <code>used = true</code>，禁止再次使用。</li>
+</ul>
+<h3 id="56-防前置抢跑mev"><a class="header" href="#56-防前置抢跑mev">5.6 防前置/抢跑（MEV）</a></h3>
+<ul>
+<li>绑定 <code>taker/执行者</code> 限定可执行主体；</li>
+<li>使用私有内存池/保护中继（如 Flashbots）；</li>
+<li>短有效期与撮合域隔离；必要时加密订单、仅对特定执行者可见。</li>
+</ul>
+<h3 id="57-费用与结算"><a class="header" href="#57-费用与结算">5.7 费用与结算</a></h3>
+<ul>
+<li>在订单中明确 <code>feeRecipient</code> 与 <code>feeBps/feeAmount</code>；</li>
+<li>费用币种可为买/卖任一侧或独立 <code>feeToken</code>；</li>
+<li>对税/通缩代币，按“实际到帐量”设计约束，或直接在白名单外禁用。</li>
+</ul>
+<h3 id="58-时序图含签名校验授权检查部分成交与取消"><a class="header" href="#58-时序图含签名校验授权检查部分成交与取消">5.8 时序图（含签名校验、授权检查、部分成交与取消）</a></h3>
+<pre class="mermaid">sequenceDiagram
+    participant MK as &quot;Maker（发单）&quot;
+    participant TK as &quot;Taker（执行）&quot;
+    participant R as &quot;撮合引擎（可选）&quot;
+    participant SC as &quot;结算合约&quot;
+
+    MK-&gt;&gt;R: 提交签名订单（EIP‑712）
+    R--&gt;&gt;TK: 返回可撮合订单
+    TK-&gt;&gt;SC: settle(order, sig, fill, params)
+
+    SC-&gt;&gt;SC: 1) 域隔离校验（chainId、verifyingContract）
+    SC-&gt;&gt;SC: 2) 恢复签名人 / ERC‑1271 校验
+    alt 已取消/过期/重复使用
+        SC--&gt;&gt;TK: revert(&quot;invalid order&quot;)
+    end
+    SC-&gt;&gt;SC: 3) 价格/最小接收等约束校验
+    SC-&gt;&gt;SC: 4) 计算成交量（支持部分成交）
+    opt 附带 Permit/Permit2
+        TK-&gt;&gt;SC: 提交 permit 数据
+        SC-&gt;&gt;SC: 调用 permit 设置授权
+    end
+    SC-&gt;&gt;SC: 5) 检查 maker 余额与授权
+    alt 余额/授权不足
+        SC--&gt;&gt;TK: revert(&quot;insufficient balance/allowance&quot;)
+    end
+    SC-&gt;&gt;SC: 6) 代币交换（SafeERC20.transferFrom）
+    SC-&gt;&gt;SC: 7) 更新 filled/used 并记录费用
+    SC--&gt;&gt;TK: emit Fill(orderHash, maker, taker, amounts)
+</pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="uniswap-1"><a class="header" href="#uniswap-1">Uniswap</a></h1>
 <p><a href="https://docs.uniswap.org/contracts/v4/overview">开发文档</a></p>
 <h2 id="概述-1"><a class="header" href="#概述-1">概述</a></h2>
@@ -5241,6 +5741,7 @@ $$</p>
 [5] Abraham Othman. 2012. Automated Market Making: Theory and Practice. Ph.D. Dissertation. Carnegie Mellon University.</p>
 <h1 id="disclaimer"><a class="header" href="#disclaimer">DISCLAIMER</a></h1>
 <p>This paper is for general information purposes only. It does not constitute investment advice or a recommendation or solicitation to buy or sell any investment and should not be used in the evaluation of the merits of making any investment decision. It should not be relied upon for accounting, legal or tax advice or investment recommendations. This paper reflects current opinions of the authors and is not made on behalf of Uniswap Labs, Paradigm, or their affiliates and does not necessarily reflect the opinions of Uniswap Labs, Paradigm, their affiliates or individuals associated with them. The opinions reflected herein are subject to change without being updated.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="以太坊进阶"><a class="header" href="#以太坊进阶">以太坊进阶</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solidity-合约安全问题解析"><a class="header" href="#solidity-合约安全问题解析">Solidity 合约安全问题解析</a></h1>
 <h2 id="引言-1"><a class="header" href="#引言-1">引言</a></h2>
 <p>智能合约安全是区块链开发中最关键的考虑因素之一。由于智能合约一旦部署就无法修改，且通常管理着大量资产，任何安全漏洞都可能导致严重的资金损失。</p>
@@ -6488,6 +6989,7 @@ function executeProposal(bytes32 id) public {
 <li><strong>合规性:</strong> 企业可以在不泄露商业机密的情况下向监管机构证明其符合特定的法规要求。</li>
 <li><strong>投票系统:</strong> 可以构建既能保证投票隐私又能验证投票有效性的电子投票系统。</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="solidity"><a class="header" href="#solidity">Solidity</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="erc常用实战"><a class="header" href="#erc常用实战">ERC常用实战</a></h1>
 <p>ERC20</p>
 <p>ERC721</p>
@@ -7138,6 +7640,7 @@ function bulkNotify(uint256 start, uint256 end) external {
 <li>能不用循环就不用</li>
 <li>必须用循环时：减少存储访问 + 限制最大迭代次数 + 使用 unchecked</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="热门项目源码分析"><a class="header" href="#热门项目源码分析">热门项目源码分析</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="bnb-源码分析"><a class="header" href="#bnb-源码分析">BNB 源码分析</a></h1>
 <p><a href="BlockChain/Ethereum/Solidity/SourceCodeAnalysis/BNB/./WBNB/WBNB.html">WBNB</a></p>
 <ul>
@@ -10818,6 +11321,8 @@ contract FiatTokenV2_2 is FiatTokenV2_1 {
 }
 
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hardhat-1"><a class="header" href="#hardhat-1">Hardhat</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="hardhat-ignition"><a class="header" href="#hardhat-ignition">Hardhat-ignition</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><p>ignition再次部署合约报错</p>
 <p><strong><u>重新部署合约时，由于ignition有记录部署过本合约而拒绝重新部署</u></strong></p>
 <pre><code>[ Transaction ] reconciliation failed ⛔
@@ -10878,6 +11383,7 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 <h2 id="入门指南书"><a class="header" href="#入门指南书">入门指南书</a></h2>
 <p><a href="https://book.getfoundry.sh/">官网导航</a></p>
 <p><a href="https://learnblockchain.cn/docs/foundry/i18n/zh/">中文版-登链社区</a></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="基础学习"><a class="header" href="#基础学习">基础学习</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="forge-clone"><a class="header" href="#forge-clone">forge clone</a></h1>
 <p>forge clone 命令可用于克隆已经验证的合约，并以 forge 自己的文件管理方式创建项目
 默认情况下将从 ETH 主网的 etherscan 上获取数据</p>
@@ -10926,10 +11432,11 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="solana"><a class="header" href="#solana">Solana</a></h1>
 <p>本篇基础学习章节大部分为个人翻译，由于带有主观理解因素，可能会对读者的学习过程带来一定的影响。建议对照官网阅读学习</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="基础学习-1"><a class="header" href="#基础学习-1">基础学习</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="账户模型"><a class="header" href="#账户模型">账户模型</a></h1>
 <p><a href="https://solana.com/nl/docs/core/accounts">官方链接</a></p>
 <p><img src="BlockChain/Solana/Basic/accountmodel/image.png" alt="alt text" /></p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>pub struct Account{
     pub lamports:u64,
@@ -10953,7 +11460,7 @@ Consider modifying your module to remove the inconsistencies with deployed futur
   </tr>
   <tr>
     <td>data</td>
-    <td>Vec<u8></td>
+    <td>Vec&lt;u8&gt;</td>
     <td>存储账户的实际数据内容。对于普通账户，可以存储任意应用数据；对于程序账户，存储智能合约的二进制代码。</td>
   </tr>
   <tr>
@@ -10993,7 +11500,7 @@ Consider modifying your module to remove the inconsistencies with deployed futur
 </blockquote>
 <h3 id="示例"><a class="header" href="#示例">示例</a></h3>
 <p>假设你有一个 Solana 账户，其 <code>Account</code> 结构体实例可能如下所示：</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let account = Account {
     lamports: 1_000_000_000, // 1 SOL
@@ -11114,7 +11621,7 @@ std-doc :<a href="https://doc.rust-lang.org/std/">std-doc</a></p>
 <ul>
 <li>不可变变量：指值在操作过程中不可修改，可理解为C、C++语言中 此变量声明后作为一个指针，指针指向的内存地址数据为只读</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn main(){
+<pre><pre class="playground"><code class="language-rust edition2018">fn main(){
     let var1 = 1; //声明并绑定不可变变量
     println!("{}",var1);
     let var1 = 2;//不可变变量重绑定
@@ -11123,7 +11630,7 @@ std-doc :<a href="https://doc.rust-lang.org/std/">std-doc</a></p>
     
 }</code></pre></pre>
 <h3 id="错误示例"><a class="header" href="#错误示例">错误示例</a></h3>
-<pre><pre class="playground"><code class="language-rust">fn main(){
+<pre><pre class="playground"><code class="language-rust edition2018">fn main(){
   let var1 = 1; //声明并绑定不可变变量
   println!("{}",var1);
   var1 = 3; //此代码将报错，将变量赋值给不可变变量
@@ -11134,7 +11641,7 @@ std-doc :<a href="https://doc.rust-lang.org/std/">std-doc</a></p>
 <li>可变变量：指值在操作过程中可以修改，可以理解为指针指向的数据可以修改！由于rust变量类型限制，仅能赋值同类型变量。</li>
 <li>关键字 <code>mut</code> 用于声明变量可变，不可变则无此声明</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">fn main(){
+<pre><pre class="playground"><code class="language-rust edition2018">fn main(){
     let mut var2 = 1;//声明并绑定可变变量
     println!("{}",var2);
     var2 = 2; //此代码正确，可变变量可赋值
@@ -11162,7 +11669,7 @@ std-doc :<a href="https://doc.rust-lang.org/std/">std-doc</a></p>
 <ul>
 <li><strong>默认类型</strong>：未标注时，整数字面量默认推断为 <code>i32</code>。</li>
 <li><strong>进制表示</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let decimal = 98_222;      // 十进制：98222
 let hex = 0xff;            // 十六进制：255
@@ -11189,7 +11696,7 @@ let byte = b'A';           // u8 类型字节：65
 <ul>
 <li><strong>默认类型</strong>：未标注时，浮点字面量默认推断为 <code>f64</code>（因现代 CPU 高效支持）。</li>
 <li><strong>数值运算</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 5.0 + 10.0;     // f64
 let difference = 95.5 - 4.3;
@@ -11199,7 +11706,7 @@ let remainder = 43.0 % 5.0;
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li><strong>陷阱</strong>：浮点数存在精度误差，<strong>避免直接判等</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// ❌ 错误写法
 assert!(0.1 + 0.2 == 0.3);
@@ -11217,7 +11724,7 @@ assert!((0.1 + 0.2 - 0.3).abs() &lt; tolerance);
 <li><strong>值域</strong>：<code>true</code> 或 <code>false</code></li>
 <li><strong>内存占用</strong>：1 字节</li>
 <li><strong>使用场景</strong>：条件判断、逻辑运算
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let is_rust_cool = true;
 let is_heavy: bool = 10 &gt; 5;  // 自动推断为 true
@@ -11231,7 +11738,7 @@ let is_heavy: bool = 10 &gt; 5;  // 自动推断为 true
 <li><strong>内存占用</strong>：4 字节（存储 Unicode 标量值）</li>
 <li><strong>值域</strong>：U+0000 ~ U+D7FF 和 U+E000 ~ U+10FFFF</li>
 <li><strong>表示方式</strong>：单引号，支持 Unicode 转义：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let c = 'z';
 let emoji = '🚀';            // 直接输入 Unicode
@@ -11246,7 +11753,7 @@ let heart = '\u{2764}';     // Unicode 转义：❤
 <li><strong>定义</strong>：固定长度、可包含不同类型的集合。</li>
 <li><strong>内存布局</strong>：元素紧密排列，无额外开销。</li>
 <li><strong>示例</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let tup: (i32, f64, bool) = (500, 6.4, true);  // 显式类型标注
 let (x, y, z) = tup;                            // 解构赋值
@@ -11261,7 +11768,7 @@ let first = tup.0;                              // 索引访问
 <li><strong>定义</strong>：固定长度、相同类型的集合，栈上分配。</li>
 <li><strong>适用场景</strong>：已知元素数量的数据集（如月份名称）。</li>
 <li><strong>示例</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let months = ["Jan", "Feb", "Mar"];         // 类型推断为 [&amp;str; 3]
 let arr: [i32; 5] = [1, 2, 3, 4, 5];       // 显式标注
@@ -11274,7 +11781,7 @@ let first = arr[0];                         // 索引访问（编译时检查越
 <hr />
 <h2 id="三类型转换与处理"><a class="header" href="#三类型转换与处理">三、类型转换与处理</a></h2>
 <h2 id="1-显式类型转换as"><a class="header" href="#1-显式类型转换as">1. 显式类型转换（<code>as</code>）</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = 1000i32;
 let y = x as u64;     // 安全转换
@@ -11282,14 +11789,14 @@ let z = x as u8;      // 可能丢失数据（1000 → 232）
 <span class="boring">}</span></code></pre></pre>
 <h2 id="2-处理不同类型运算"><a class="header" href="#2-处理不同类型运算">2. 处理不同类型运算</a></h2>
 <p>需手动统一类型：</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 10i32;
 let b = 100u32;
 let sum = a as i64 + b as i64;  // 统一为 i64 避免溢出
 <span class="boring">}</span></code></pre></pre>
 <h2 id="3-类型推断与标注"><a class="header" href="#3-类型推断与标注">3. 类型推断与标注</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = 42;          // 默认推断为 i32
 let y: u8 = 10;      // 显式标注为 u8
@@ -11316,7 +11823,7 @@ let z = x + y as i32; // ✅ 正确
 </ul>
 <hr />
 <h2 id="五代码示例"><a class="header" href="#五代码示例">五、代码示例</a></h2>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2018">fn main() {
     // 整数操作
     let decimal = 98_222;             // i32
     let hex = 0xff;                   // i32
@@ -11341,7 +11848,7 @@ let z = x + y as i32; // ✅ 正确
     let first_element = arr[0];
 }</code></pre></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="通过特征变量和特征实现不同结构体实现相同效果"><a class="header" href="#通过特征变量和特征实现不同结构体实现相同效果">通过特征变量和特征实现不同结构体实现相同效果</a></h1>
-<pre><pre class="playground"><code class="language-rust">use std::fmt::format;
+<pre><pre class="playground"><code class="language-rust edition2018">use std::fmt::format;
 
 #[derive(Debug)]
 pub struct Teacher {
@@ -11424,7 +11931,7 @@ fn main() {
 <ul>
 <li>不同类型的史莱姆实现</li>
 </ul>
-<pre><pre class="playground"><code class="language-rust">struct Slime&lt;T&gt; {
+<pre><pre class="playground"><code class="language-rust edition2018">struct Slime&lt;T&gt; {
     size: T,
     weight: T,
 }
@@ -11449,6 +11956,7 @@ fn main() {
     b.yell();
 }
 </code></pre></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="高级特性"><a class="header" href="#高级特性">高级特性</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="闭包"><a class="header" href="#闭包">闭包</a></h1>
 <ul>
 <li>
@@ -11460,7 +11968,7 @@ fn main() {
 </ul>
 <p>以下展示闭包的基本用法</p>
 <h3 id="正确用法"><a class="header" href="#正确用法">正确用法</a></h3>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2018">fn main() {
     let x = |a,b|-&gt;i32{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
     println!("{:?}",x(1,2));
 }</code></pre></pre>
@@ -11468,7 +11976,7 @@ fn main() {
 <li>当 rust 函数中第一次调用闭包时，此闭包的的参数类型会被确定下来。(当然，配合特征变量可以实现对符合特征的变量做统一操作)</li>
 </ul>
 <h3 id="错误用法"><a class="header" href="#错误用法">错误用法</a></h3>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2018">fn main() {
     let x = |a,b|{return a+b}; //定义闭包，传入参数a,b，返回a+b的值
     println!("{}",x(1,2));
     println!("{}",x(1.0,2.0));//此处报错
@@ -11481,13 +11989,13 @@ fn main() {
 闭包能捕获的范围是当前闭包声明函数出现之前的变量</li>
 </ul>
 <h3 id="正确示范"><a class="header" href="#正确示范">正确示范</a></h3>
-<pre><pre class="playground"><code class="language-rust">fn main(){
+<pre><pre class="playground"><code class="language-rust edition2018">fn main(){
     let outside = 1;
     let x =|a|{println!("{}",outside+a)};
     x(1);
 }</code></pre></pre>
 <h3 id="错误示范"><a class="header" href="#错误示范">错误示范</a></h3>
-<pre><pre class="playground"><code class="language-rust">fn main(){
+<pre><pre class="playground"><code class="language-rust edition2018">fn main(){
     //这里改变声明顺序，然后报错
     let x =|a|{println!("{}",outside+a)};
     let outside = 1;
@@ -11710,6 +12218,15 @@ TCP/IP更简洁实用，但OSI更适合理论分析。</li>
 <li><strong>演进</strong>：IPv4（32位地址）向IPv6（128位地址）过渡，截至2025年3月，IPv6普及率已超50%（根据APNIC数据推测）。</li>
 <li><strong>现状</strong>：支持5G、IoT、云计算等技术，HTTP/3（基于UDP的QUIC）成为2025年应用层新趋势。</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="网页基础"><a class="header" href="#网页基础">网页基础</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="html"><a class="header" href="#html">HTML</a></h1>
+<p>Placeholder page for HTML notes. Content to be added.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="css3"><a class="header" href="#css3">CSS3</a></h1>
+<p>Placeholder page for CSS3 notes. Content to be added.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="javascript"><a class="header" href="#javascript">JavaScript</a></h1>
+<p>Placeholder page for JavaScript notes. Content to be added.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="react"><a class="header" href="#react">React</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="typescript"><a class="header" href="#typescript">TypeScript</a></h1>
 
                     </main>
 
@@ -11761,6 +12278,8 @@ TCP/IP更简洁实用，但OSI更适合理论分析。</li>
         <script src="book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
 
         <script>
         window.addEventListener('load', function() {
@@ -11769,6 +12288,7 @@ TCP/IP更简洁实用，但OSI更适合理论分析。</li>
             });
         });
         </script>
+
 
     </div>
     </body>

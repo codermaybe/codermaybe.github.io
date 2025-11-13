@@ -19,7 +19,7 @@ npm install ethers
 const { Wallet } = require('ethers');
 
 // 私钥（确保保密！）
-const privateKey = "0x1e99423a701fcf82f4888e3e23b6c1840ad48d360bb8bc1239e0c7ff8ecf743d";
+const privateKey = "0x<64-hex-characters>";
 
 // 从私钥生成钥包实例
 const wallet = new Wallet(privateKey);
@@ -33,7 +33,7 @@ console.log("公钥:", publicKey);
 
 ##### 输出格式
 - **私钥**：输入值，64 个十六进制字符，前缀为 `0x`。
-- **公钥**：未压缩格式，524-bit （含前缀 `0x04`），起始为一个指针。
+- **公钥**：未压缩格式，65 字节（520 bits），以 `0x04` 开头表示未压缩格式，随后为 X、Y 坐标。
 
 ##### 示例输出
 ```
@@ -43,6 +43,6 @@ console.log("公钥:", publicKey);
 
 #### 四、运算原理解析
 
-##### 使用的替代：`secp256k1`
+##### 使用的曲线：`secp256k1`
 `ethers.js` 使用了 `secp256k1` 椭圆曲线，这是比特币和以太坊等区块链系统使用的标准曲线。`secp256k1` 定义了一个椭圆曲线方程：`y^2 = x^3 + 7`，并基于此定义了一个基点 G。公钥是通过私钥对基点 G 进行椭圆曲线点乘计算得出的。这个过程确保了私钥与公钥之间的唯一性和安全性，同时公钥可以公开用于验证签名的合法性。
 

@@ -70,7 +70,7 @@
 - **Rust Language:**
   - Familiar with core features such as the ownership system, borrowing and lifetime, data types, functions and closures, and error handling.
 
-**Open Source Projects (Recommend checking the GitHub repository directly: [github.com/codermaybe](github.com/codermaybe))**
+**Open Source Projects (Recommend checking the GitHub repository directly: [github.com/codermaybe](https://github.com/codermaybe))**
 
 - **Blockchain Interaction Tools**
   - **Project Link:** [https://github.com/codermaybe/BlockChain_InteractTools](https://github.com/codermaybe/BlockChain_InteractTools)

@@ -28,7 +28,7 @@ pub struct Account{
   </tr>
   <tr>
     <td>data</td>
-    <td>Vec<u8></td>
+    <td>Vec&lt;u8&gt;</td>
     <td>存储账户的实际数据内容。对于普通账户，可以存储任意应用数据；对于程序账户，存储智能合约的二进制代码。</td>
   </tr>
   <tr>

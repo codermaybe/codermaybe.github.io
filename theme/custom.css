@@ -1,0 +1,2 @@
+/* Hide the per-page headings block in sidebar */
+.on-this-page { display: none !important; }

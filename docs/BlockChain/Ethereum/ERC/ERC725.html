@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html lang="en" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>ERC-725 - Xu&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="This blog record my learning progress">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="erc-725-区块链身份标准"><a class="header" href="#erc-725-区块链身份标准">ERC-725: 区块链身份标准</a></h1>
+<h2 id="摘要"><a class="header" href="#摘要">摘要</a></h2>
+<p>ERC-725 是一个为基于区块链的身份（或任何事物）建立的通用、可扩展的标准。它允许智能合约拥有一个去中心化的身份，并通过一个统一的接口来管理与之关联的数据和权限。这个标准主要分为两部分：ERC-725X (执行) 和 ERC-725Y (数据)。</p>
+<hr />
+<h2 id="1-背景为什么需要链上身份"><a class="header" href="#1-背景为什么需要链上身份">1. 背景：为什么需要链上身份？</a></h2>
+<p>在以太坊上，EOA（外部拥有账户）和合约账户本身不包含任何元数据。一个地址 <code>0x...</code> 无法告诉我们它代表的是一个人、一个组织、一台设备还是一个 DApp。为了解决这个问题，我们需要一个标准化的方式来为账户附加信息和管理权限，这就是 ERC-725 的目标。</p>
+<p>ERC-725 旨在为任何地址（无论是合约还是未来的账户抽象钱包）创建一个可编程的、自我主权的身份。</p>
+<hr />
+<h2 id="2-核心概念"><a class="header" href="#2-核心概念">2. 核心概念</a></h2>
+<p>ERC-725 身份由两个核心部分组成，它们通常在同一个智能合约中实现。</p>
+<h3 id="erc-725y-通用键值数据存储"><a class="header" href="#erc-725y-通用键值数据存储">ERC-725Y: 通用键值数据存储</a></h3>
+<p>ERC-725Y 提出了一种使用键值对来存储身份数据的标准。这使得身份信息变得非常灵活和可扩展。</p>
+<ul>
+<li><strong>数据键 (Data Key)</strong>：是一个 <code>bytes32</code> 值，用于标识一段特定的数据。为了避免冲突并实现互操作性，社区定义了一个通用标准 <strong>LSP2 (LUKSO Standard Proposal 2)</strong> 来规范如何生成这些键。例如，一个名为 <code>UserProfile</code> 的 JSON 对象的键可以被标准化地哈希为一个 <code>bytes32</code> 值。</li>
+<li><strong>数据值 (Data Value)</strong>：是与键关联的 <code>bytes</code> 数据。它可以是任何信息，例如个人资料、认证声明、其他资产的地址等。</li>
+</ul>
+<p>通过 <code>getData(bytes32 key)</code> 和 <code>setData(bytes32 key, bytes value)</code> 这两个核心函数，任何外部应用都可以以标准化的方式读取或写入（如果权限允许）一个身份的数据。</p>
+<p><strong>示例：</strong>
+一个用户的身份合约可以存储以下信息：</p>
+<ul>
+<li><code>keccak256("LSP3Profile")</code> -&gt; <code>0x...</code> (指向一个包含个人资料 JSON 文件的 IPFS CID)</li>
+<li><code>keccak256("LSP5ReceivedAssets[]")</code> -&gt; <code>[0x..., 0x...]</code> (该身份拥有的资产列表)</li>
+</ul>
+<h3 id="erc-725x-通用执行"><a class="header" href="#erc-725x-通用执行">ERC-725X: 通用执行</a></h3>
+<p>ERC-725X 允许身份的所有者或授权的密钥，通过该身份合约执行任意操作。</p>
+<ul>
+<li><strong><code>execute(uint256 operationType, address target, uint256 value, bytes calldata)</code></strong>：这是 ERC-725X 的核心函数。它允许身份合约与其他智能合约进行交互。
+<ul>
+<li><code>operationType</code>: 定义了操作类型，如 <code>CALL</code>, <code>CREATE</code>, <code>STATICCALL</code> 等。</li>
+<li><code>target</code>: 目标合约地址。</li>
+<li><code>value</code>: 发送的 ETH 数量。</li>
+<li><code>calldata</code>: 要执行的函数调用数据。</li>
+</ul>
+</li>
+</ul>
+<p>这种设计将 <strong>“谁可以执行”</strong> (权限管理) 和 <strong>“可以执行什么”</strong> (具体操作) 分离开来。身份合约的所有者可以授予不同的密钥不同的权限，例如：</p>
+<ul>
+<li>一个密钥只能用于在社交媒体 DApp 上发帖 (<code>execute</code> 调用该 DApp 的 <code>post</code> 函数)。</li>
+<li>另一个密钥可以转移资产 (<code>execute</code> 调用 ERC20 的 <code>transfer</code> 函数)。</li>
+<li>主密钥拥有管理其他密钥的最高权限。</li>
+</ul>
+<hr />
+<h2 id="3-权限管理与密钥"><a class="header" href="#3-权限管理与密钥">3. 权限管理与密钥</a></h2>
+<p>ERC-725 的强大之处在于其灵活的权限管理系统。身份的所有权不是由单个私钥（像 EOA 那样）控制，而是由一组具有不同权限的密钥来管理。</p>
+<ul>
+<li><strong>密钥 (Key)</strong>：可以是 EOA 地址或另一个合约地址。</li>
+<li><strong>目的 (Purpose)</strong>：每个密钥都被分配一个或多个“目的”，定义了它能做什么。例如：
+<ul>
+<li><code>PURPOSE_MANAGEMENT</code>: 管理密钥和权限。</li>
+<li><code>PURPOSE_EXECUTION</code>: 执行交易。</li>
+<li><code>PURPOSE_ENCRYPTION</code>: 用于加密数据。</li>
+</ul>
+</li>
+<li><strong>方案 (Scheme)</strong>：定义了签名的类型，例如 <code>ECDSA</code> (用于 EOA) 或 <code>EIP1271</code> (用于合约签名)。</li>
+</ul>
+<p>这种模型被称为 <strong>“元交易 (Meta-Transactions)”</strong> 的一种实现，因为交易的验证逻辑（签名和权限检查）是在合约内部处理的，而不是由以太坊协议本身处理。</p>
+<hr />
+<h2 id="4-用例"><a class="header" href="#4-用例">4. 用例</a></h2>
+<p>ERC-725 的应用场景非常广泛：</p>
+<ol>
+<li><strong>自我主权身份 (Self-Sovereign Identity, SSI)</strong>：用户可以完全控制自己的数字身份，管理个人数据，并有选择地向 DApp 授予访问权限，而无需依赖中心化服务商。</li>
+<li><strong>通用 DApp 配置文件</strong>：用户可以在其 ERC-725 身份上存储一次个人资料（如用户名、头像），所有集成了该标准的 DApp 都可以读取这份资料，无需重复创建。</li>
+<li><strong>设备与物联网 (IoT)</strong>：为物联网设备创建一个链上身份，使其能够自主地进行交易、注册或与其他设备交互。</li>
+<li><strong>组织与 DAO</strong>：为去中心化自治组织 (DAO) 创建一个身份，管理其成员、投票权和资产。</li>
+</ol>
+<hr />
+<h2 id="结论"><a class="header" href="#结论">结论</a></h2>
+<p>ERC-725 是构建去中心化社会 (DeSoc) 和 Web3 的一个基础构件。它通过提供一个标准化的、可扩展的身份层，将以太坊从一个纯粹的金融交易网络，转变为一个能够承载复杂社会和经济活动的平台。随着账户抽象 (ERC-4337) 的普及，基于 ERC-725 的智能合约钱包有望成为未来用户进入 Web3 的主要入口。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC777.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../BlockChain/Ethereum/ERC/ERC721.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/ERC/ERC777.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../mermaid.min.js"></script>
+        <script src="../../../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

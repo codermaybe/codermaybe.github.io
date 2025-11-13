@@ -1,2 +1,4 @@
 mdbook.exe
 TODO.md
+.env
+book/

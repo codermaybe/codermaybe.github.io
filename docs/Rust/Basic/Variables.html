@@ -3,12 +3,12 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>变量类型</title>
+        <title>变量类型 - Xu&#x27;s Blog</title>
 
 
         <!-- Custom HTML head -->
 
-        <meta name="description" content="">
+        <meta name="description" content="This blog record my learning progress">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
@@ -29,6 +29,7 @@
         <link rel="stylesheet" id="ayu-highlight-css" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/custom.css">
 
         <!-- MathJax -->
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -38,11 +39,23 @@
             const path_to_root = "../../";
             const default_light_theme = "rust";
             const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../searchindex.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../../toc.js"></script>
     </head>
     <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
     <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
@@ -83,10 +96,13 @@
                 sidebar = sidebar || 'visible';
             } else {
                 sidebar = 'hidden';
+                sidebar_toggle.checked = false;
             }
-            sidebar_toggle.checked = sidebar === 'visible';
-            html.classList.remove('sidebar-visible');
-            html.classList.add("sidebar-" + sidebar);
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -120,12 +136,12 @@
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
-                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
                         </button>
                     </div>
 
-                    <h1 class="menu-title"></h1>
+                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
 
                     <div class="right-buttons">
                         <a href="../../print.html" title="Print this book" aria-label="Print this book">
@@ -140,7 +156,12 @@
 
                 <div id="search-wrapper" class="hidden">
                     <form id="searchbar-outer" class="searchbar-outer">
-                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
                     </form>
                     <div id="searchresults-outer" class="searchresults-outer hidden">
                         <div id="searchresults-header" class="searchresults-header"></div>
@@ -182,7 +203,7 @@
 <ul>
 <li><strong>默认类型</strong>：未标注时，整数字面量默认推断为 <code>i32</code>。</li>
 <li><strong>进制表示</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let decimal = 98_222;      // 十进制：98222
 let hex = 0xff;            // 十六进制：255
@@ -209,7 +230,7 @@ let byte = b'A';           // u8 类型字节：65
 <ul>
 <li><strong>默认类型</strong>：未标注时，浮点字面量默认推断为 <code>f64</code>（因现代 CPU 高效支持）。</li>
 <li><strong>数值运算</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let sum = 5.0 + 10.0;     // f64
 let difference = 95.5 - 4.3;
@@ -219,7 +240,7 @@ let remainder = 43.0 % 5.0;
 <span class="boring">}</span></code></pre></pre>
 </li>
 <li><strong>陷阱</strong>：浮点数存在精度误差，<strong>避免直接判等</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// ❌ 错误写法
 assert!(0.1 + 0.2 == 0.3);
@@ -237,7 +258,7 @@ assert!((0.1 + 0.2 - 0.3).abs() &lt; tolerance);
 <li><strong>值域</strong>：<code>true</code> 或 <code>false</code></li>
 <li><strong>内存占用</strong>：1 字节</li>
 <li><strong>使用场景</strong>：条件判断、逻辑运算
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let is_rust_cool = true;
 let is_heavy: bool = 10 &gt; 5;  // 自动推断为 true
@@ -251,7 +272,7 @@ let is_heavy: bool = 10 &gt; 5;  // 自动推断为 true
 <li><strong>内存占用</strong>：4 字节（存储 Unicode 标量值）</li>
 <li><strong>值域</strong>：U+0000 ~ U+D7FF 和 U+E000 ~ U+10FFFF</li>
 <li><strong>表示方式</strong>：单引号，支持 Unicode 转义：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let c = 'z';
 let emoji = '🚀';            // 直接输入 Unicode
@@ -266,7 +287,7 @@ let heart = '\u{2764}';     // Unicode 转义：❤
 <li><strong>定义</strong>：固定长度、可包含不同类型的集合。</li>
 <li><strong>内存布局</strong>：元素紧密排列，无额外开销。</li>
 <li><strong>示例</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let tup: (i32, f64, bool) = (500, 6.4, true);  // 显式类型标注
 let (x, y, z) = tup;                            // 解构赋值
@@ -281,7 +302,7 @@ let first = tup.0;                              // 索引访问
 <li><strong>定义</strong>：固定长度、相同类型的集合，栈上分配。</li>
 <li><strong>适用场景</strong>：已知元素数量的数据集（如月份名称）。</li>
 <li><strong>示例</strong>：
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let months = ["Jan", "Feb", "Mar"];         // 类型推断为 [&amp;str; 3]
 let arr: [i32; 5] = [1, 2, 3, 4, 5];       // 显式标注
@@ -294,7 +315,7 @@ let first = arr[0];                         // 索引访问（编译时检查越
 <hr />
 <h2 id="三类型转换与处理"><a class="header" href="#三类型转换与处理">三、类型转换与处理</a></h2>
 <h2 id="1-显式类型转换as"><a class="header" href="#1-显式类型转换as">1. 显式类型转换（<code>as</code>）</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = 1000i32;
 let y = x as u64;     // 安全转换
@@ -302,14 +323,14 @@ let z = x as u8;      // 可能丢失数据（1000 → 232）
 <span class="boring">}</span></code></pre></pre>
 <h2 id="2-处理不同类型运算"><a class="header" href="#2-处理不同类型运算">2. 处理不同类型运算</a></h2>
 <p>需手动统一类型：</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let a = 10i32;
 let b = 100u32;
 let sum = a as i64 + b as i64;  // 统一为 i64 避免溢出
 <span class="boring">}</span></code></pre></pre>
 <h2 id="3-类型推断与标注"><a class="header" href="#3-类型推断与标注">3. 类型推断与标注</a></h2>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust edition2018"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let x = 42;          // 默认推断为 i32
 let y: u8 = 10;      // 显式标注为 u8
@@ -336,7 +357,7 @@ let z = x + y as i32; // ✅ 正确
 </ul>
 <hr />
 <h2 id="五代码示例"><a class="header" href="#五代码示例">五、代码示例</a></h2>
-<pre><pre class="playground"><code class="language-rust">fn main() {
+<pre><pre class="playground"><code class="language-rust edition2018">fn main() {
     // 整数操作
     let decimal = 98_222;             // i32
     let hex = 0xff;                   // i32
@@ -423,6 +444,9 @@ let z = x + y as i32; // ✅ 正确
         <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
+        <script src="../../mermaid.min.js"></script>
+        <script src="../../mermaid-init.js"></script>
+
 
 
     </div>

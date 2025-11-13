@@ -21,7 +21,7 @@
 ## 娱乐影视
 [硬核指南](https://yinghezhinan.com/)
 
-[低端影视](https://ddys.pro/) 
+[~~低端影视-2025.11月宣布停运-可惜~~](https://ddys.pro/) 
 
 [奈菲影视](https://www.nfyingshi.com/) 
 

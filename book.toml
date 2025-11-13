@@ -1,7 +1,6 @@
 [book]
 authors = ["codermaybe"]
 language = "en"
-multilingual = false
 src = "src"
 title = "Xu's Blog"
 description = "This blog record my learning progress"
@@ -9,19 +8,22 @@ description = "This blog record my learning progress"
 [output.html]
 default-theme = "Rust"
 git-repository-url = "https://github.com/codermaybe"
-git-repository-icon = "fa-github"
-destination = "docs"
 mathjax-support = true
+additional-css = ["theme/custom.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
 
 [output.html.search]
 limit-results = 8
 
 [output.html.fold]
-enable = true    # whether or not to enable section folding
-level = 1         # the depth to start folding
+enable = true # whether or not to enable section folding
+level = 1     # the depth to start folding
 
 [rust]
 edition = "2018"
 
 [build]
-build-dir = "book"
+build-dir = "docs"
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

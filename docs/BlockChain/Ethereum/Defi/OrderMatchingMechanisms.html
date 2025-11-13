@@ -1,0 +1,520 @@
+<!DOCTYPE HTML>
+<html lang="en" class="rust sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>订单撮合机制 - Xu&#x27;s Blog</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="This blog record my learning progress">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="../../../highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../theme/custom.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../../../";
+            const default_light_theme = "rust";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../../../searchindex.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../../../toc.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('rust')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../../../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Xu&#x27;s Blog</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/codermaybe" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="web3-交易所核心订单撮合机制深度解析"><a class="header" href="#web3-交易所核心订单撮合机制深度解析">Web3 交易所核心：订单撮合机制深度解析</a></h1>
+<h2 id="摘要"><a class="header" href="#摘要">摘要</a></h2>
+<p>在金融世界中，交易所的核心功能是“撮合”——将买家的订单与卖家的订单匹配以促成交易。当我们将交易所迁移到 Web3 和区块链上时，如何在去中心化、安全和高效之间找到平衡，成为一个巨大的挑战。本文将深入探讨 Web3 交易所（特别是去中心化交易所，DEX）中主流的订单撮合机制，分析其设计思路、优缺点，并通过流程图展示其运作方式。</p>
+<hr />
+<h2 id="1-基础什么是订单簿-order-book"><a class="header" href="#1-基础什么是订单簿-order-book">1. 基础：什么是订单簿 (Order Book)？</a></h2>
+<p>在讨论撮合机制之前，我们必须先理解<strong>订单簿</strong>。这是一个包含特定资产所有未成交买单（Bids）和卖单（Asks）的实时列表。</p>
+<ul>
+<li><strong>买单 (Bids)</strong>：代表买家愿意以特定价格购买的数量。</li>
+<li><strong>卖单 (Asks)</strong>：代表卖家愿意以特定价格出售的数量。</li>
+<li><strong>价差 (Spread)</strong>：最高买单价和最低卖单价之间的差距。</li>
+</ul>
+<p>当一个新的买单价格高于或等于最低卖单价，或者一个新的卖单价格低于或等于最高买单价时，<strong>撮合引擎 (Matching Engine)</strong> 就会执行交易。这个过程就是<strong>订单撮合</strong>。</p>
+<hr />
+<h2 id="2-核心挑战在区块链上实现订单簿"><a class="header" href="#2-核心挑战在区块链上实现订单簿">2. 核心挑战：在区块链上实现订单簿</a></h2>
+<p>将传统的订单簿模型直接搬到 Layer-1 区块链（如以太坊主网）上会遇到几个严重的问题，这源于区块链的“不可能三角”——去中心化、安全、可扩展性：</p>
+<ol>
+<li><strong>成本高昂</strong>：在以太坊上，每一个操作（下单、取消订单、修改订单）都需要作为一笔交易上链，并支付 Gas 费。在高频交易场景下，这笔费用会变得无法承受。</li>
+<li><strong>速度缓慢</strong>：交易需要等待下一个区块才能被确认，延迟通常在十几秒到几分钟不等，这对于需要快速响应市场变化的交易者是致命的。</li>
+<li><strong>抢跑交易 (Front-running)</strong>：由于交易在被打包进区块前会进入公开的内存池 (Mempool)，恶意的矿工或机器人可以观察到即将到来的大额订单，并抢先执行自己的交易来获利，损害了原始用户的利益。</li>
+</ol>
+<p>为了克服这些挑战，Web3 社区探索出了几种不同的订单撮合架构。</p>
+<hr />
+<h2 id="3-主流订单撮合机制的设计与对比"><a class="header" href="#3-主流订单撮合机制的设计与对比">3. 主流订单撮合机制的设计与对比</a></h2>
+<h3 id="模式一完全链上订单簿-fully-on-chain-order-book"><a class="header" href="#模式一完全链上订单簿-fully-on-chain-order-book">模式一：完全链上订单簿 (Fully On-Chain Order Book)</a></h3>
+<p>这是最符合去中心化理想的模型，所有订单的生命周期——提交、存储、撮合、取消——都在链上通过智能合约完成。</p>
+<ul>
+<li>
+<p><strong>工作流程</strong>:</p>
+<ol>
+<li>用户 A 调用智能合约的 <code>placeOrder</code> 函数，提交一个买单。这笔交易被打包上链，订单被存储在合约中。</li>
+<li>用户 B 调用 <code>placeOrder</code> 函数，提交一个价格匹配的卖单。</li>
+<li>智能合约的撮合逻辑被触发，识别到这两个订单可以匹配。</li>
+<li>合约自动执行资产交换，将资产分别发送给 A 和 B。</li>
+</ol>
+</li>
+<li>
+<p><strong>Mermaid 流程图</strong>:</p>
+</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant UA as &quot;用户 A&quot;
+    participant UB as &quot;用户 B&quot;
+    participant OBC as &quot;订单簿合约&quot;
+    participant BC as &quot;区块链&quot;
+
+    UA-&gt;&gt;OBC: 下单（买入 ETH）
+    OBC-&gt;&gt;BC: 存储买单
+    BC--&gt;&gt;UA: 订单已提交（确认）
+
+    UB-&gt;&gt;OBC: 下单（卖出 ETH）
+    OBC-&gt;&gt;OBC: 匹配成功（A 买单 vs B 卖单）
+    OBC-&gt;&gt;BC: 执行交换并结算
+    BC--&gt;&gt;UB: 订单已匹配并结算
+    BC--&gt;&gt;UA: 订单已匹配并结算
+</pre>
+<ul>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>完全去中心化和抗审查</strong>：没有单点故障或控制方。</li>
+<li><strong>透明可信</strong>：所有操作都在链上公开可验证。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>极度昂贵和缓慢</strong>：如前所述，每个操作都需要 Gas 和区块确认时间。</li>
+<li><strong>抢跑风险高</strong>：所有意图都暴露在内存池中。</li>
+</ul>
+</li>
+<li><strong>适用场景</strong>:
+<ul>
+<li>几乎不适用于高频交易。仅在 Layer-2 或高性能专用链上才变得有可行性。</li>
+</ul>
+</li>
+</ul>
+<h3 id="模式二链下撮合链上结算-off-chain-matching-on-chain-settlement"><a class="header" href="#模式二链下撮合链上结算-off-chain-matching-on-chain-settlement">模式二：链下撮合，链上结算 (Off-Chain Matching, On-Chain Settlement)</a></h3>
+<p>这是目前最主流和实用的订单簿 DEX 模型，也被称为<strong>混合模型 (Hybrid Model)</strong>。它将计算密集型且需要高速响应的订单管理和撮合过程移至链下，仅将最终的交易结果上链进行结算。</p>
+<ul>
+<li>
+<p><strong>工作流程</strong>:</p>
+<ol>
+<li>用户 A 在前端界面上创建一个买单，然后用自己的私钥对这个订单数据进行<strong>签名</strong>，这不消耗 Gas。</li>
+<li>这个经过签名的订单被发送到一个中心化的<strong>中继方 (Relayer)</strong> 的服务器上。</li>
+<li>用户 B 同样签名一个卖单，并发送给同一个 Relayer。</li>
+<li>Relayer 的撮合引擎在自己的链下数据库中匹配这两个订单。</li>
+<li>一旦匹配成功，Relayer 会将 A 和 B 的两个签名订单捆绑在一起，打包成一笔交易，并调用链上的<strong>结算合约 (Settlement Contract)</strong>。</li>
+<li>结算合约在链上验证 A 和 B 的签名是否有效，并检查他们是否有足够的资产。验证通过后，合约执行原子化的资产交换。</li>
+</ol>
+</li>
+<li>
+<p><strong>Mermaid 流程图</strong>:</p>
+</li>
+</ul>
+<pre class="mermaid">sequenceDiagram
+    participant UA as &quot;用户 A&quot;
+    participant UB as &quot;用户 B&quot;
+    participant R as &quot;中继者（链下）&quot;
+    participant SC as &quot;结算合约（链上）&quot;
+
+    UA-&gt;&gt;UA: 创建并签署买单
+    UA-&gt;&gt;R: 提交已签名订单
+
+    UB-&gt;&gt;UB: 创建并签署卖单
+    UB-&gt;&gt;R: 提交已签名订单
+
+    R-&gt;&gt;R: 在链下数据库中撮合订单
+    R-&gt;&gt;SC: 提交匹配订单及签名
+    
+    SC-&gt;&gt;SC: 1. 验证签名 A
+    SC-&gt;&gt;SC: 2. 验证签名 B
+    SC-&gt;&gt;SC: 3. 执行原子交换
+    SC--&gt;&gt;R: 结算已确认
+</pre>
+<ul>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>用户体验好</strong>：下单和取消订单免费且即时。</li>
+<li><strong>成本低</strong>：只有在交易成功撮合后才需要支付一次性的链上结算 Gas 费（通常由 Taker 或 Relayer 支付）。</li>
+<li><strong>高性能</strong>：撮合速度接近中心化交易所。</li>
+<li><strong>抗抢跑</strong>：由于撮合过程在链下，抢跑者无法在内存池中提前发现订单。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>中心化风险</strong>：Relayer 成为一个中心化组件。它可能会审查订单、选择性撮合，甚至宕机导致服务中断。（可以通过去中心化的 Relayer 网络缓解，如 0x Protocol）。</li>
+<li><strong>非托管性</strong>：尽管 Relayer 无法偷走用户的资金（因为没有私钥），但它在撮合环节引入了中心化信任。</li>
+</ul>
+</li>
+<li><strong>代表项目</strong>:
+<ul>
+<li><strong>0x Protocol</strong>, <strong>dYdX (早期版本)</strong>, <strong>Loopring</strong>。</li>
+</ul>
+</li>
+</ul>
+<h3 id="模式三自动做市商-automated-market-maker-amm"><a class="header" href="#模式三自动做市商-automated-market-maker-amm">模式三：自动做市商 (Automated Market Maker, AMM)</a></h3>
+<p>虽然 AMM 不使用传统的订单簿和撮合引擎，但它作为一种去中心化的交易机制，是理解 DEX 生态的关键。它通过算法和流动性池来自动定价和执行交易。</p>
+<ul>
+<li><strong>工作流程</strong>:
+<ol>
+<li>流动性提供者 (LP) 将两种代币存入一个资金池。</li>
+<li>当用户想要交易时，他们与资金池进行交互，而不是与另一个交易者。</li>
+<li>价格由池中两种代币的比例决定，通常遵循一个确定性算法，如 Uniswap 的 <code>x * y = k</code>。</li>
+</ol>
+</li>
+<li><strong>优点</strong>:
+<ul>
+<li><strong>始终有流动性</strong>：只要池中有资金，交易就可以随时进行，无需等待对手方。</li>
+<li><strong>完全去中心化和无需许可</strong>。</li>
+</ul>
+</li>
+<li><strong>缺点</strong>:
+<ul>
+<li><strong>滑点 (Slippage)</strong>：大额交易会显著影响价格。</li>
+<li><strong>无常损失 (Impermanent Loss)</strong>：对流动性提供者有风险。</li>
+<li><strong>无法挂限价单</strong>：只能以当前市场价（或滑点范围内）进行交易。</li>
+</ul>
+</li>
+<li><strong>代表项目</strong>:
+<ul>
+<li><strong>Uniswap</strong>, <strong>Curve</strong>, <strong>Balancer</strong>。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<h2 id="4-总结与展望"><a class="header" href="#4-总结与展望">4. 总结与展望</a></h2>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">特性</th><th style="text-align: left">完全链上订单簿</th><th style="text-align: left">链下撮合，链上结算</th><th style="text-align: left">自动做市商 (AMM)</th></tr></thead><tbody>
+<tr><td style="text-align: left"><strong>去中心化程度</strong></td><td style="text-align: left">最高</td><td style="text-align: left">中等（依赖 Relayer）</td><td style="text-align: left">高</td></tr>
+<tr><td style="text-align: left"><strong>交易速度</strong></td><td style="text-align: left">慢 (区块时间)</td><td style="text-align: left">快 (链下撮合)</td><td style="text-align: left">中等 (区块时间)</td></tr>
+<tr><td style="text-align: left"><strong>交易成本</strong></td><td style="text-align: left">非常高</td><td style="text-align: left">低（仅结算）</td><td style="text-align: left">中等（单次 Swap）</td></tr>
+<tr><td style="text-align: left"><strong>用户体验</strong></td><td style="text-align: left">差</td><td style="text-align: left">好</td><td style="text-align: left">好</td></tr>
+<tr><td style="text-align: left"><strong>支持订单类型</strong></td><td style="text-align: left">市价单、限价单</td><td style="text-align: left">市价单、限价单</td><td style="text-align: left">仅市价单</td></tr>
+<tr><td style="text-align: left"><strong>抗抢跑性</strong></td><td style="text-align: left">差</td><td style="text-align: left">好</td><td style="text-align: left">中等（有 MEV 风险）</td></tr>
+</tbody></table>
+</div>
+<p><strong>结论：</strong></p>
+<p>在当前的区块链技术（特别是 Layer-1）限制下，<strong>“链下撮合，链上结算”的混合模型</strong> 是实现高性能、低成本订单簿 DEX 的最佳方案，它在用户体验和去中心化之间取得了巧妙的平衡。</p>
+<p>与此同时，<strong>AMM</strong> 以其简洁和完全去中心化的特性，开辟了另一条成功的道路，并成为目前 DeFi 领域交易量最大的模式。</p>
+<p>展望未来，随着 Layer-2 扩容方案（如 ZK-Rollups 和 Optimistic Rollups）的成熟，交易成本将大幅降低，执行速度显著提升。这可能会让<strong>完全链上订单簿</strong>模型重新焕发生机，在高性能的 L2 环境中实现接近中心化交易所的体验，同时保留区块链的去中心化和安全优势。</p>
+<hr />
+<h2 id="5-深入链下撮合链上结算的安全与验证"><a class="header" href="#5-深入链下撮合链上结算的安全与验证">5. 深入：链下撮合、链上结算的安全与验证</a></h2>
+<p>本节补充“链下撮合、链上结算”模式的关键设计点，涵盖签名与域隔离、价格与数量校验、余额与授权检查、部分成交与取消、以及前置/抢跑的缓解手段。</p>
+<h3 id="51-参与方与职责"><a class="header" href="#51-参与方与职责">5.1 参与方与职责</a></h3>
+<ul>
+<li>Maker（发单方）：签名授权愿意成交的代币、价格/数量、有效期、是否允许部分成交等约束。</li>
+<li>Taker（吃单/执行）：选择订单并发起链上结算，或委托撮合引擎代为执行。</li>
+<li>Relayer/撮合引擎：聚合订单与撮合配对，可代付 Gas 并收取撮合费（可选）。</li>
+<li>结算合约：验证签名与约束、检查余额与授权、执行代币交换、记录成交与取消状态。</li>
+</ul>
+<h3 id="52-订单结构与签名eip712"><a class="header" href="#52-订单结构与签名eip712">5.2 订单结构与签名（EIP‑712）</a></h3>
+<ul>
+<li>常见字段：<code>maker</code>、<code>taker（可选）</code>、<code>sellToken</code>、<code>buyToken</code>、<code>sellAmount</code>、<code>minBuyAmount/price</code>、<code>deadline</code>、<code>nonce/salt</code>、<code>receiver</code>、<code>feeRecipient</code>、<code>feeBps/feeAmount</code>、<code>chainId</code>、<code>verifyingContract</code>、<code>partialFill</code> 等。</li>
+<li>签名：使用 EIP‑712 Typed Data。Domain 至少包含 <code>name</code>、<code>version</code>、<code>chainId</code>、<code>verifyingContract</code>，避免跨链/跨合约重放。</li>
+<li>支持合约署名：如机构账户用 ERC‑1271 校验。</li>
+</ul>
+<h3 id="53-结算合约验证流程关键步骤"><a class="header" href="#53-结算合约验证流程关键步骤">5.3 结算合约验证流程（关键步骤）</a></h3>
+<ul>
+<li>域隔离：校验 <code>chainId</code> 与 <code>verifyingContract</code> 是否匹配。</li>
+<li>签名恢复：<code>ecrecover</code>/OpenZeppelin ECDSA 或 ERC‑1271 验证签名者为 <code>maker</code>。</li>
+<li>期限/重放保护：检查 <code>deadline</code>、<code>used[orderHash]</code> 与 <code>filled[orderHash]</code>（允许部分成交时按累计量校验）。</li>
+<li>价格与数量约束：校验 <code>sell/buy</code> 方向相反，成交量满足双方最小接收/价格区间；计算填单量的取整方向需固定，避免被四舍五入套利。</li>
+<li>授权与余额：
+<ul>
+<li>非托管：检查 <code>balanceOf(maker)</code> 与 <code>allowance(maker, settlement)</code> 是否足够。</li>
+<li>可选即刻授权：支持 EIP‑2612/Permit2，先 <code>permit</code> 再结算，减少“授权被用户修改导致失败”。</li>
+</ul>
+</li>
+<li>代币转账：使用 <code>SafeERC20</code> 做 <code>transferFrom</code>，考虑非标准返回值与税/通缩代币；费用按约定结算给 <code>feeRecipient</code>。</li>
+<li>状态更新与事件：更新 <code>filled/used</code>，<code>emit</code> 成交事件，便于索引与审计。</li>
+</ul>
+<h3 id="54-防止用户在执行前转走资产"><a class="header" href="#54-防止用户在执行前转走资产">5.4 防止用户在执行前转走资产</a></h3>
+<ul>
+<li>无法从协议层“禁止”用户转资；常见策略是：
+<ul>
+<li>即刻授权（Permit/Permit2）减少失败概率；</li>
+<li>上链前仿真（eth_call/Tenderly）检查余额与可行性；</li>
+<li>指定 <code>taker</code> + 短 <code>deadline</code>，缩短状态变化窗口；</li>
+<li>托管/预存模式（在合约/二层账户中持有余额），以可用余额为准保障执行确定性。</li>
+</ul>
+</li>
+</ul>
+<h3 id="55-取消与部分成交"><a class="header" href="#55-取消与部分成交">5.5 取消与部分成交</a></h3>
+<ul>
+<li>取消：提供 <code>cancel(orderHash)</code> 或 <code>cancelUpTo(nonceFloor)</code>，也可签名“取消指令”由第三方代上链。</li>
+<li>部分成交：<code>filled[orderHash]</code> 记录累计成交量，完全成交或取消后标记 <code>used = true</code>，禁止再次使用。</li>
+</ul>
+<h3 id="56-防前置抢跑mev"><a class="header" href="#56-防前置抢跑mev">5.6 防前置/抢跑（MEV）</a></h3>
+<ul>
+<li>绑定 <code>taker/执行者</code> 限定可执行主体；</li>
+<li>使用私有内存池/保护中继（如 Flashbots）；</li>
+<li>短有效期与撮合域隔离；必要时加密订单、仅对特定执行者可见。</li>
+</ul>
+<h3 id="57-费用与结算"><a class="header" href="#57-费用与结算">5.7 费用与结算</a></h3>
+<ul>
+<li>在订单中明确 <code>feeRecipient</code> 与 <code>feeBps/feeAmount</code>；</li>
+<li>费用币种可为买/卖任一侧或独立 <code>feeToken</code>；</li>
+<li>对税/通缩代币，按“实际到帐量”设计约束，或直接在白名单外禁用。</li>
+</ul>
+<h3 id="58-时序图含签名校验授权检查部分成交与取消"><a class="header" href="#58-时序图含签名校验授权检查部分成交与取消">5.8 时序图（含签名校验、授权检查、部分成交与取消）</a></h3>
+<pre class="mermaid">sequenceDiagram
+    participant MK as &quot;Maker（发单）&quot;
+    participant TK as &quot;Taker（执行）&quot;
+    participant R as &quot;撮合引擎（可选）&quot;
+    participant SC as &quot;结算合约&quot;
+
+    MK-&gt;&gt;R: 提交签名订单（EIP‑712）
+    R--&gt;&gt;TK: 返回可撮合订单
+    TK-&gt;&gt;SC: settle(order, sig, fill, params)
+
+    SC-&gt;&gt;SC: 1) 域隔离校验（chainId、verifyingContract）
+    SC-&gt;&gt;SC: 2) 恢复签名人 / ERC‑1271 校验
+    alt 已取消/过期/重复使用
+        SC--&gt;&gt;TK: revert(&quot;invalid order&quot;)
+    end
+    SC-&gt;&gt;SC: 3) 价格/最小接收等约束校验
+    SC-&gt;&gt;SC: 4) 计算成交量（支持部分成交）
+    opt 附带 Permit/Permit2
+        TK-&gt;&gt;SC: 提交 permit 数据
+        SC-&gt;&gt;SC: 调用 permit 设置授权
+    end
+    SC-&gt;&gt;SC: 5) 检查 maker 余额与授权
+    alt 余额/授权不足
+        SC--&gt;&gt;TK: revert(&quot;insufficient balance/allowance&quot;)
+    end
+    SC-&gt;&gt;SC: 6) 代币交换（SafeERC20.transferFrom）
+    SC-&gt;&gt;SC: 7) 更新 filled/used 并记录费用
+    SC--&gt;&gt;TK: emit Fill(orderHash, maker, taker, amounts)
+</pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../BlockChain/Ethereum/Defi/Defi.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../BlockChain/Ethereum/Defi/Uniswap/uniswap.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../BlockChain/Ethereum/Defi/Defi.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../BlockChain/Ethereum/Defi/Uniswap/uniswap.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../mermaid.min.js"></script>
+        <script src="../../../mermaid-init.js"></script>
+
+
+
+    </div>
+    </body>
+</html>
